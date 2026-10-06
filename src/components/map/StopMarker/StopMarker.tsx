@@ -1,8 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Marker } from 'react-native-maps';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { BusStop } from '../../../types/route.types';
 import { formatEtaMinutes } from '../../../utils/time.utils';
+
+let NativeMarker: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    NativeMarker = require('react-native-maps').Marker;
+  } catch (e) {
+    NativeMarker = null;
+  }
+}
 
 export interface StopMarkerProps {
   stop: BusStop;
@@ -10,8 +18,12 @@ export interface StopMarkerProps {
 }
 
 export const StopMarker: React.FC<StopMarkerProps> = ({ stop, onPress }) => {
+  if (Platform.OS === 'web' || !NativeMarker) {
+    return null;
+  }
+
   return (
-    <Marker
+    <NativeMarker
       coordinate={stop.location}
       onPress={onPress}
       anchor={{ x: 0.5, y: 0.5 }}
@@ -25,7 +37,7 @@ export const StopMarker: React.FC<StopMarkerProps> = ({ stop, onPress }) => {
           </Text>
         </View>
       </View>
-    </Marker>
+    </NativeMarker>
   );
 };
 
@@ -41,10 +53,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderWidth: 3,
     borderColor: '#38bdf8',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
     elevation: 3,
   },
   terminalDot: {

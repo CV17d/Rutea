@@ -32,6 +32,11 @@
         "FOREGROUND_SERVICE_LOCATION"
       ]
     },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "platforms": ["ios", "android", "web"],
     "plugins": [
       [
         "expo-location",

@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import MapView, { PROVIDER_DEFAULT } from 'react-native-maps';
+import { View, StyleSheet, Platform, TouchableWithoutFeedback } from 'react-native';
 import { PASTO_COORDINATES } from '../../../constants/pastoCoordinates';
 
 export interface MapContainerProps {
@@ -8,25 +7,41 @@ export interface MapContainerProps {
   onPressMap?: () => void;
 }
 
-const DARK_MAP_STYLE = [
-  { elementType: 'geometry', stylers: [{ color: '#17202a' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#8ca0ba' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#17202a' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#243342' }] },
-  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#334e68' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0b131e' }] },
-  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#162b29' }] },
-];
+let NativeMapView: any = null;
+let PROVIDER_DEFAULT: any = null;
+
+if (Platform.OS !== 'web') {
+  try {
+    const Maps = require('react-native-maps');
+    NativeMapView = Maps.default;
+    PROVIDER_DEFAULT = Maps.PROVIDER_DEFAULT;
+  } catch (e) {
+    NativeMapView = null;
+  }
+}
 
 export const MapContainer: React.FC<MapContainerProps> = ({
   children,
   onPressMap,
 }) => {
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<any>(null);
+
+  if (Platform.OS === 'web' || !NativeMapView) {
+    return (
+      <TouchableWithoutFeedback onPress={onPressMap}>
+        <View style={styles.webContainer}>
+          {/* Simulated Dark City Grid of San Juan de Pasto */}
+          <View style={styles.webGridOverlay} />
+          <View style={styles.webCenterRing} />
+          {children}
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <MapView
+      <NativeMapView
         ref={mapRef}
         style={StyleSheet.absoluteFillObject}
         provider={PROVIDER_DEFAULT}
@@ -36,14 +51,13 @@ export const MapContainer: React.FC<MapContainerProps> = ({
           latitudeDelta: PASTO_COORDINATES.defaultDelta.latitudeDelta,
           longitudeDelta: PASTO_COORDINATES.defaultDelta.longitudeDelta,
         }}
-        customMapStyle={DARK_MAP_STYLE}
         showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={false}
         onPress={onPressMap}
       >
         {children}
-      </MapView>
+      </NativeMapView>
     </View>
   );
 };
@@ -52,5 +66,27 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#070b13',
+  },
+  webContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#090e17',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  webGridOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.15,
+    borderWidth: 1,
+    borderColor: '#38bdf8',
+  },
+  webCenterRing: {
+    position: 'absolute',
+    top: '48%',
+    left: '48%',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
 });

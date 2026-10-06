@@ -1,7 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Marker } from 'react-native-maps';
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { ProjectedBusLocation } from '../../../types/telemetry.types';
+
+let NativeMarker: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    NativeMarker = require('react-native-maps').Marker;
+  } catch (e) {
+    NativeMarker = null;
+  }
+}
 
 export interface BusMarkerProps {
   bus: ProjectedBusLocation;
@@ -11,41 +19,51 @@ export interface BusMarkerProps {
 export const BusMarker: React.FC<BusMarkerProps> = ({ bus, onPress }) => {
   const isLive = bus.status === 'LIVE';
 
+  const markerContent = (
+    <View style={[styles.wrapper, !isLive && styles.ghostWrapper]}>
+      {isLive && <View style={styles.livePulseHalo} />}
+      <View
+        style={[
+          styles.busCircle,
+          { backgroundColor: bus.routeColor },
+          !isLive && styles.ghostCircle,
+        ]}
+      >
+        <Text style={styles.busIcon}>🚍</Text>
+      </View>
+      <View style={[styles.badge, isLive ? styles.liveBadge : styles.ghostBadge]}>
+        <Text style={styles.badgeText}>
+          {bus.routeCode} {isLive ? '• VIVO' : '• EST'}
+        </Text>
+      </View>
+    </View>
+  );
+
+  if (Platform.OS === 'web' || !NativeMarker) {
+    // Web simulated positioning relative to Pasto bounds
+    const topPct = Math.max(15, Math.min(75, 45 + (bus.snappedPosition.latitude - 1.2136) * 600));
+    const leftPct = Math.max(15, Math.min(80, 50 + (bus.snappedPosition.longitude - (-77.2811)) * 600));
+
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        style={[styles.webPositioned, { top: `${topPct}%`, left: `${leftPct}%` }]}
+      >
+        {markerContent}
+      </TouchableOpacity>
+    );
+  }
+
   return (
-    <Marker
+    <NativeMarker
       coordinate={bus.snappedPosition}
       onPress={onPress}
       anchor={{ x: 0.5, y: 0.5 }}
       flat={false}
       tracksViewChanges={false}
     >
-      <View style={[styles.wrapper, !isLive && styles.ghostWrapper]}>
-        {/* Pulsing Outer Glow for Live Buses */}
-        {isLive && <View style={styles.livePulseHalo} />}
-
-        <View
-          style={[
-            styles.busCircle,
-            { backgroundColor: bus.routeColor },
-            !isLive && styles.ghostCircle,
-          ]}
-        >
-          <Text style={styles.busIcon}>🚍</Text>
-        </View>
-
-        {/* Floating Route Badge */}
-        <View
-          style={[
-            styles.badge,
-            isLive ? styles.liveBadge : styles.ghostBadge,
-          ]}
-        >
-          <Text style={styles.badgeText}>
-            {bus.routeCode} {isLive ? '• VIVO' : '• EST'}
-          </Text>
-        </View>
-      </View>
-    </Marker>
+      {markerContent}
+    </NativeMarker>
   );
 };
 
@@ -53,6 +71,11 @@ const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  webPositioned: {
+    position: 'absolute',
+    zIndex: 10,
+    cursor: 'pointer',
   },
   ghostWrapper: {
     opacity: 0.65,
@@ -74,10 +97,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2.5,
     borderColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
     elevation: 6,
   },
   ghostCircle: {
