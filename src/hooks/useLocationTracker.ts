@@ -27,7 +27,7 @@ export function useLocationTracker(onLocationUpdate?: (payload: RawTelemetryPayl
 
   useEffect(() => {
     let sub: Location.LocationSubscription | null = null;
-    let pointsInterval: NodeJS.Timeout | null = null;
+    let pointsInterval: ReturnType<typeof setInterval> | null = null;
 
     if (role === 'BROADCASTER' && profile.activeRouteId) {
       setIsTracking(true);

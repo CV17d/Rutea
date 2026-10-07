@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   innerGlow: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
   initials: {

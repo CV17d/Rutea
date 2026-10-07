@@ -52,7 +52,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         <View style={styles.webVignette} pointerEvents="none" />
 
         <TouchableWithoutFeedback onPress={onPressMap}>
-          <View style={StyleSheet.absoluteFillObject}>{children}</View>
+          <View style={StyleSheet.absoluteFill}>{children}</View>
         </TouchableWithoutFeedback>
       </View>
     );
@@ -62,7 +62,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     <View style={styles.container}>
       <NativeMapView
         ref={mapRef}
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
         provider={PROVIDER_DEFAULT}
         initialRegion={{
           latitude: PASTO_COORDINATES.center.latitude,
@@ -83,16 +83,16 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#070b13',
   },
   webContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#090e17',
     overflow: 'hidden',
   },
   webVignette: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(7, 11, 19, 0.45)',
   },
 });
