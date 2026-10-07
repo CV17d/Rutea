@@ -36,7 +36,7 @@ export const routeDetailCardStyles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 15,
     fontWeight: '800',
-    maxWidth: 180,
+    flexShrink: 1,
   },
   nextStopLabel: {
     color: '#94a3b8',

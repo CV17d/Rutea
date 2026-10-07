@@ -29,7 +29,7 @@ export const RouteDetailCard: React.FC = () => {
     <View style={styles.container}>
       <GlassCard isHighlighted style={styles.card}>
         <View style={styles.headerBlock}>
-          <View>
+          <View style={{ flex: 1, marginRight: 12 }}>
             <View style={styles.routeHeaderRow}>
               <View style={[styles.codeBadge, { backgroundColor: selectedRoute.color }]}>
                 <Text style={styles.codeText}>{selectedRoute.code}</Text>

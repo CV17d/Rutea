@@ -27,15 +27,34 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   const mapRef = useRef<any>(null);
 
   if (Platform.OS === 'web' || !NativeMapView) {
+    // OpenStreetMap de San Juan de Pasto con filtro oscuro de alto contraste
+    const pastoUrl = 'https://www.openstreetmap.org/export/embed.html?bbox=-77.315%2C1.185%2C-77.245%2C1.245&layer=mapnik';
+
     return (
-      <TouchableWithoutFeedback onPress={onPressMap}>
-        <View style={styles.webContainer}>
-          {/* Simulated Dark City Grid of San Juan de Pasto */}
-          <View style={styles.webGridOverlay} />
-          <View style={styles.webCenterRing} />
-          {children}
-        </View>
-      </TouchableWithoutFeedback>
+      <View style={styles.webContainer}>
+        {/* Mapa real de San Juan de Pasto para navegadores web */}
+        {React.createElement('iframe', {
+          src: pastoUrl,
+          style: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            filter: 'invert(92%) hue-rotate(190deg) brightness(80%) contrast(115%)',
+            pointerEvents: 'none',
+          },
+          title: 'Mapa de Pasto',
+        })}
+
+        {/* Capa de viñeta oscura para realzar el glassmorfismo */}
+        <View style={styles.webVignette} pointerEvents="none" />
+
+        <TouchableWithoutFeedback onPress={onPressMap}>
+          <View style={StyleSheet.absoluteFillObject}>{children}</View>
+        </TouchableWithoutFeedback>
+      </View>
     );
   }
 
@@ -71,22 +90,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#090e17',
     overflow: 'hidden',
-    position: 'relative',
   },
-  webGridOverlay: {
+  webVignette: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0.15,
-    borderWidth: 1,
-    borderColor: '#38bdf8',
-  },
-  webCenterRing: {
-    position: 'absolute',
-    top: '48%',
-    left: '48%',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'rgba(16, 185, 129, 0.4)',
+    backgroundColor: 'rgba(7, 11, 19, 0.45)',
   },
 });
