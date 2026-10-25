@@ -37,6 +37,12 @@ class SocketService {
     }
   }
 
+  startBoarding(data: { userId: string; routeId: string; latitude?: number; longitude?: number }) {
+    if (this.socket) {
+      this.socket.emit('startBoarding', data);
+    }
+  }
+
   leaveRouteRoom(routeId: string) {
     if (this.socket && this.connected) {
       this.socket.emit('room:leave', routeId);

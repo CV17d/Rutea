@@ -101,6 +101,7 @@ export function useLocationTracking(onLocationUpdate?: (location: CurrentUserLoc
       socketClient.connect();
       const targetRoute = routeId || profile.activeRouteId || 'route-c1';
       socketClient.joinRoom(targetRoute);
+      socketClient.startBoarding({ userId: profile.id, routeId: targetRoute });
 
       try {
         const sub = await Location.watchPositionAsync(
