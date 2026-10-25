@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { RoutesModule } from './modules/routes/routes.module';
 import { TrackingModule } from './modules/tracking/tracking.module';
 import { TelemetryModule } from './modules/telemetry/telemetry.module';
@@ -9,6 +10,7 @@ import { SupabaseModule } from './modules/supabase/supabase.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     RoutesModule,
     TrackingModule,
     TelemetryModule,

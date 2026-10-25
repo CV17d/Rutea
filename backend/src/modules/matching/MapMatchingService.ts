@@ -26,7 +26,7 @@ export interface ProcessedCoordinateResult {
 }
 
 // GeoJSON temporal con trazados oficiales de transporte de San Juan de Pasto
-const PASTO_ROUTES_GEOJSON: Record<string, GeoJSON.Feature<GeoJSON.LineString>> = {
+export const PASTO_ROUTES_GEOJSON: Record<string, GeoJSON.Feature<GeoJSON.LineString>> = {
   'route-c1': turf.lineString([
     [-77.2845, 1.1732], // Catambuco
     [-77.2810, 1.1850],

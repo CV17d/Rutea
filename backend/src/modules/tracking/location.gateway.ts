@@ -12,6 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { MapMatchingService } from '../matching/MapMatchingService';
 import { SupabaseService } from '../supabase/supabase.service';
 import { GamificationService } from '../gamification/gamification.service';
+import { GhostBusService } from '../matching/ghost-bus.service';
 
 export interface LocationPayload {
   userId: string;
@@ -39,15 +40,23 @@ export class LocationGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   private readonly matching: MapMatchingService;
   private readonly supabase: SupabaseService;
   private readonly gamification: GamificationService;
+  private readonly ghostBus: GhostBusService;
 
-  constructor(matching?: MapMatchingService, supabase?: SupabaseService, gamif?: GamificationService) {
+  constructor(
+    matching?: MapMatchingService,
+    supabase?: SupabaseService,
+    gamif?: GamificationService,
+    ghost?: GhostBusService,
+  ) {
     this.matching = matching ?? new MapMatchingService();
     this.supabase = supabase ?? new SupabaseService();
     this.gamification = gamif ?? new GamificationService();
+    this.ghostBus = ghost ?? new GhostBusService();
   }
 
   afterInit() {
-    console.log('[LocationGateway] Inicializado');
+    this.ghostBus.setBroadcaster((rId, data) => this.broadcastProjectedBus(rId, data));
+    console.log('[LocationGateway] Inicializado con GhostBusService');
   }
 
   handleConnection(client: Socket) {
@@ -135,6 +144,9 @@ export class LocationGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       this.server.to(routeId).emit('locationUpdated', cleanPayload);
       this.server.to(routeId).emit('telemetry:projected', cleanPayload);
     }
+
+    // Registrar actividad de usuario real para pausar bus fantasma
+    this.ghostBus.notifyRealUserActivity(routeId);
 
     // 4. Persistencia en Supabase y Recompensas de Gamificación
     this.supabase.updateSessionTelemetry(payload.userId, cleanPayload);

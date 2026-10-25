@@ -1,69 +1,98 @@
-import { Injectable } from '@nestjs/common';
-import { RouteEntity } from '../routes/routes.service';
-import { Point2D } from './matching.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
+import * as turf from '@turf/turf';
+import { PASTO_ROUTES_GEOJSON } from './MapMatchingService';
 
-export interface GhostBusEstimate {
+export interface GhostBusPayload {
   busId: string;
+  userId: string;
   routeId: string;
-  routeCode: string;
-  status: 'GHOST';
-  estimatedPosition: Point2D;
-  heading: number;
+  latitude: number;
+  longitude: number;
   speedKmh: number;
-  nextStopName: string;
-  estimatedArrivalMinutes: number;
+  heading: number;
+  accuracy: number;
+  is_ghost: true;
+  status: 'GHOST';
+  timestamp: number;
 }
 
 @Injectable()
 export class GhostBusService {
-  private readonly AVERAGE_URBAN_SPEED_KMH = 20.0;
+  private readonly logger = new Logger(GhostBusService.name);
+  private readonly SIMULATED_SPEED_KMH = 18.0; // Velocidad promedio urbana de 18 km/h
+  private readonly STEP_INTERVAL_SECONDS = 15; // Intervalo de 15 segundos
+  private readonly STEP_DISTANCE_KM = (18.0 * 15) / 3600; // 0.075 km = 75 metros por paso
 
-  generateGhostBusForRoute(route: RouteEntity, offsetRatio: number = 0.4): GhostBusEstimate {
-    const coords = route.coordinates;
-    if (coords.length < 2) {
-      return this.fallbackGhostBus(route);
-    }
+  private readonly routeProgress = new Map<string, number>();
+  private readonly lastRealPing = new Map<string, number>();
+  private broadcaster?: (routeId: string, payload: GhostBusPayload) => void;
 
-    // Interpolate position along route based on scheduled frequency
-    const targetIndex = Math.min(
-      coords.length - 2,
-      Math.floor((coords.length - 1) * offsetRatio),
-    );
+  setBroadcaster(fn: (routeId: string, payload: GhostBusPayload) => void) {
+    this.broadcaster = fn;
+  }
 
-    const start = coords[targetIndex];
-    const end = coords[targetIndex + 1];
+  notifyRealUserActivity(routeId: string) {
+    this.lastRealPing.set(routeId, Date.now());
+  }
 
-    const estimatedPosition: Point2D = {
-      latitude: start.latitude + (end.latitude - start.latitude) * 0.5,
-      longitude: start.longitude + (end.longitude - start.longitude) * 0.5,
-    };
+  hasActiveRealUsers(routeId: string, maxIdleSeconds: number = 30): boolean {
+    const lastPing = this.lastRealPing.get(routeId);
+    if (!lastPing) return false;
+    return Date.now() - lastPing < maxIdleSeconds * 1000;
+  }
 
-    const nextStop = route.stops[targetIndex + 1] || route.stops[0];
+  calculateGhostPosition(routeId: string): GhostBusPayload | null {
+    const routeFeature = PASTO_ROUTES_GEOJSON[routeId] || PASTO_ROUTES_GEOJSON['route-c1'];
+    if (!routeFeature) return null;
+
+    const totalLengthKm = turf.length(routeFeature, { units: 'kilometers' });
+    if (totalLengthKm <= 0) return null;
+
+    let currentDist = this.routeProgress.get(routeId) || 0;
+    currentDist = (currentDist + this.STEP_DISTANCE_KM) % totalLengthKm;
+    this.routeProgress.set(routeId, currentDist);
+
+    // Posición estimada sobre el trazado GeoJSON
+    const point = turf.along(routeFeature, currentDist, { units: 'kilometers' });
+    const [longitude, latitude] = point.geometry.coordinates;
+
+    // Cálculo del rumbo (heading) mirando 20 metros hacia adelante
+    const nextDist = (currentDist + 0.02) % totalLengthKm;
+    const nextPoint = turf.along(routeFeature, nextDist, { units: 'kilometers' });
+    const rawBearing = turf.bearing(point, nextPoint);
+    const heading = Math.round((rawBearing + 360) % 360);
 
     return {
-      busId: `ghost-${route.id}-${Math.floor(offsetRatio * 100)}`,
-      routeId: route.id,
-      routeCode: route.code,
+      busId: `ghost-${routeId}`,
+      userId: `ghost-system-${routeId}`,
+      routeId,
+      latitude,
+      longitude,
+      speedKmh: this.SIMULATED_SPEED_KMH,
+      heading,
+      accuracy: 5,
+      is_ghost: true,
       status: 'GHOST',
-      estimatedPosition,
-      heading: 20,
-      speedKmh: this.AVERAGE_URBAN_SPEED_KMH,
-      nextStopName: nextStop ? nextStop.name : 'Siguiente Parada',
-      estimatedArrivalMinutes: 5,
+      timestamp: Date.now(),
     };
   }
 
-  private fallbackGhostBus(route: RouteEntity): GhostBusEstimate {
-    return {
-      busId: `ghost-${route.id}-default`,
-      routeId: route.id,
-      routeCode: route.code,
-      status: 'GHOST',
-      estimatedPosition: { latitude: 1.2145, longitude: -77.2783 },
-      heading: 0,
-      speedKmh: this.AVERAGE_URBAN_SPEED_KMH,
-      nextStopName: 'Plaza Nariño',
-      estimatedArrivalMinutes: 4,
-    };
+  @Interval(15000)
+  handleGhostBusInterval() {
+    const routesToMonitor = ['route-c1', 'route-c16', 'route-e4'];
+
+    for (const routeId of routesToMonitor) {
+      if (!this.hasActiveRealUsers(routeId)) {
+        const ghostBus = this.calculateGhostPosition(routeId);
+        if (ghostBus && this.broadcaster) {
+          this.logger.debug(
+            `[GhostBus] Emitiendo bus fantasma para ${routeId}: ` +
+            `(${ghostBus.latitude.toFixed(4)}, ${ghostBus.longitude.toFixed(4)})`,
+          );
+          this.broadcaster(routeId, ghostBus);
+        }
+      }
+    }
   }
 }
