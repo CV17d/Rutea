@@ -11,6 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { MapMatchingService } from '../matching/MapMatchingService';
 import { SupabaseService } from '../supabase/supabase.service';
+import { GamificationService } from '../gamification/gamification.service';
 
 export interface LocationPayload {
   userId: string;
@@ -30,30 +31,23 @@ export interface BoardingPayload {
   longitude?: number;
 }
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-  },
-})
-export class LocationGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+@WebSocketGateway({ cors: { origin: '*' } })
+export class LocationGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
   private readonly matching: MapMatchingService;
   private readonly supabase: SupabaseService;
+  private readonly gamification: GamificationService;
 
-  constructor(
-    mapMatching?: MapMatchingService,
-    supabase?: SupabaseService,
-  ) {
-    this.matching = mapMatching ?? new MapMatchingService();
+  constructor(matching?: MapMatchingService, supabase?: SupabaseService, gamif?: GamificationService) {
+    this.matching = matching ?? new MapMatchingService();
     this.supabase = supabase ?? new SupabaseService();
+    this.gamification = gamif ?? new GamificationService();
   }
 
   afterInit() {
-    console.log('[LocationGateway] Servidor inicializado');
+    console.log('[LocationGateway] Inicializado');
   }
 
   handleConnection(client: Socket) {
@@ -67,33 +61,19 @@ export class LocationGateway
   }
 
   @SubscribeMessage('joinRoom')
-  async handleJoinRoom(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: string | { routeId: string; userId?: string },
-  ) {
+  async handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     const routeId = typeof data === 'string' ? data : data?.routeId;
-    if (routeId) {
-      client.join(routeId);
-      console.log(`[LocationGateway] Cliente ${client.id} se unio a la ruta: ${routeId}`);
-    }
+    if (routeId) client.join(routeId);
     if (typeof data === 'object' && data.userId && routeId) {
-      const session = await this.supabase.registerAnonymousSession({
-        userId: data.userId,
-        routeId,
-      });
+      const session = await this.supabase.registerAnonymousSession({ userId: data.userId, routeId });
       client.emit('sessionRegistered', session);
     }
     return { event: 'roomJoined', routeId };
   }
 
   @SubscribeMessage('startBoarding')
-  async handleStartBoarding(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: BoardingPayload,
-  ) {
-    if (!payload?.userId || !payload?.routeId) {
-      return { status: 'error', message: 'Datos incompletos de abordaje' };
-    }
+  async handleStartBoarding(@ConnectedSocket() client: Socket, @MessageBody() payload: BoardingPayload) {
+    if (!payload?.userId || !payload?.routeId) return { status: 'error', message: 'Datos incompletos' };
     client.join(payload.routeId);
     (client as any).data = { ...(client as any).data, userId: payload.userId };
     const session = await this.supabase.registerAnonymousSession(payload);
@@ -102,24 +82,18 @@ export class LocationGateway
   }
 
   @SubscribeMessage('room:join')
-  handleRoomJoinAlias(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: string | { routeId: string; userId?: string },
-  ) {
+  handleRoomJoinAlias(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     return this.handleJoinRoom(client, data);
   }
 
   @SubscribeMessage('updateLocation')
-  handleUpdateLocation(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: LocationPayload,
-  ) {
+  handleUpdateLocation(@ConnectedSocket() client: Socket, @MessageBody() payload: LocationPayload) {
     const routeId = payload?.routeId;
     if (!routeId || !payload.latitude || !payload.longitude) {
       return { status: 'error', message: 'Parametros invalidos' };
     }
 
-    // 1. Procesar con Turf Map-Matching
+    // 1. Turf Map-Matching
     const processed = this.matching.processRawCoordinates({
       userId: payload.userId,
       routeId,
@@ -131,7 +105,7 @@ export class LocationGateway
       timestamp: payload.timestamp || Date.now(),
     });
 
-    // 2. Si esta desviado (fuera de tolerancia de 45m), alertar o descartar
+    // 2. Si esta desviado (>45m)
     if (processed.isDeviated) {
       if (this.server) {
         this.server.to(routeId).emit('locationDeviated', {
@@ -145,7 +119,7 @@ export class LocationGateway
       return { status: 'deviated', distanceMeters: processed.distanceMeters };
     }
 
-    // 3. Coordenada proyectada y limpia lista para dibujar en el mapa
+    // 3. Proyección SNAPPED limpia
     const cleanPayload = {
       ...payload,
       latitude: processed.snappedLatitude,
@@ -162,17 +136,23 @@ export class LocationGateway
       this.server.to(routeId).emit('telemetry:projected', cleanPayload);
     }
 
-    // Persistir telemetria en Supabase
+    // 4. Persistencia en Supabase y Recompensas de Gamificación
     this.supabase.updateSessionTelemetry(payload.userId, cleanPayload);
+    const reward = this.gamification.processTelemetryReward(
+      payload.userId,
+      cleanPayload.latitude,
+      cleanPayload.longitude,
+    );
+    if (reward.awarded > 0 || reward.rankUp) {
+      client.emit('gamification:update', reward);
+      this.supabase.updateSessionPoints(payload.userId, reward.totalPoints, reward.currentRank);
+    }
 
     return { status: 'snapped', cleanPayload };
   }
 
   @SubscribeMessage('telemetry:emit')
-  handleTelemetryEmitAlias(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: LocationPayload,
-  ) {
+  handleTelemetryEmitAlias(@ConnectedSocket() client: Socket, @MessageBody() payload: LocationPayload) {
     return this.handleUpdateLocation(client, payload);
   }
 
@@ -184,8 +164,6 @@ export class LocationGateway
   }
 
   broadcastToRoute(routeId: string, event: string, data: any) {
-    if (this.server) {
-      this.server.to(routeId).emit(event, data);
-    }
+    if (this.server) this.server.to(routeId).emit(event, data);
   }
 }

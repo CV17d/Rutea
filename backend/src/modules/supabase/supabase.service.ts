@@ -132,6 +132,21 @@ export class SupabaseService {
     }
   }
 
+  async updateSessionPoints(userId: string, points: number, rank: string): Promise<void> {
+    try {
+      await this.client
+        .from('active_sessions')
+        .update({
+          total_points: points,
+          current_rank: rank,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', userId);
+    } catch (err: any) {
+      this.logger.debug(`[Supabase] Puntos offline: ${err?.message}`);
+    }
+  }
+
   async endSession(userId: string): Promise<void> {
     try {
       await this.client
