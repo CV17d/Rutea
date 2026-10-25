@@ -9,6 +9,7 @@ import {
   OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { MapMatchingService } from '../matching/MapMatchingService';
 
 export interface LocationPayload {
   userId: string;
@@ -31,6 +32,12 @@ export class LocationGateway
 {
   @WebSocketServer()
   server: Server;
+
+  private readonly matching: MapMatchingService;
+
+  constructor(mapMatchingService?: MapMatchingService) {
+    this.matching = mapMatchingService ?? new MapMatchingService();
+  }
 
   afterInit() {
     console.log('[LocationGateway] Servidor WebSocket inicializado');
@@ -71,17 +78,63 @@ export class LocationGateway
     @MessageBody() payload: LocationPayload,
   ) {
     const routeId = payload?.routeId;
-    console.log(
-      `[LocationGateway] Telemetria de ${client.id} en ${routeId}: ` +
-      `(${payload.latitude}, ${payload.longitude}), vel: ${payload.speedKmh ?? 0} km/h`,
-    );
-
-    if (routeId && this.server) {
-      this.server.to(routeId).emit('locationUpdated', payload);
-      this.server.to(routeId).emit('telemetry:projected', payload);
+    if (!routeId || !payload.latitude || !payload.longitude) {
+      return { status: 'error', message: 'Parametros invalidos' };
     }
 
-    return { status: 'acknowledged', timestamp: Date.now() };
+    // 1. Procesar con Turf Map-Matching
+    const processed = this.matching.processRawCoordinates({
+      userId: payload.userId,
+      routeId,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      speedKmh: payload.speedKmh,
+      heading: payload.heading,
+      accuracy: payload.accuracy,
+      timestamp: payload.timestamp || Date.now(),
+    });
+
+    // 2. Si esta desviado (fuera de tolerancia de 45m), alertar o descartar
+    if (processed.isDeviated) {
+      console.warn(
+        `[LocationGateway] Telemetria desviada (${processed.distanceMeters}m) ` +
+        `para usuario ${payload.userId} en ruta ${routeId}`,
+      );
+      if (this.server) {
+        this.server.to(routeId).emit('locationDeviated', {
+          userId: payload.userId,
+          routeId,
+          distanceMeters: processed.distanceMeters,
+          status: 'DEVIATED',
+          timestamp: payload.timestamp,
+        });
+      }
+      return { status: 'deviated', distanceMeters: processed.distanceMeters };
+    }
+
+    // 3. Coordenada proyectada y limpia lista para dibujar en el mapa
+    const cleanPayload = {
+      ...payload,
+      latitude: processed.snappedLatitude,
+      longitude: processed.snappedLongitude,
+      snappedLatitude: processed.snappedLatitude,
+      snappedLongitude: processed.snappedLongitude,
+      distanceMeters: processed.distanceMeters,
+      bearing: processed.bearing,
+      status: 'SNAPPED',
+    };
+
+    console.log(
+      `[LocationGateway] Telemetria de ${client.id} proyectada en ${routeId}: ` +
+      `(${cleanPayload.latitude}, ${cleanPayload.longitude}), rumbo: ${cleanPayload.bearing}°`,
+    );
+
+    if (this.server) {
+      this.server.to(routeId).emit('locationUpdated', cleanPayload);
+      this.server.to(routeId).emit('telemetry:projected', cleanPayload);
+    }
+
+    return { status: 'snapped', cleanPayload };
   }
 
   @SubscribeMessage('telemetry:emit')
