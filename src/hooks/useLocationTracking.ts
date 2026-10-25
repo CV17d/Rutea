@@ -3,6 +3,8 @@ import { Platform } from 'react-native';
 import * as Location from 'expo-location';
 import { useUserSessionStore } from '../store/useUserSessionStore';
 import { useTrackingStore, CurrentUserLocation } from '../store/useTrackingStore';
+import { socketClient } from '../services/socket.client';
+import { RawTelemetryPayload } from '../types/telemetry.types';
 
 export function useLocationTracking(onLocationUpdate?: (location: CurrentUserLocation) => void) {
   const { role, profile, addPoints } = useUserSessionStore();
@@ -16,13 +18,15 @@ export function useLocationTracking(onLocationUpdate?: (location: CurrentUserLoc
 
   const subscriptionRef = useRef<Location.LocationSubscription | null>(null);
   const pointsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const emitIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastLocationRef = useRef<CurrentUserLocation | null>(null);
 
   const requestPermissions = useCallback(async (): Promise<boolean> => {
     try {
       const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
       if (fgStatus !== 'granted') {
         setHasPermission(false);
-        setErrorMsg('Permiso de ubicación en primer plano denegado');
+        setErrorMsg('Permiso de ubicacion en primer plano denegado');
         return false;
       }
       setHasPermission(true);
@@ -38,11 +42,30 @@ export function useLocationTracking(onLocationUpdate?: (location: CurrentUserLoc
 
       return true;
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Error solicitando permisos de ubicación');
+      setErrorMsg(err?.message || 'Error solicitando permisos de ubicacion');
       setHasPermission(false);
       return false;
     }
   }, []);
+
+  const emitToGateway = useCallback(
+    (loc: CurrentUserLocation) => {
+      const routeId = profile.activeRouteId || 'route-c1';
+      const payload: RawTelemetryPayload = {
+        userId: profile.id,
+        routeId,
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        speedKmh: loc.speedKmh,
+        heading: loc.heading,
+        accuracy: loc.accuracy,
+        timestamp: loc.timestamp,
+      };
+
+      socketClient.updateLocation(payload);
+    },
+    [profile.id, profile.activeRouteId]
+  );
 
   const stopTracking = useCallback(() => {
     if (subscriptionRef.current) {
@@ -53,53 +76,80 @@ export function useLocationTracking(onLocationUpdate?: (location: CurrentUserLoc
       clearInterval(pointsIntervalRef.current);
       pointsIntervalRef.current = null;
     }
+    if (emitIntervalRef.current) {
+      clearInterval(emitIntervalRef.current);
+      emitIntervalRef.current = null;
+    }
+
+    if (profile.activeRouteId) {
+      socketClient.leaveRouteRoom(profile.activeRouteId);
+    }
+
     setIsTracking(false);
     setCurrentLocation(null);
-  }, [setCurrentLocation]);
+    lastLocationRef.current = null;
+  }, [profile.activeRouteId, setCurrentLocation]);
 
-  const startTracking = useCallback(async (_routeId?: string) => {
-    const granted = await requestPermissions();
-    if (!granted) return;
+  const startTracking = useCallback(
+    async (routeId?: string) => {
+      const granted = await requestPermissions();
+      if (!granted) return;
 
-    stopTracking();
-    setIsTracking(true);
+      stopTracking();
+      setIsTracking(true);
 
-    try {
-      const sub = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 3000,
-          distanceInterval: 5,
-        },
-        (loc) => {
-          const speedKmh = Math.max(0, (loc.coords.speed || 0) * 3.6);
-          const locationData: CurrentUserLocation = {
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-            speedKmh,
-            heading: loc.coords.heading || 0,
-            accuracy: loc.coords.accuracy || 10,
-            timestamp: loc.timestamp,
-          };
+      socketClient.connect();
+      const targetRoute = routeId || profile.activeRouteId || 'route-c1';
+      socketClient.joinRoom(targetRoute);
 
-          setCurrentLocation(locationData);
+      try {
+        const sub = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            timeInterval: 3000,
+            distanceInterval: 5,
+          },
+          (loc) => {
+            const speedKmh = Math.max(0, (loc.coords.speed || 0) * 3.6);
+            const locationData: CurrentUserLocation = {
+              latitude: loc.coords.latitude,
+              longitude: loc.coords.longitude,
+              speedKmh,
+              heading: loc.coords.heading || 0,
+              accuracy: loc.coords.accuracy || 10,
+              timestamp: loc.timestamp,
+            };
 
-          if (onLocationUpdate) {
-            onLocationUpdate(locationData);
+            lastLocationRef.current = locationData;
+            setCurrentLocation(locationData);
+            emitToGateway(locationData);
+
+            if (onLocationUpdate) {
+              onLocationUpdate(locationData);
+            }
           }
-        }
-      );
+        );
 
-      subscriptionRef.current = sub;
+        subscriptionRef.current = sub;
 
-      pointsIntervalRef.current = setInterval(() => {
-        addPoints(2);
-      }, 30000);
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'Error iniciando rastreo GPS');
-      setIsTracking(false);
-    }
-  }, [requestPermissions, stopTracking, setCurrentLocation, onLocationUpdate, addPoints]);
+        // Emision cada 3 segundos hacia el LocationGateway
+        emitIntervalRef.current = setInterval(() => {
+          if (lastLocationRef.current) {
+            emitToGateway(lastLocationRef.current);
+          }
+        }, 3000);
+
+        // Gamificacion: +2 puntos cada 30 segundos
+        pointsIntervalRef.current = setInterval(() => {
+          addPoints(2);
+        }, 30000);
+      } catch (err: any) {
+        setErrorMsg(err?.message || 'Error iniciando rastreo GPS');
+        setIsTracking(false);
+      }
+    },
+    [requestPermissions, stopTracking, profile.activeRouteId, setCurrentLocation, emitToGateway, onLocationUpdate, addPoints]
+  );
 
   useEffect(() => {
     if (role === 'BROADCASTER' && profile.activeRouteId) {

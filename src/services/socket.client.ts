@@ -27,7 +27,12 @@ class SocketService {
   }
 
   joinRouteRoom(routeId: string) {
+    this.joinRoom(routeId);
+  }
+
+  joinRoom(routeId: string) {
     if (this.socket && this.connected) {
+      this.socket.emit('joinRoom', { routeId });
       this.socket.emit('room:join', routeId);
     }
   }
@@ -38,10 +43,15 @@ class SocketService {
     }
   }
 
-  emitTelemetry(payload: RawTelemetryPayload) {
+  updateLocation(payload: RawTelemetryPayload) {
     if (this.socket && this.connected) {
+      this.socket.emit('updateLocation', payload);
       this.socket.emit('telemetry:emit', payload);
     }
+  }
+
+  emitTelemetry(payload: RawTelemetryPayload) {
+    this.updateLocation(payload);
   }
 
   on(event: string, callback: (...args: any[]) => void) {
