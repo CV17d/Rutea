@@ -17,23 +17,25 @@ export interface BusMarkerProps {
 }
 
 export const BusMarker: React.FC<BusMarkerProps> = ({ bus, onPress }) => {
-  const isLive = bus.status === 'LIVE';
+  const isGhost = bus.status === 'GHOST' || (bus as any).is_ghost === true;
+  const isLive = !isGhost;
 
   const markerContent = (
-    <View style={[styles.wrapper, !isLive && styles.ghostWrapper]}>
-      {isLive && <View style={styles.livePulseHalo} />}
+    <View style={[styles.wrapper, isGhost && styles.ghostWrapper]}>
+      {/* Halo verde esmeralda para buses con usuarios reales */}
+      {isLive && <View style={styles.emeraldHalo} />}
       <View
         style={[
           styles.busCircle,
-          { backgroundColor: bus.routeColor },
-          !isLive && styles.ghostCircle,
+          { backgroundColor: bus.routeColor || '#10b981' },
+          isGhost && styles.ghostCircle,
         ]}
       >
-        <Text style={styles.busIcon}>🚍</Text>
+        <Text style={styles.busIcon}>{isGhost ? '👻' : '🚍'}</Text>
       </View>
       <View style={[styles.badge, isLive ? styles.liveBadge : styles.ghostBadge]}>
         <Text style={styles.badgeText}>
-          {bus.routeCode} {isLive ? '• VIVO' : '• EST'}
+          {bus.routeCode} {isLive ? '• EN VIVO' : '• FANTASMA'}
         </Text>
       </View>
     </View>
@@ -78,16 +80,16 @@ const styles = StyleSheet.create({
     cursor: 'pointer',
   },
   ghostWrapper: {
-    opacity: 0.65,
+    opacity: 0.50, // Opacidad al 50% para buses fantasma
   },
-  livePulseHalo: {
+  emeraldHalo: {
     position: 'absolute',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(16, 185, 129, 0.35)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(16, 185, 129, 0.70)',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(16, 185, 129, 0.40)', // Halo verde esmeralda
+    borderWidth: 2,
+    borderColor: '#10b981',
   },
   busCircle: {
     width: 36,
@@ -100,8 +102,9 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   ghostCircle: {
-    borderStyle: 'dashed',
-    borderColor: 'rgba(255, 255, 255, 0.6)',
+    borderStyle: 'dashed', // Borde punteado/discontinuo
+    borderColor: 'rgba(255, 255, 255, 0.85)',
+    borderWidth: 2,
   },
   busIcon: {
     fontSize: 16,
