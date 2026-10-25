@@ -15,21 +15,12 @@ import { GamificationService } from '../gamification/gamification.service';
 import { GhostBusService } from '../matching/ghost-bus.service';
 
 export interface LocationPayload {
-  userId: string;
-  routeId: string;
-  latitude: number;
-  longitude: number;
-  speedKmh?: number;
-  heading?: number;
-  accuracy?: number;
-  timestamp: number;
+  userId: string; routeId: string; latitude: number; longitude: number;
+  speedKmh?: number; heading?: number; accuracy?: number; timestamp: number;
 }
 
 export interface BoardingPayload {
-  userId: string;
-  routeId: string;
-  latitude?: number;
-  longitude?: number;
+  userId: string; routeId: string; latitude?: number; longitude?: number;
 }
 
 @WebSocketGateway({ cors: { origin: '*' } })
@@ -161,6 +152,26 @@ export class LocationGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     }
 
     return { status: 'snapped', cleanPayload };
+  }
+
+  @SubscribeMessage('report:create')
+  async handleCommunityReport(@ConnectedSocket() client: Socket, @MessageBody() p: any) {
+    if (!p?.routeId || !p?.latitude || !p?.longitude) return { status: 'error', message: 'Incompleto' };
+    const saved = await this.supabase.saveCommunityReport({
+      id: `rep-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      user_id: p.userId || 'anon',
+      route_id: p.routeId,
+      report_type: p.reportType || 'TRAFFIC',
+      title: p.title || `Alerta: ${p.reportType || 'Tráfico'}`,
+      description: p.description || '',
+      reporter_alias: p.reporterAlias || 'Vecino Pastuso',
+      latitude: p.latitude,
+      longitude: p.longitude,
+    });
+    const reward = this.gamification.awardBonusPoints(p.userId || 'anon', 15, 'Reporte vial (+15 PTS)');
+    client.emit('gamification:update', reward);
+    if (this.server) this.server.to(p.routeId).emit('report:created', saved);
+    return { status: 'success', report: saved, reward };
   }
 
   @SubscribeMessage('telemetry:emit')

@@ -158,4 +158,16 @@ export class SupabaseService {
       this.logger.debug(`[Supabase] Fin sesión offline: ${err?.message}`);
     }
   }
+
+  async saveCommunityReport(report: any): Promise<any> {
+    try {
+      const expiresAt = new Date(Date.now() + 45 * 60 * 1000).toISOString();
+      const record = { ...report, expires_at: expiresAt };
+      await this.client.from('community_reports').insert(record);
+      return record;
+    } catch (err: any) {
+      this.logger.debug(`[Supabase] Reporte offline: ${err?.message}`);
+      return report;
+    }
+  }
 }

@@ -5,6 +5,7 @@ import { MapContainer } from './src/components/map/MapContainer';
 import { RoutePolyline } from './src/components/map/RoutePolyline';
 import { StopMarker } from './src/components/map/StopMarker';
 import { BusMarker } from './src/components/map/BusMarker';
+import { ReportMarker } from './src/components/map/ReportMarker';
 import { FloatingSearchBar } from './src/components/floating/FloatingSearchBar';
 import { RouteDetailCard } from './src/components/floating/RouteDetailCard';
 import { OnBoardPanel } from './src/components/floating/OnBoardPanel';
@@ -22,7 +23,7 @@ export default function App() {
   useLocationTracking();
 
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
-  const { activeBuses, selectedBusId, setSelectedBusId } = useTrackingStore();
+  const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
   const { screenMode, isAvatarModalOpen, closeAvatarModal, openAvatarModal } = useUiStore();
 
   const currentBusList = Object.values(activeBuses).filter(
@@ -57,6 +58,10 @@ export default function App() {
               }
             }}
           />
+        ))}
+
+        {reports.map((report) => (
+          <ReportMarker key={report.id} report={report} />
         ))}
       </MapContainer>
 

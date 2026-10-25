@@ -15,6 +15,7 @@ export interface UserProfile {
 export type IncidentCategory = 
   | 'TRAFFIC_JAM' 
   | 'ROAD_BLOCK' 
+  | 'BUS_FULL'
   | 'DETOUR' 
   | 'ACCIDENT' 
   | 'POLICE_CHECK';
@@ -29,4 +30,8 @@ export interface CommunityReport {
   timestamp: number;
   upvotes: number;
   routeCode?: string;
+  routeId?: string;
+  latitude?: number;
+  longitude?: number;
+  expiresAt?: number;
 }

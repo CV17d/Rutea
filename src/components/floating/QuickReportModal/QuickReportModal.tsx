@@ -5,23 +5,52 @@ import { GlassButton } from '../../ui/GlassButton';
 import { IncidentCategory } from '../../../types/user.types';
 import { useUiStore } from '../../../store/useUiStore';
 import { useUserSessionStore } from '../../../store/useUserSessionStore';
+import { useTrackingStore } from '../../../store/useTrackingStore';
+import { socketClient } from '../../../services/socket.client';
 import { quickReportModalStyles as styles } from './QuickReportModal.styles';
 
 const CATEGORIES: { key: IncidentCategory; label: string; icon: string }[] = [
-  { key: 'TRAFFIC_JAM', label: 'Congestión', icon: '🚗' },
-  { key: 'DETOUR', label: 'Desvío de Ruta', icon: '↪️' },
+  { key: 'TRAFFIC_JAM', label: 'Tráfico', icon: '🚗' },
   { key: 'ROAD_BLOCK', label: 'Vía Cerrada', icon: '🚧' },
-  { key: 'ACCIDENT', label: 'Accidente', icon: '💥' },
+  { key: 'BUS_FULL', label: 'Bus Lleno', icon: '🚌' },
+  { key: 'DETOUR', label: 'Desvío', icon: '↪️' },
 ];
 
 export const QuickReportModal: React.FC = () => {
   const { isReportModalOpen, closeReportModal } = useUiStore();
-  const addPoints = useUserSessionStore((s) => s.addPoints);
+  const { profile, addPoints } = useUserSessionStore();
+  const currentLocation = useTrackingStore((s) => s.currentLocation);
+  const addReport = useTrackingStore((s) => s.addReport);
   const [selectedCat, setSelectedCat] = useState<IncidentCategory>('TRAFFIC_JAM');
   const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
     addPoints(15);
+    const catLabel = CATEGORIES.find((c) => c.key === selectedCat)?.label || 'Incidente';
+    const reportData = {
+      id: `rep-${Date.now()}`,
+      category: selectedCat,
+      title: `${catLabel} en vía`,
+      description: description || 'Reportado por usuario a bordo',
+      reporterAlias: profile.alias,
+      reporterAvatarSeed: profile.avatarSeed,
+      timestamp: Date.now(),
+      upvotes: 1,
+      routeCode: profile.activeRouteId || 'C1',
+      latitude: currentLocation?.latitude || 1.2145,
+      longitude: currentLocation?.longitude || -77.2783,
+    };
+    addReport(reportData);
+    socketClient.emit('report:create', {
+      userId: profile.id,
+      routeId: profile.activeRouteId || 'route-c1',
+      reportType: selectedCat,
+      title: reportData.title,
+      description: reportData.description,
+      reporterAlias: profile.alias,
+      latitude: reportData.latitude,
+      longitude: reportData.longitude,
+    });
     setDescription('');
     closeReportModal();
   };
