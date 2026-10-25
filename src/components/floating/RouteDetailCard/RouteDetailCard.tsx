@@ -6,6 +6,7 @@ import { GlassBadge } from '../../ui/GlassBadge';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useUserSessionStore } from '../../../store/useUserSessionStore';
 import { useUiStore } from '../../../store/useUiStore';
+import { useLocationTracking } from '../../../hooks/useLocationTracking';
 import { formatEtaMinutes } from '../../../utils/time.utils';
 import { routeDetailCardStyles as styles } from './RouteDetailCard.styles';
 
@@ -13,6 +14,7 @@ export const RouteDetailCard: React.FC = () => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const startBroadcasting = useUserSessionStore((s) => s.startBroadcasting);
   const { screenMode, setScreenMode } = useUiStore();
+  const { startTracking } = useLocationTracking();
 
   if (!selectedRoute) return null;
 
@@ -22,6 +24,7 @@ export const RouteDetailCard: React.FC = () => {
 
   const handleStartBoarding = () => {
     startBroadcasting(selectedRoute.id);
+    startTracking(selectedRoute.id);
     setScreenMode('ON_BOARD');
   };
 

@@ -1,9 +1,20 @@
 import { create } from 'zustand';
 import { ProjectedBusLocation } from '../types/telemetry.types';
 
+export interface CurrentUserLocation {
+  latitude: number;
+  longitude: number;
+  speedKmh: number;
+  heading: number;
+  accuracy: number;
+  timestamp: number;
+}
+
 interface TrackingState {
   activeBuses: Record<string, ProjectedBusLocation>;
   selectedBusId: string | null;
+  currentLocation: CurrentUserLocation | null;
+  setCurrentLocation: (loc: CurrentUserLocation | null) => void;
   updateBusLocation: (bus: ProjectedBusLocation) => void;
   removeBus: (busId: string) => void;
   setSelectedBusId: (busId: string | null) => void;
@@ -102,6 +113,8 @@ export const useTrackingStore = create<TrackingState>((set, get) => ({
     },
   },
   selectedBusId: null,
+  currentLocation: null,
+  setCurrentLocation: (loc) => set({ currentLocation: loc }),
 
   updateBusLocation: (bus) => {
     set((state) => ({

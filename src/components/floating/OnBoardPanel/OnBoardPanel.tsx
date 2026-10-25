@@ -5,13 +5,16 @@ import { GlassButton } from '../../ui/GlassButton';
 import { GlassBadge } from '../../ui/GlassBadge';
 import { useUserSessionStore } from '../../../store/useUserSessionStore';
 import { useUiStore } from '../../../store/useUiStore';
+import { useLocationTracking } from '../../../hooks/useLocationTracking';
 import { onBoardPanelStyles as styles } from './OnBoardPanel.styles';
 
 export const OnBoardPanel: React.FC = () => {
   const { profile, stopBroadcasting } = useUserSessionStore();
   const { setScreenMode, openReportModal } = useUiStore();
+  const { stopTracking } = useLocationTracking();
 
   const handleStop = () => {
+    stopTracking();
     stopBroadcasting();
     setScreenMode('HOME');
   };

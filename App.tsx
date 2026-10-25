@@ -15,11 +15,11 @@ import { useRoutesStore } from './src/store/useRoutesStore';
 import { useTrackingStore } from './src/store/useTrackingStore';
 import { useUiStore } from './src/store/useUiStore';
 import { useSocketRoutes } from './src/hooks/useSocketRoutes';
-import { useLocationTracker } from './src/hooks/useLocationTracker';
+import { useLocationTracking } from './src/hooks/useLocationTracking';
 
 export default function App() {
   useSocketRoutes();
-  useLocationTracker();
+  useLocationTracking();
 
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { activeBuses, selectedBusId, setSelectedBusId } = useTrackingStore();
