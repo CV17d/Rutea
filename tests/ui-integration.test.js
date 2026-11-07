@@ -106,7 +106,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
 
   assert.ok(allRoutesText.includes('La Paz - Altavista'), 'Debe incluir C2');
   assert.ok(allRoutesText.includes('Puente Tabla - Briceño'), 'Debe incluir C5');
-  assert.ok(allRoutesText.includes('Hospital - Unicentro'), 'Debe incluir C16');
+  assert.ok(allRoutesText.includes('Anganoy - Cabrera'), 'Debe incluir C16');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -171,16 +171,21 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
   assert.strictEqual(parsedEwkt[2].latitude, 1.192918);
   assert.strictEqual(parsedEwkt[2].longitude, -77.276066);
 
-  // 3. Validar los 128 puntos de alta fidelidad OSRM
+  // 3. Validar los 100+ puntos de alta fidelidad OSRM (688 puntos para C16 transversal)
   const fs = require('node:fs');
   const path = require('node:path');
   const c16Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c16OsrmGeometry.json'), 'utf8'));
   const parsedOsrm = parsePostgisToCoordinates(c16Data);
-  assert.strictEqual(parsedOsrm.length, 128, 'Debe parsear exactamente 128 puntos de OSRM');
+  assert.ok(parsedOsrm.length >= 100, 'Debe parsear 100+ puntos de OSRM');
+  assert.strictEqual(parsedOsrm.length, 688, 'Debe parsear exactamente 688 puntos de OSRM para Anganoy - Cabrera');
 
-  // 4. Validar que la ruta C16 en standardRoutes2 no tenga coordenadas hardcodeadas
+  // 4. Validar que la ruta C16 en standardRoutes2 contenga los 9 paraderos oficiales
   const r2 = fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/standardRoutes2.ts'), 'utf8');
   assert.ok(r2.includes("coordinates: [], // Geometría cargada dinámicamente desde PostGIS"), 'C16 no debe tener coordenadas hardcodeadas');
+  const expectedStops = ['Anganoy', 'Panorámico', 'Liceo Udenar', 'Teatro Imperial', 'San Andresito', 'San Juan Bosco', 'Las Lunas', 'San Fernando', 'Cabrera'];
+  for (const stopName of expectedStops) {
+    assert.ok(r2.includes(stopName), `Debe contener el paradero ${stopName}`);
+  }
 
   // 5. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');

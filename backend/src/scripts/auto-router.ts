@@ -100,9 +100,15 @@ async function runAutoRouter() {
     .select();
 
   if (error) {
-    console.error('[Supabase] Error en update:', error);
+    console.error('[Supabase] Error en update path:', error);
     process.exit(1);
   }
+
+  // 5. Actualizar descripción a 'Anganoy - Cabrera'
+  await supabase
+    .from('routes')
+    .update({ description: 'Anganoy - Cabrera' })
+    .eq('id', 'route-c16');
 
   console.log('✅ Base de datos actualizada con éxito con geometría OSRM:');
   console.log(data);

@@ -11,7 +11,7 @@ export const RouteSummaryCard: React.FC = () => {
 
   const displayTitle = selectedRoute
     ? `Ruta ${selectedRoute.code} • ${selectedRoute.name}`
-    : 'Ruta C16 • Hospital - Unicentro';
+    : 'Ruta C16 • Anganoy - Cabrera';
 
   return (
     <TouchableOpacity

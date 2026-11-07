@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useRoutesStore } from '../../../store/useRoutesStore';
 import { styles } from './StopTimeline.styles';
 
 export interface TimelineStop {
@@ -10,9 +11,9 @@ export interface TimelineStop {
 }
 
 const DEFAULT_STOPS: TimelineStop[] = [
-  { id: '1', name: 'Parque Infantil', eta: '1 min', variant: 'pink' },
-  { id: '2', name: 'Plaza de Nariño', eta: '3 min', variant: 'green' },
-  { id: '3', name: 'Unicentro', eta: '3 min', variant: 'gray' },
+  { id: '1', name: 'Anganoy', eta: '2 min', variant: 'pink' },
+  { id: '2', name: 'Teatro Imperial', eta: '11 min', variant: 'green' },
+  { id: '3', name: 'Cabrera', eta: '28 min', variant: 'gray' },
 ];
 
 interface StopTimelineProps {
@@ -21,14 +22,29 @@ interface StopTimelineProps {
 }
 
 export const StopTimeline: React.FC<StopTimelineProps> = ({
-  stops = DEFAULT_STOPS,
+  stops,
   onPressDetails,
 }) => {
+  const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
+
+  const activeStops: TimelineStop[] = stops || (selectedRoute?.stops && selectedRoute.stops.length > 0
+    ? selectedRoute.stops.map((s, idx) => ({
+        id: s.id,
+        name: s.name,
+        eta: `${s.estimatedWaitMinutes} min`,
+        variant: idx === 0 ? 'pink' : idx === selectedRoute.stops.length - 1 ? 'gray' : 'green',
+      }))
+    : DEFAULT_STOPS);
+
   return (
     <View style={styles.card}>
-      <View style={styles.stopsContainer}>
-        {stops.map((stop, index) => {
-          const isLast = index === stops.length - 1;
+      <ScrollView
+        style={[styles.stopsContainer, { maxHeight: 220 }]}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={true}
+      >
+        {activeStops.map((stop, index) => {
+          const isLast = index === activeStops.length - 1;
 
           return (
             <View
@@ -68,7 +84,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
             </View>
           );
         })}
-      </View>
+      </ScrollView>
 
       <TouchableOpacity
         style={styles.detailsButton}

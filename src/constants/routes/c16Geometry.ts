@@ -2,8 +2,8 @@ import { LatLng } from '../../types/route.types';
 import c16Data from './c16OsrmGeometry.json';
 
 /**
- * 128 coordenadas de alta resolución generadas por OSRM (snap-to-roads)
- * para la Ruta C16 (Hospital Departamental - Unicentro Pasto).
+ * 688 coordenadas de alta resolución generadas por OSRM (snap-to-roads)
+ * para la Ruta C16 transversal (Anganoy - Cabrera, Pasto).
  */
 export const C16_OSRM_LINESTRING = c16Data;
 
