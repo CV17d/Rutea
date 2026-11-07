@@ -120,6 +120,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Hospital De Santa Mónica - Santa Rita'), 'Debe incluir C13');
   assert.ok(allRoutesText.includes('Altos De Daza - Lorenzo'), 'Debe incluir C14');
   assert.ok(allRoutesText.includes('Obonuco - Villanueva'), 'Debe incluir C15');
+  assert.ok(allRoutesText.includes('Dolores - Udenar'), 'Debe incluir E1');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -366,7 +367,19 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r2.includes(stopName), `Debe contener el paradero C15: ${stopName}`);
   }
 
-  // 20. Validar que exista la migración RLS para lectura pública
+  // 20. Validar los 431 puntos de alta fidelidad OSRM y paradas para E1 (Dolores - Udenar)
+  const e1Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/e1OsrmGeometry.json'), 'utf8'));
+  const parsedE1 = parsePostgisToCoordinates(e1Data);
+  assert.strictEqual(parsedE1.length, 431, 'Debe parsear exactamente 431 puntos de OSRM para E1');
+
+  const re = fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/expressRoutes.ts'), 'utf8');
+  assert.ok(re.includes("color: '#4338ca'"), 'E1 debe tener color tematico indigo #4338ca');
+  const expectedStopsE1 = ['Vía La Laguna', 'Dolores', 'Variante Daza', 'Pinal Del Rio', 'Santa Mónica', 'Hospital Departamental', 'San Juan Bosco', 'Av. Los Estudiantes', 'Universidad Cooperativa', 'Udenar - Facultad de Veterinaria'];
+  for (const stopName of expectedStopsE1) {
+    assert.ok(re.includes(stopName), `Debe contener el paradero E1: ${stopName}`);
+  }
+
+  // 21. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

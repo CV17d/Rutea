@@ -100,4 +100,11 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   pandiacoCalle19a: { latitude: 1.2295, longitude: -77.2855 },
   bernal: { latitude: 1.1990, longitude: -77.2690 },
   patinodromo: { latitude: 1.1972, longitude: -77.2987 },
+  viaLaLaguna: { latitude: 1.1960, longitude: -77.2300 },
+  dolores: { latitude: 1.1938, longitude: -77.2405 },
+  varianteDaza: { latitude: 1.1980, longitude: -77.2440 },
+  pinalDelRio: { latitude: 1.2021, longitude: -77.2485 },
+  avLosEstudiantes: { latitude: 1.2215, longitude: -77.2835 },
+  universidadCooperativa: { latitude: 1.2330, longitude: -77.2930 },
+  udenarVeterinaria: { latitude: 1.2355, longitude: -77.2950 },
 };

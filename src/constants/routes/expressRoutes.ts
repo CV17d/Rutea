@@ -3,26 +3,14 @@ import { PASTO_LOCATIONS as L } from './pastoWaypoints';
 
 export const EXPRESS_ROUTES: TransitRoute[] = [
   {
-    id: 'route-e1',
-    code: 'E1',
-    name: 'Aranda - Maridíaz - Torobajo',
-    color: '#f59e0b',
-    description: 'Aranda - Maridíaz - Torobajo',
-    type: 'EXPRESS',
-    direction: 'NORTE_SUR',
-    estimatedFrequencyMinutes: 12,
-    isActive: true,
-    coordinates: [
-      L.aranda,
-      { latitude: 1.2190, longitude: -77.2720 },
-      L.plazaNarino,
-      L.maridiaz,
-      L.torobajoUdenar,
-    ],
+    id: 'route-e1', code: 'E1', name: 'Ruta E1', color: '#4338ca', description: 'Dolores - Udenar',
+    type: 'EXPRESS', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 10, isActive: true, coordinates: [],
     stops: [
-      { id: 's-e1-1', name: 'Terminal Aranda', orderIndex: 1, location: L.aranda, estimatedWaitMinutes: 4, isTerminal: true },
-      { id: 's-e1-2', name: 'Hospital Infantil', orderIndex: 2, location: { latitude: 1.2190, longitude: -77.2720 }, estimatedWaitMinutes: 9 },
-      { id: 's-e1-3', name: 'Centro Cultural Pandiaco', orderIndex: 3, location: L.maridiaz, estimatedWaitMinutes: 15, isTerminal: true },
+      { id: 's-e1-1', name: 'Vía La Laguna', orderIndex: 1, location: L.viaLaLaguna, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-e1-2', name: 'Dolores', orderIndex: 2, location: L.dolores, estimatedWaitMinutes: 5 },
+      { id: 's-e1-3', name: 'Variante Daza', orderIndex: 3, location: L.varianteDaza, estimatedWaitMinutes: 8 }, { id: 's-e1-4', name: 'Pinal Del Rio', orderIndex: 4, location: L.pinalDelRio, estimatedWaitMinutes: 11 },
+      { id: 's-e1-5', name: 'Santa Mónica', orderIndex: 5, location: L.santaMonica, estimatedWaitMinutes: 15 }, { id: 's-e1-6', name: 'Hospital Departamental', orderIndex: 6, location: L.hospitalDepartamental, estimatedWaitMinutes: 18 },
+      { id: 's-e1-7', name: 'San Juan Bosco', orderIndex: 7, location: L.sanJuanBosco, estimatedWaitMinutes: 22 }, { id: 's-e1-8', name: 'Av. Los Estudiantes', orderIndex: 8, location: L.avLosEstudiantes, estimatedWaitMinutes: 25 },
+      { id: 's-e1-9', name: 'Universidad Cooperativa', orderIndex: 9, location: L.universidadCooperativa, estimatedWaitMinutes: 29 }, { id: 's-e1-10', name: 'Udenar - Facultad de Veterinaria', orderIndex: 10, location: L.udenarVeterinaria, estimatedWaitMinutes: 33, isTerminal: true },
     ],
   },
   {
