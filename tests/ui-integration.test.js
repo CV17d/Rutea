@@ -110,6 +110,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Altos de Chapalito - Obonuco'), 'Debe incluir C1');
   assert.ok(allRoutesText.includes('Arnulfo Guerrero - Gilberto Pabón'), 'Debe incluir C3');
   assert.ok(allRoutesText.includes('El Porvenir - Jongovito'), 'Debe incluir C4');
+  assert.ok(allRoutesText.includes('Cam Anganoy - Catambuco/Coba Negra'), 'Debe incluir C6');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -246,7 +247,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r1.includes(stopName), `Debe contener el paradero C5: ${stopName}`);
   }
 
-  // 10. Validar que exista la migración RLS para lectura pública
+  // 10. Validar los 632 puntos de alta fidelidad OSRM y paradas para C6 (Cam Anganoy - Catambuco/Coba Negra)
+  const c6Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c6OsrmGeometry.json'), 'utf8'));
+  const parsedC6 = parsePostgisToCoordinates(c6Data);
+  assert.strictEqual(parsedC6.length, 632, 'Debe parsear exactamente 632 puntos de OSRM para C6');
+
+  assert.ok(r1.includes("color: '#0d9488'"), 'C6 debe tener color tematico cerceta/turquesa #0d9488');
+  const expectedStopsC6 = ['Cam Anganoy', 'Panorámico', 'Liceo Udenar', 'Teatro Imperial', 'San Andresito', 'Coliseo Antonio Ruano', 'Estadio Libertad', 'Chapal', 'Catambuco', 'Coba Negra'];
+  for (const stopName of expectedStopsC6) {
+    assert.ok(r1.includes(stopName), `Debe contener el paradero C6: ${stopName}`);
+  }
+
+  // 11. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

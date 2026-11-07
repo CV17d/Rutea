@@ -58,4 +58,10 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   lorenzo: { latitude: 1.1940, longitude: -77.2660 },
   plazaCarnaval: { latitude: 1.2115, longitude: -77.2778 },
   maridiaz: { latitude: 1.2210, longitude: -77.2830 },
+  camAnganoy: { latitude: 1.2115, longitude: -77.3009 },
+  coliseoAntonioRuano: { latitude: 1.2045, longitude: -77.2791 },
+  estadioLibertad: { latitude: 1.1980, longitude: -77.2778 },
+  chapal: { latitude: 1.1920, longitude: -77.2760 },
+  catambuco: { latitude: 1.1732, longitude: -77.2845 },
+  cobaNegra: { latitude: 1.1649, longitude: -77.2940 },
 };
