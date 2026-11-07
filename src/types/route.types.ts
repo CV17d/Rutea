@@ -18,6 +18,7 @@ export interface TransitRoute {
   name: string;
   color: string;
   description: string;
+  type?: 'STANDARD' | 'EXPRESS';
   direction: 'SUR_NORTE' | 'NORTE_SUR' | 'CIRCULAR';
   coordinates: LatLng[];
   stops: BusStop[];

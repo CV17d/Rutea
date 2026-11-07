@@ -87,3 +87,24 @@ test('RouteDetailCard: Estimación de ETA en minutos para aproximación de bus',
   // 900 metros / (300 m/min) = 3 minutos
   assert.strictEqual(eta, 3);
 });
+
+test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+
+  const r1 = fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/standardRoutes1.ts'), 'utf8');
+  const r2 = fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/standardRoutes2.ts'), 'utf8');
+  const re = fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/expressRoutes.ts'), 'utf8');
+  const allRoutesText = `${r1}\n${r2}\n${re}`;
+
+  for (let i = 1; i <= 16; i++) {
+    assert.ok(allRoutesText.includes(`'route-c${i}'`), `Debe contener route-c${i}`);
+  }
+  for (let i = 1; i <= 4; i++) {
+    assert.ok(allRoutesText.includes(`'route-e${i}'`), `Debe contener route-e${i}`);
+  }
+
+  assert.ok(allRoutesText.includes('La Paz - Altavista'), 'Debe incluir C2');
+  assert.ok(allRoutesText.includes('Puente Tabla - Briceño'), 'Debe incluir C5');
+  assert.ok(allRoutesText.includes('Hospital - Unicentro'), 'Debe incluir C16');
+});

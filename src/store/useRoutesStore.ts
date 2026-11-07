@@ -14,7 +14,7 @@ interface RoutesState {
 
 export const useRoutesStore = create<RoutesState>((set, get) => ({
   routes: MOCK_PASTO_ROUTES,
-  selectedRouteId: 'route-c1', // Por defecto seleccionada Ruta C1
+  selectedRouteId: 'route-c16', // Por defecto seleccionada Ruta C16 (Hospital - Unicentro)
   searchQuery: '',
 
   selectRoute: (routeId: string | null) => {
