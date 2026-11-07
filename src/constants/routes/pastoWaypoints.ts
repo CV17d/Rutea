@@ -72,4 +72,9 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   dosPuentes: { latitude: 1.2158, longitude: -77.2753 },
   sanAgustin: { latitude: 1.2132, longitude: -77.2795 },
   calle17Amorel: { latitude: 1.2155, longitude: -77.2860 },
+  universidadMariana: { latitude: 1.2236, longitude: -77.2831 },
+  hospitalInfantil: { latitude: 1.2232, longitude: -77.2800 },
+  bomberos: { latitude: 1.2155, longitude: -77.2760 },
+  nuevaAranda: { latitude: 1.2287, longitude: -77.2702 },
+  villaNueva: { latitude: 1.2315, longitude: -77.2660 },
 };

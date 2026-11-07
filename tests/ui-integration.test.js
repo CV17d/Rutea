@@ -113,6 +113,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Cam Anganoy - Catambuco/Coba Negra'), 'Debe incluir C6');
   assert.ok(allRoutesText.includes('Altos De Chapalito - San Juan De Anganoy'), 'Debe incluir C7');
   assert.ok(allRoutesText.includes('Cujacal/Puente Tabla - San Martín'), 'Debe incluir C8');
+  assert.ok(allRoutesText.includes('Udenar/Briceño - Villa Nueva'), 'Debe incluir C9');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -282,7 +283,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r1.includes(stopName), `Debe contener el paradero C8: ${stopName}`);
   }
 
-  // 13. Validar que exista la migración RLS para lectura pública
+  // 13. Validar los 308 puntos de alta fidelidad OSRM y paradas para C9 (Udenar/Briceño - Villa Nueva)
+  const c9Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c9OsrmGeometry.json'), 'utf8'));
+  const parsedC9 = parsePostgisToCoordinates(c9Data);
+  assert.strictEqual(parsedC9.length, 308, 'Debe parsear exactamente 308 puntos de OSRM para C9');
+
+  assert.ok(r2.includes("color: '#10b981'"), 'C9 debe tener color tematico verde esmeralda #10b981');
+  const expectedStopsC9 = ['Briceño', 'Udenar Torobajo', 'Universidad Mariana', 'Hospital Infantil', 'Bomberos', 'Hospital Civil', 'Nueva Aranda', 'Villa Nueva'];
+  for (const stopName of expectedStopsC9) {
+    assert.ok(r2.includes(stopName), `Debe contener el paradero C9: ${stopName}`);
+  }
+
+  // 14. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');
