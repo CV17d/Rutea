@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rutea.pasto",
@@ -54,7 +53,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#0f172a"
         }
-      ]
+      ],
+      "expo-status-bar"
     ]
   }
 }

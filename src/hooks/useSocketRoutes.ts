@@ -44,8 +44,15 @@ export function useSocketRoutes() {
       }
     };
 
+    const handleGamification = (data: any) => {
+      if (data?.totalPoints != null && data?.currentRank) {
+        useTrackingStore.getState().setGamification(data.totalPoints, data.currentRank);
+      }
+    };
+
     socketClient.on('telemetry:projected', handleUpdate);
     socketClient.on('locationUpdated', handleUpdate);
+    socketClient.on('gamification:update', handleGamification);
 
     if (selectedRouteId) {
       socketClient.joinRouteRoom(selectedRouteId);
@@ -57,6 +64,7 @@ export function useSocketRoutes() {
       }
       socketClient.off('telemetry:projected', handleUpdate);
       socketClient.off('locationUpdated', handleUpdate);
+      socketClient.off('gamification:update', handleGamification);
     };
   }, [selectedRouteId, updateBusLocation]);
 

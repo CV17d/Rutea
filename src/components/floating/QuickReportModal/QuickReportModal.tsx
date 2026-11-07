@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Modal, TouchableOpacity } from 'react-native';
 import { GlassCard } from '../../ui/GlassCard';
-import { GlassButton } from '../../ui/GlassButton';
 import { IncidentCategory } from '../../../types/user.types';
 import { useUiStore } from '../../../store/useUiStore';
 import { useUserSessionStore } from '../../../store/useUserSessionStore';
@@ -9,49 +8,71 @@ import { useTrackingStore } from '../../../store/useTrackingStore';
 import { socketClient } from '../../../services/socket.client';
 import { quickReportModalStyles as styles } from './QuickReportModal.styles';
 
-const CATEGORIES: { key: IncidentCategory; label: string; icon: string }[] = [
-  { key: 'TRAFFIC_JAM', label: 'Tráfico', icon: '🚗' },
-  { key: 'ROAD_BLOCK', label: 'Vía Cerrada', icon: '🚧' },
-  { key: 'BUS_FULL', label: 'Bus Lleno', icon: '🚌' },
-  { key: 'DETOUR', label: 'Desvío', icon: '↪️' },
+interface ReportOption {
+  key: IncidentCategory;
+  label: string;
+  icon: string;
+  sub: string;
+}
+
+const REPORT_OPTIONS: ReportOption[] = [
+  { key: 'TRAFFIC_JAM', label: 'Tráfico', icon: '🚗', sub: 'Congestión vehicular lenta' },
+  { key: 'ROAD_BLOCK', label: 'Vía Cerrada', icon: '🚧', sub: 'Obras, paso o calle bloqueada' },
+  { key: 'BUS_FULL', label: 'Bus Lleno', icon: '🚌', sub: 'Sin cupo disponible a bordo' },
 ];
 
 export const QuickReportModal: React.FC = () => {
   const { isReportModalOpen, closeReportModal } = useUiStore();
   const { profile, addPoints } = useUserSessionStore();
-  const currentLocation = useTrackingStore((s) => s.currentLocation);
-  const addReport = useTrackingStore((s) => s.addReport);
-  const [selectedCat, setSelectedCat] = useState<IncidentCategory>('TRAFFIC_JAM');
-  const [description, setDescription] = useState('');
+  const { currentLocation, addReport, totalPoints, setGamification, currentRank } = useTrackingStore();
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const handleSubmit = () => {
+  const handleSelectReport = (option: ReportOption) => {
+    // 1. Otorgar +15 puntos de recompensa en estado global
     addPoints(15);
-    const catLabel = CATEGORIES.find((c) => c.key === selectedCat)?.label || 'Incidente';
-    const reportData = {
+    setGamification(totalPoints + 15, currentRank);
+
+    const lat = currentLocation?.latitude || 1.2145;
+    const lng = currentLocation?.longitude || -77.2783;
+    const routeId = profile.activeRouteId || 'route-c1';
+
+    // 2. Guardar en store local
+    addReport({
       id: `rep-${Date.now()}`,
-      category: selectedCat,
-      title: `${catLabel} en vía`,
-      description: description || 'Reportado por usuario a bordo',
+      category: option.key,
+      title: `${option.label} en vía`,
+      description: option.sub,
       reporterAlias: profile.alias,
       reporterAvatarSeed: profile.avatarSeed,
       timestamp: Date.now(),
       upvotes: 1,
-      routeCode: profile.activeRouteId || 'C1',
-      latitude: currentLocation?.latitude || 1.2145,
-      longitude: currentLocation?.longitude || -77.2783,
-    };
-    addReport(reportData);
+      routeCode: routeId.replace('route-', '').toUpperCase(),
+      latitude: lat,
+      longitude: lng,
+    });
+
+    // 3. Emitir evento vía WebSockets hacia el backend
     socketClient.emit('report:create', {
       userId: profile.id,
-      routeId: profile.activeRouteId || 'route-c1',
-      reportType: selectedCat,
-      title: reportData.title,
-      description: reportData.description,
+      routeId,
+      reportType: option.key,
+      title: `${option.label} en vía`,
+      description: option.sub,
       reporterAlias: profile.alias,
-      latitude: reportData.latitude,
-      longitude: reportData.longitude,
+      latitude: lat,
+      longitude: lng,
     });
-    setDescription('');
+
+    // 4. Mostrar toast de recompensa
+    setToastMessage(`🎉 ¡+15 Puntos por tu reporte de ${option.label}!`);
+    setTimeout(() => {
+      setToastMessage(null);
+      closeReportModal();
+    }, 1200);
+  };
+
+  const handleClose = () => {
+    setToastMessage(null);
     closeReportModal();
   };
 
@@ -60,51 +81,43 @@ export const QuickReportModal: React.FC = () => {
       visible={isReportModalOpen}
       transparent
       animationType="fade"
-      onRequestClose={closeReportModal}
+      onRequestClose={handleClose}
     >
       <View style={styles.overlay}>
         <GlassCard isHighlighted style={styles.modalCard}>
           <View style={styles.header}>
-            <Text style={styles.title}>Reportar Incidente en Pasto</Text>
-            <TouchableOpacity onPress={closeReportModal} style={styles.closeBtn}>
+            <Text style={styles.title}>Reportar Novedad Vial</Text>
+            <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
               <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.subtitle}>Gana +15 PTS por cada reporte verificado</Text>
+          <Text style={styles.subtitle}>Toca un botón para alertar a la comunidad de Pasto</Text>
 
-          <View style={styles.grid}>
-            {CATEGORIES.map((cat) => {
-              const isSelected = selectedCat === cat.key;
-              return (
-                <TouchableOpacity
-                  key={cat.key}
-                  onPress={() => setSelectedCat(cat.key)}
-                  style={[styles.catBtn, isSelected && styles.catBtnSelected]}
-                >
-                  <Text style={styles.catIcon}>{cat.icon}</Text>
-                  <Text style={[styles.catLabel, isSelected && styles.catLabelSelected]}>
-                    {cat.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+          <View style={styles.buttonsList}>
+            {REPORT_OPTIONS.map((opt) => (
+              <TouchableOpacity
+                key={opt.key}
+                onPress={() => handleSelectReport(opt)}
+                activeOpacity={0.75}
+                style={styles.bigReportBtn}
+              >
+                <Text style={styles.bigBtnIcon}>{opt.icon}</Text>
+                <View style={styles.bigBtnTextWrap}>
+                  <Text style={styles.bigBtnTitle}>{opt.label} ({opt.icon})</Text>
+                  <Text style={styles.bigBtnSub}>{opt.sub}</Text>
+                </View>
+                <View style={styles.rewardTag}>
+                  <Text style={styles.rewardTagText}>+15 PTS</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Describe brevemente lo que ocurre en la vía..."
-            placeholderTextColor="#94a3b8"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-          />
-
-          <GlassButton
-            label="Enviar Reporte Comunitario"
-            variant="primary"
-            onPress={handleSubmit}
-            style={styles.submitBtn}
-          />
+          {toastMessage && (
+            <View style={styles.toastContainer}>
+              <Text style={styles.toastText}>{toastMessage}</Text>
+            </View>
+          )}
         </GlassCard>
       </View>
     </Modal>

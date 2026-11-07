@@ -2,7 +2,10 @@ import { LatLng } from '../types/route.types';
 
 export const EARTH_RADIUS_METERS = 6371000;
 
-export function calculateDistanceMeters(p1: LatLng, p2: LatLng): number {
+export function calculateDistanceMeters(p1?: LatLng | null, p2?: LatLng | null): number {
+  if (!p1 || !p2 || p1.latitude == null || p2.latitude == null || p1.longitude == null || p2.longitude == null) {
+    return 0;
+  }
   const dLat = (p2.latitude - p1.latitude) * (Math.PI / 180);
   const dLon = (p2.longitude - p1.longitude) * (Math.PI / 180);
   const lat1 = p1.latitude * (Math.PI / 180);

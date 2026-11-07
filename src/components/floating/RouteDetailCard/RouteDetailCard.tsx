@@ -32,7 +32,9 @@ export const RouteDetailCard: React.FC = () => {
     let nearest = selectedRoute.stops[0];
     let minDist = Infinity;
     for (const stop of selectedRoute.stops) {
-      const d = calculateDistanceMeters(userPoint, stop.coordinate);
+      const stopLoc = stop?.location || (stop as any)?.coordinate;
+      if (!userPoint || !stopLoc || stopLoc.latitude == null || stopLoc.longitude == null) continue;
+      const d = (userPoint && stopLoc) ? calculateDistanceMeters(userPoint, stopLoc) : 0;
       if (d < minDist) {
         minDist = d;
         nearest = stop;
@@ -42,8 +44,11 @@ export const RouteDetailCard: React.FC = () => {
     const buses = getBusesByRoute(selectedRoute.id);
     let closestBus = buses[0];
     let minBusDist = Infinity;
+    const nearestLoc = nearest?.location || (nearest as any)?.coordinate;
     for (const bus of buses) {
-      const d = calculateDistanceMeters(bus.snappedPosition, nearest.coordinate);
+      const busLoc = bus?.snappedPosition || bus?.position;
+      if (!busLoc || !nearestLoc || busLoc.latitude == null || nearestLoc.latitude == null) continue;
+      const d = (busLoc && nearestLoc) ? calculateDistanceMeters(busLoc, nearestLoc) : 0;
       if (d < minBusDist) {
         minBusDist = d;
         closestBus = bus;
@@ -96,7 +101,7 @@ export const RouteDetailCard: React.FC = () => {
               {formatEtaMinutes(nearestData.etaMinutes)}
             </Text>
             <GlassBadge
-              type={nearestData.isLive ? 'LIVE' : 'DEFAULT'}
+              type={nearestData.isLive ? 'LIVE' : 'GHOST'}
               label={nearestData.isLive ? 'EN VIVO' : 'ESTIMADO'}
             />
           </View>

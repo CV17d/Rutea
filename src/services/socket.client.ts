@@ -60,6 +60,12 @@ class SocketService {
     this.updateLocation(payload);
   }
 
+  emit(event: string, data: any) {
+    if (this.socket) {
+      this.socket.emit(event, data);
+    }
+  }
+
   on(event: string, callback: (...args: any[]) => void) {
     if (this.socket) {
       this.socket.on(event, callback);

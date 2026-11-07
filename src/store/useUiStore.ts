@@ -6,6 +6,7 @@ interface UiState {
   screenMode: UiScreenMode;
   isReportModalOpen: boolean;
   isAvatarModalOpen: boolean;
+  isProfileModalOpen: boolean;
   selectedAvatarBroadcasterId: string | null;
   isRouteListExpanded: boolean;
   
@@ -14,6 +15,9 @@ interface UiState {
   closeReportModal: () => void;
   openAvatarModal: (broadcasterId: string) => void;
   closeAvatarModal: () => void;
+  openProfileModal: () => void;
+  closeProfileModal: () => void;
+  toggleProfileModal: () => void;
   toggleRouteList: () => void;
   setRouteListExpanded: (expanded: boolean) => void;
 }
@@ -22,6 +26,7 @@ export const useUiStore = create<UiState>((set) => ({
   screenMode: 'HOME',
   isReportModalOpen: false,
   isAvatarModalOpen: false,
+  isProfileModalOpen: false,
   selectedAvatarBroadcasterId: null,
   isRouteListExpanded: false,
 
@@ -32,6 +37,9 @@ export const useUiStore = create<UiState>((set) => ({
     set({ isAvatarModalOpen: true, selectedAvatarBroadcasterId: broadcasterId }),
   closeAvatarModal: () => 
     set({ isAvatarModalOpen: false, selectedAvatarBroadcasterId: null }),
+  openProfileModal: () => set({ isProfileModalOpen: true }),
+  closeProfileModal: () => set({ isProfileModalOpen: false }),
+  toggleProfileModal: () => set((s) => ({ isProfileModalOpen: !s.isProfileModalOpen })),
   toggleRouteList: () => 
     set((state) => ({ isRouteListExpanded: !state.isRouteListExpanded })),
   setRouteListExpanded: (expanded) => 

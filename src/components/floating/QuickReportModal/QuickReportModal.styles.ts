@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export const quickReportModalStyles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(7, 11, 19, 0.82)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -20,69 +20,89 @@ export const quickReportModalStyles = StyleSheet.create({
   },
   title: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '800',
   },
   closeBtn: {
-    padding: 4,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   closeText: {
     color: '#94a3b8',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   subtitle: {
-    color: '#10b981',
+    color: '#38bdf8',
     fontSize: 12,
-    fontWeight: '700',
-    marginTop: 2,
-    marginBottom: 14,
+    fontWeight: '600',
+    marginTop: 4,
+    marginBottom: 16,
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 14,
+  buttonsList: {
+    gap: 12,
+    marginBottom: 8,
   },
-  catBtn: {
+  bigReportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    gap: 6,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    gap: 14,
   },
-  catBtnSelected: {
-    backgroundColor: 'rgba(56, 189, 248, 0.25)',
-    borderColor: '#38bdf8',
+  bigBtnIcon: {
+    fontSize: 28,
   },
-  catIcon: {
-    fontSize: 14,
+  bigBtnTextWrap: {
+    flex: 1,
   },
-  catLabel: {
-    color: '#cbd5e1',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  catLabelSelected: {
+  bigBtnTitle: {
     color: '#ffffff',
+    fontSize: 15,
     fontWeight: '800',
   },
-  input: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  bigBtnSub: {
+    color: '#94a3b8',
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  rewardTag: {
+    backgroundColor: 'rgba(16, 185, 129, 0.20)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 12,
-    padding: 10,
+    borderColor: '#10b981',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+  },
+  rewardTagText: {
+    color: '#10b981',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  toastContainer: {
+    marginTop: 14,
+    backgroundColor: 'rgba(16, 185, 129, 0.22)',
+    borderWidth: 1.5,
+    borderColor: '#10b981',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toastText: {
     color: '#ffffff',
     fontSize: 13,
-    minHeight: 60,
-    marginBottom: 16,
-  },
-  submitBtn: {
-    paddingVertical: 12,
+    fontWeight: '800',
+    textAlign: 'center',
   },
 });

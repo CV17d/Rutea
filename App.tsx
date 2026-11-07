@@ -12,6 +12,7 @@ import { OnBoardPanel } from './src/components/floating/OnBoardPanel';
 import { CommunityReportFeed } from './src/components/floating/CommunityReportFeed';
 import { QuickReportModal } from './src/components/floating/QuickReportModal';
 import { AvatarCard } from './src/components/avatar/AvatarCard';
+import { UserProfileCard } from './src/components/profile/UserProfileCard';
 import { useRoutesStore } from './src/store/useRoutesStore';
 import { useTrackingStore } from './src/store/useTrackingStore';
 import { useUiStore } from './src/store/useUiStore';
@@ -24,7 +25,14 @@ export default function App() {
 
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
-  const { screenMode, isAvatarModalOpen, closeAvatarModal, openAvatarModal } = useUiStore();
+  const {
+    screenMode,
+    isAvatarModalOpen,
+    closeAvatarModal,
+    openAvatarModal,
+    isProfileModalOpen,
+    closeProfileModal,
+  } = useUiStore();
 
   const currentBusList = Object.values(activeBuses).filter(
     (b) => !selectedRoute || b.routeId === selectedRoute.id
@@ -93,6 +101,11 @@ export default function App() {
 
       {/* Crowdsourced Incident Modal */}
       <QuickReportModal />
+
+      {/* User Gamification Profile & Leaderboard Modal */}
+      {isProfileModalOpen && (
+        <UserProfileCard onClose={closeProfileModal} />
+      )}
     </View>
   );
 }

@@ -2,10 +2,14 @@ import React from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { GlassCard } from '../../ui/GlassCard';
 import { useRoutesStore } from '../../../store/useRoutesStore';
+import { useUiStore } from '../../../store/useUiStore';
+import { useTrackingStore } from '../../../store/useTrackingStore';
 
 export const FloatingSearchBar: React.FC = () => {
   const { searchQuery, setSearchQuery, routes, selectedRouteId, selectRoute } =
     useRoutesStore();
+  const openProfileModal = useUiStore((s) => s.openProfileModal);
+  const totalPoints = useTrackingStore((s) => s.totalPoints);
 
   return (
     <View style={styles.container}>
@@ -14,7 +18,7 @@ export const FloatingSearchBar: React.FC = () => {
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.input}
-            placeholder="Buscar Ruta en Pasto (C1, C16, E1)..."
+            placeholder="Buscar Ruta (C1, C16, E1)..."
             placeholderTextColor="#94a3b8"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -25,6 +29,10 @@ export const FloatingSearchBar: React.FC = () => {
               <Text style={styles.clearText}>✕</Text>
             </TouchableOpacity>
           )}
+          <TouchableOpacity onPress={openProfileModal} style={styles.profileBtn}>
+            <Text style={styles.profileIcon}>🐹</Text>
+            <Text style={styles.profilePoints}>{totalPoints}p</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Quick Route Selector Pills */}
@@ -94,6 +102,25 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  profileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.45)',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 14,
+    gap: 4,
+  },
+  profileIcon: {
+    fontSize: 13,
+  },
+  profilePoints: {
+    color: '#10b981',
+    fontSize: 11,
+    fontWeight: '800',
   },
   pillsRow: {
     flexDirection: 'row',
