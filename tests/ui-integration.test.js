@@ -104,7 +104,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
     assert.ok(allRoutesText.includes(`'route-e${i}'`), `Debe contener route-e${i}`);
   }
 
-  assert.ok(allRoutesText.includes('La Paz - Altavista'), 'Debe incluir C2');
+  assert.ok(allRoutesText.includes('Altavista - La Paz'), 'Debe incluir C2');
   assert.ok(allRoutesText.includes('Puente Tabla - Briceño'), 'Debe incluir C5');
   assert.ok(allRoutesText.includes('Anganoy - Cabrera'), 'Debe incluir C16');
   assert.ok(allRoutesText.includes('Altos de Chapalito - Obonuco'), 'Debe incluir C1');
@@ -200,7 +200,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r1.includes(stopName), `Debe contener el paradero C1: ${stopName}`);
   }
 
-  // 6. Validar que exista la migración RLS para lectura pública
+  // 6. Validar los 387 puntos de alta fidelidad OSRM y paradas para C2 (Altavista - La Paz)
+  const c2Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c2OsrmGeometry.json'), 'utf8'));
+  const parsedC2 = parsePostgisToCoordinates(c2Data);
+  assert.strictEqual(parsedC2.length, 387, 'Debe parsear exactamente 387 puntos de OSRM para C2');
+
+  assert.ok(r1.includes("color: '#ea580c'"), 'C2 debe tener color tematico naranja/rojo #ea580c');
+  const expectedStopsC2 = ['Altavista', 'Hospital San Rafael', 'Panamericana Calle 14', 'La Panadería', 'Plaza Del Carnaval', 'San Juan Bosco', 'Terminal De Transportes', 'Lorenzo', 'La Paz'];
+  for (const stopName of expectedStopsC2) {
+    assert.ok(r1.includes(stopName), `Debe contener el paradero C2: ${stopName}`);
+  }
+
+  // 7. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

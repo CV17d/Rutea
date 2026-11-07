@@ -13,6 +13,9 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   aranda: { latitude: 1.2240, longitude: -77.2650 },
   laPaz: { latitude: 1.1850, longitude: -77.2700 },
   altavista: { latitude: 1.2350, longitude: -77.2800 },
+  hospitalSanRafael: { latitude: 1.2290, longitude: -77.2815 },
+  panamericanaCalle14: { latitude: 1.2180, longitude: -77.2850 },
+  laPanaderia: { latitude: 1.2165, longitude: -77.2760 },
   puenteTabla: { latitude: 1.1950, longitude: -77.2820 },
   briceno: { latitude: 1.2200, longitude: -77.2600 },
   tamasagra: { latitude: 1.2100, longitude: -77.2950 },
@@ -36,7 +39,7 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   cabrera: { latitude: 1.2250, longitude: -77.2500 },
   buesaquillo: { latitude: 1.2150, longitude: -77.2400 },
   sanFernando: { latitude: 1.2020, longitude: -77.2580 },
-  lorenzo: { latitude: 1.2050, longitude: -77.2880 },
+  lorenzo: { latitude: 1.1940, longitude: -77.2660 },
   plazaCarnaval: { latitude: 1.2115, longitude: -77.2778 },
   maridiaz: { latitude: 1.2210, longitude: -77.2830 },
 };

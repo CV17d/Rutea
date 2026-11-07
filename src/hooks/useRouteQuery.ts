@@ -5,6 +5,13 @@ import { parsePostgisToCoordinates } from '../utils/geo.utils';
 import { LatLng } from '../types/route.types';
 import { C16_FALLBACK_COORDINATES } from '../constants/routes/c16Geometry';
 import { C1_FALLBACK_COORDINATES } from '../constants/routes/c1Geometry';
+import { C2_FALLBACK_COORDINATES } from '../constants/routes/c2Geometry';
+
+const ROUTE_FALLBACKS: Record<string, LatLng[]> = {
+  'route-c1': C1_FALLBACK_COORDINATES,
+  'route-c2': C2_FALLBACK_COORDINATES,
+  'route-c16': C16_FALLBACK_COORDINATES,
+};
 
 export interface UseRouteQueryResult {
   coordinates: LatLng[];
@@ -47,7 +54,7 @@ export function useRouteQuery(routeId: string = 'route-c16'): UseRouteQueryResul
       }
 
       // Si data está vacía por políticas de RLS de Supabase, cargar fallback OSRM
-      const fallback = routeId === 'route-c1' ? C1_FALLBACK_COORDINATES : routeId === 'route-c16' ? C16_FALLBACK_COORDINATES : null;
+      const fallback = ROUTE_FALLBACKS[routeId];
       if (fallback && fallback.length > 0) {
         console.log(`[useRouteQuery] Fallback RLS activo: ${fallback.length} puntos OSRM renderizados para ${routeId}`);
         setCoordinates(fallback);
@@ -57,7 +64,7 @@ export function useRouteQuery(routeId: string = 'route-c16'): UseRouteQueryResul
       console.warn(`[useRouteQuery] Error cargando geometria para ${routeId}:`, err?.message || err);
       setError(err?.message || 'Error al obtener la ruta de Supabase');
 
-      const fallback = routeId === 'route-c1' ? C1_FALLBACK_COORDINATES : routeId === 'route-c16' ? C16_FALLBACK_COORDINATES : null;
+      const fallback = ROUTE_FALLBACKS[routeId];
       if (fallback && fallback.length > 0) {
         setCoordinates(fallback);
         updateRouteCoordinates(routeId, fallback);
