@@ -125,7 +125,7 @@
     },
     {
       "type": "Feature",
-      "properties": {"id":"route-c16","name":"Ruta C16","description":"Anganoy - Cabrera","color":"#38bdf8"},
+      "properties": {"id":"route-c16","name":"Ruta C16","description":"Anganoy - Cabrera","color":"#4b5563"},
       "geometry": { "type": "LineString", "coordinates": [
         [-77.3, 1.218], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],
         [-77.2735, 1.2095], [-77.268, 1.206], [-77.258, 1.202], [-77.252, 1.212], [-77.25, 1.225]

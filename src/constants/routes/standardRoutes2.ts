@@ -79,18 +79,14 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c16', code: 'C16', name: 'Anganoy - Cabrera', color: '#38bdf8', description: 'Anganoy - Cabrera',
+    id: 'route-c16', code: 'C16', name: 'Ruta C16', color: '#4b5563', description: 'Anganoy - Cabrera',
     type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 10, isActive: true,
-    coordinates: [], // Geometría cargada dinámicamente desde PostGIS (Supabase)
+    coordinates: [], // Geometría cargada dinámicamente desde PostGIS
     stops: [
-      { id: 's-c16-1', name: 'Anganoy', orderIndex: 1, location: L.anganoy, estimatedWaitMinutes: 2, isTerminal: true },
-      { id: 's-c16-2', name: 'Panorámico', orderIndex: 2, location: L.panoramico, estimatedWaitMinutes: 4 },
-      { id: 's-c16-3', name: 'Liceo Udenar', orderIndex: 3, location: L.liceoUdenar, estimatedWaitMinutes: 7 },
-      { id: 's-c16-4', name: 'Teatro Imperial', orderIndex: 4, location: L.teatroImperial, estimatedWaitMinutes: 11 },
-      { id: 's-c16-5', name: 'San Andresito', orderIndex: 5, location: L.sanAndresito, estimatedWaitMinutes: 14 },
-      { id: 's-c16-6', name: 'San Juan Bosco', orderIndex: 6, location: L.sanJuanBosco, estimatedWaitMinutes: 17 },
-      { id: 's-c16-7', name: 'Las Lunas', orderIndex: 7, location: L.lasLunas, estimatedWaitMinutes: 20 },
-      { id: 's-c16-8', name: 'San Fernando', orderIndex: 8, location: L.sanFernando, estimatedWaitMinutes: 23 },
+      { id: 's-c16-1', name: 'Anganoy', orderIndex: 1, location: L.anganoy, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c16-2', name: 'Panorámico', orderIndex: 2, location: L.panoramico, estimatedWaitMinutes: 4 },
+      { id: 's-c16-3', name: 'Liceo Udenar', orderIndex: 3, location: L.liceoUdenar, estimatedWaitMinutes: 7 }, { id: 's-c16-4', name: 'Teatro Imperial', orderIndex: 4, location: L.teatroImperial, estimatedWaitMinutes: 11 },
+      { id: 's-c16-5', name: 'San Andresito', orderIndex: 5, location: L.sanAndresito, estimatedWaitMinutes: 14 }, { id: 's-c16-6', name: 'San Juan Bosco', orderIndex: 6, location: L.sanJuanBosco, estimatedWaitMinutes: 17 },
+      { id: 's-c16-7', name: 'Las Lunas', orderIndex: 7, location: L.lasLunas, estimatedWaitMinutes: 20 }, { id: 's-c16-8', name: 'San Fernando', orderIndex: 8, location: L.sanFernando, estimatedWaitMinutes: 23 },
       { id: 's-c16-9', name: 'Cabrera', orderIndex: 9, location: L.cabrera, estimatedWaitMinutes: 28, isTerminal: true },
     ],
   },
