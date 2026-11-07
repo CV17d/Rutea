@@ -6,10 +6,12 @@ import { LatLng } from '../types/route.types';
 import { C16_FALLBACK_COORDINATES } from '../constants/routes/c16Geometry';
 import { C1_FALLBACK_COORDINATES } from '../constants/routes/c1Geometry';
 import { C2_FALLBACK_COORDINATES } from '../constants/routes/c2Geometry';
+import { C3_FALLBACK_COORDINATES } from '../constants/routes/c3Geometry';
 
 const ROUTE_FALLBACKS: Record<string, LatLng[]> = {
   'route-c1': C1_FALLBACK_COORDINATES,
   'route-c2': C2_FALLBACK_COORDINATES,
+  'route-c3': C3_FALLBACK_COORDINATES,
   'route-c16': C16_FALLBACK_COORDINATES,
 };
 

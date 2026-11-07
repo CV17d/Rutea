@@ -50,6 +50,29 @@
     {
       "type": "Feature",
       "properties": {
+        "id": "route-c3",
+        "name": "Ruta C3",
+        "description": "Arnulfo Guerrero - Gilberto Pabón",
+        "color": "#b91c1c"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-77.2550, 1.2080],
+          [-77.2650, 1.2030],
+          [-77.2750, 1.2050],
+          [-77.2735, 1.2095],
+          [-77.2790, 1.2140],
+          [-77.2845, 1.2145],
+          [-77.2915, 1.2140],
+          [-77.2980, 1.2090],
+          [-77.3020, 1.2030]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "id": "route-c16",
         "name": "Ruta C16",
         "description": "Anganoy - Cabrera",

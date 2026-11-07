@@ -108,6 +108,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Puente Tabla - Briceño'), 'Debe incluir C5');
   assert.ok(allRoutesText.includes('Anganoy - Cabrera'), 'Debe incluir C16');
   assert.ok(allRoutesText.includes('Altos de Chapalito - Obonuco'), 'Debe incluir C1');
+  assert.ok(allRoutesText.includes('Arnulfo Guerrero - Gilberto Pabón'), 'Debe incluir C3');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -211,7 +212,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r1.includes(stopName), `Debe contener el paradero C2: ${stopName}`);
   }
 
-  // 7. Validar que exista la migración RLS para lectura pública
+  // 7. Validar los 435 puntos de alta fidelidad OSRM y paradas para C3 (Arnulfo Guerrero - Gilberto Pabón)
+  const c3Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c3OsrmGeometry.json'), 'utf8'));
+  const parsedC3 = parsePostgisToCoordinates(c3Data);
+  assert.strictEqual(parsedC3.length, 435, 'Debe parsear exactamente 435 puntos de OSRM para C3');
+
+  assert.ok(r1.includes("color: '#b91c1c'"), 'C3 debe tener color tematico carmesi #b91c1c');
+  const expectedStopsC3 = ['Arnulfo Guerrero', 'Villa Flor II', 'Hospital Departamental', 'San Juan Bosco', 'Alcaldía Centro', 'Calle 16 Carrera 27', 'INEM Av Mijitayo', 'Sumatambo', 'Gilberto Pabón'];
+  for (const stopName of expectedStopsC3) {
+    assert.ok(r1.includes(stopName), `Debe contener el paradero C3: ${stopName}`);
+  }
+
+  // 8. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');
