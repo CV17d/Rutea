@@ -68,9 +68,15 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c15', code: 'C15', name: 'San Fernando - Maridíaz', color: '#ef4444', description: 'San Fernando - Maridíaz',
-    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 9, isActive: true, coordinates: [L.sanFernando, L.maridiaz],
-    stops: [{ id: 's-c15-1', name: 'San Fernando', orderIndex: 1, location: L.sanFernando, estimatedWaitMinutes: 3, isTerminal: true }, { id: 's-c15-2', name: 'Maridíaz', orderIndex: 2, location: L.maridiaz, estimatedWaitMinutes: 14, isTerminal: true }],
+    id: 'route-c15', code: 'C15', name: 'Ruta C15', color: '#1e3a8a', description: 'Obonuco - Villanueva',
+    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 12, isActive: true, coordinates: [],
+    stops: [
+      { id: 's-c15-1', name: 'Atención Integral Obonuco', orderIndex: 1, location: L.obonucoAtencionIntegral, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c15-2', name: 'Patinódromo', orderIndex: 2, location: L.patinodromo, estimatedWaitMinutes: 5 },
+      { id: 's-c15-3', name: 'Sumatambo Calle 4', orderIndex: 3, location: L.sumatamboCalle4, estimatedWaitMinutes: 8 }, { id: 's-c15-4', name: 'Teatro Imperial', orderIndex: 4, location: L.teatroImperial, estimatedWaitMinutes: 12 },
+      { id: 's-c15-5', name: 'San Andresito', orderIndex: 5, location: L.sanAndresito, estimatedWaitMinutes: 15 }, { id: 's-c15-6', name: 'Bomberos', orderIndex: 6, location: L.bomberos, estimatedWaitMinutes: 18 },
+      { id: 's-c15-7', name: 'Hospital Civil', orderIndex: 7, location: L.hospitalCivil, estimatedWaitMinutes: 22 }, { id: 's-c15-8', name: 'Piscina Semiolímpica', orderIndex: 8, location: L.piscinaSemiolimpica, estimatedWaitMinutes: 26 },
+      { id: 's-c15-9', name: 'Villa Nueva', orderIndex: 9, location: L.villaNueva, estimatedWaitMinutes: 30, isTerminal: true },
+    ],
   },
   {
     id: 'route-c16', code: 'C16', name: 'Anganoy - Cabrera', color: '#38bdf8', description: 'Anganoy - Cabrera',

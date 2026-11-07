@@ -119,6 +119,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Briceño - Villaflor'), 'Debe incluir C12');
   assert.ok(allRoutesText.includes('Hospital De Santa Mónica - Santa Rita'), 'Debe incluir C13');
   assert.ok(allRoutesText.includes('Altos De Daza - Lorenzo'), 'Debe incluir C14');
+  assert.ok(allRoutesText.includes('Obonuco - Villanueva'), 'Debe incluir C15');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -354,7 +355,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r2.includes(stopName), `Debe contener el paradero C14: ${stopName}`);
   }
 
-  // 19. Validar que exista la migración RLS para lectura pública
+  // 19. Validar los 246 puntos de alta fidelidad OSRM y paradas para C15 (Obonuco - Villanueva)
+  const c15Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c15OsrmGeometry.json'), 'utf8'));
+  const parsedC15 = parsePostgisToCoordinates(c15Data);
+  assert.strictEqual(parsedC15.length, 246, 'Debe parsear exactamente 246 puntos de OSRM para C15');
+
+  assert.ok(r2.includes("color: '#1e3a8a'"), 'C15 debe tener color tematico azul marino #1e3a8a');
+  const expectedStopsC15 = ['Atención Integral Obonuco', 'Patinódromo', 'Sumatambo Calle 4', 'Teatro Imperial', 'San Andresito', 'Bomberos', 'Hospital Civil', 'Piscina Semiolímpica', 'Villa Nueva'];
+  for (const stopName of expectedStopsC15) {
+    assert.ok(r2.includes(stopName), `Debe contener el paradero C15: ${stopName}`);
+  }
+
+  // 20. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

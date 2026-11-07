@@ -117,6 +117,14 @@
     },
     {
       "type": "Feature",
+      "properties": {"id":"route-c15","name":"Ruta C15","description":"Obonuco - Villanueva","color":"#1e3a8a"},
+      "geometry": { "type": "LineString", "coordinates": [
+        [-77.302, 1.198], [-77.2987, 1.1972], [-77.2925, 1.2055], [-77.2805, 1.2135], [-77.2765, 1.2125],
+        [-77.276, 1.2155], [-77.2697, 1.219], [-77.267, 1.233], [-77.266, 1.2315]
+      ]}
+    },
+    {
+      "type": "Feature",
       "properties": {"id":"route-c16","name":"Ruta C16","description":"Anganoy - Cabrera","color":"#38bdf8"},
       "geometry": { "type": "LineString", "coordinates": [
         [-77.3, 1.218], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],

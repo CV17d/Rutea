@@ -99,4 +99,5 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   daza: { latitude: 1.2664, longitude: -77.2785 },
   pandiacoCalle19a: { latitude: 1.2295, longitude: -77.2855 },
   bernal: { latitude: 1.1990, longitude: -77.2690 },
+  patinodromo: { latitude: 1.1972, longitude: -77.2987 },
 };
