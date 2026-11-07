@@ -102,3 +102,24 @@ test('Supabase Service: Estructura de ActiveSessionRecord al presionar "Estoy a 
   assert.strictEqual(typeof session.latitude, 'number');
   assert.strictEqual(typeof session.longitude, 'number');
 });
+
+test('Supabase Seed: Script 20261107000004 contiene 20 rutas oficiales SETPasto', () => {
+  const seedPath = path.resolve(__dirname, '../supabase/migrations/20261107000004_seed_setp_routes.sql');
+  assert.ok(fs.existsSync(seedPath), 'El archivo de migracion debe existir');
+
+  const sql = fs.readFileSync(seedPath, 'utf8');
+
+  // Validar 20 rutas
+  for (let i = 1; i <= 16; i++) {
+    assert.ok(sql.includes(`'route-c${i}'`), `Debe incluir route-c${i}`);
+  }
+  for (let i = 1; i <= 4; i++) {
+    assert.ok(sql.includes(`'route-e${i}'`), `Debe incluir route-e${i}`);
+  }
+
+  // Validar descripciones específicas
+  assert.ok(sql.includes('La Paz - Altavista'), 'Debe incluir descripcion para C2');
+  assert.ok(sql.includes('Puente Tabla - Briceño'), 'Debe incluir descripcion para C5');
+  assert.ok(sql.includes('Hospital - Unicentro'), 'Debe incluir descripcion para C16');
+  assert.ok(sql.includes('ON CONFLICT (id) DO NOTHING;'), 'Debe contener ON CONFLICT (id) DO NOTHING');
+});
