@@ -85,4 +85,8 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   mercadoElTejar: { latitude: 1.1982, longitude: -77.2636 },
   cementerio: { latitude: 1.2290, longitude: -77.2665 },
   piscinaSemiolimpica: { latitude: 1.2330, longitude: -77.2670 },
+  sanDiego: { latitude: 1.2185, longitude: -77.2855 },
+  bienestarSocial: { latitude: 1.2115, longitude: -77.2915 },
+  sumatamboCalle4: { latitude: 1.2055, longitude: -77.2925 },
+  villaFlor2Cra9e: { latitude: 1.2025, longitude: -77.2635 },
 };

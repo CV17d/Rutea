@@ -35,9 +35,15 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c12', code: 'C12', name: 'Cabrera - Centro', color: '#0ea5e9', description: 'Cabrera - Centro',
-    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 18, isActive: true, coordinates: [L.cabrera, L.plazaNarino],
-    stops: [{ id: 's-c12-1', name: 'Cabrera', orderIndex: 1, location: L.cabrera, estimatedWaitMinutes: 8, isTerminal: true }, { id: 's-c12-2', name: 'Plaza Nariño', orderIndex: 2, location: L.plazaNarino, estimatedWaitMinutes: 22, isTerminal: true }],
+    id: 'route-c12', code: 'C12', name: 'Ruta C12', color: '#eab308', description: 'Briceño - Villaflor',
+    type: 'STANDARD', direction: 'NORTE_SUR', estimatedFrequencyMinutes: 12, isActive: true, coordinates: [],
+    stops: [
+      { id: 's-c12-1', name: 'Briceño', orderIndex: 1, location: L.briceno, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c12-2', name: 'Udenar Torobajo', orderIndex: 2, location: L.torobajoUdenar, estimatedWaitMinutes: 5 },
+      { id: 's-c12-3', name: 'Unicentro', orderIndex: 3, location: L.unicentro, estimatedWaitMinutes: 8 }, { id: 's-c12-4', name: 'Liceo Udenar', orderIndex: 4, location: L.liceoUdenar, estimatedWaitMinutes: 11 },
+      { id: 's-c12-5', name: 'San Diego', orderIndex: 5, location: L.sanDiego, estimatedWaitMinutes: 14 }, { id: 's-c12-6', name: 'Bienestar Social', orderIndex: 6, location: L.bienestarSocial, estimatedWaitMinutes: 17 },
+      { id: 's-c12-7', name: 'Sumatambo Calle 4', orderIndex: 7, location: L.sumatamboCalle4, estimatedWaitMinutes: 20 }, { id: 's-c12-8', name: 'Estadio Libertad', orderIndex: 8, location: L.estadioLibertad, estimatedWaitMinutes: 24 },
+      { id: 's-c12-9', name: 'Colegio Ciudad de Pasto', orderIndex: 9, location: L.colegioCiudadDePasto, estimatedWaitMinutes: 28 }, { id: 's-c12-10', name: 'Villa Flor II Carrera 9e', orderIndex: 10, location: L.villaFlor2Cra9e, estimatedWaitMinutes: 32, isTerminal: true },
+    ],
   },
   {
     id: 'route-c13', code: 'C13', name: 'Buesaquillo - Pandiaco', color: '#10b981', description: 'Buesaquillo - Pandiaco',
