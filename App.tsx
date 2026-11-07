@@ -7,7 +7,9 @@ import { StopMarker } from './src/components/map/StopMarker';
 import { BusMarker } from './src/components/map/BusMarker';
 import { ReportMarker } from './src/components/map/ReportMarker';
 import { FloatingSearchBar } from './src/components/floating/FloatingSearchBar';
+import { RouteSummaryCard } from './src/components/floating/RouteSummaryCard';
 import { RouteDetailCard } from './src/components/floating/RouteDetailCard';
+import { BottomNavBar } from './src/components/navigation/BottomNavBar';
 import { OnBoardPanel } from './src/components/floating/OnBoardPanel';
 import { CommunityReportFeed } from './src/components/floating/CommunityReportFeed';
 import { QuickReportModal } from './src/components/floating/QuickReportModal';
@@ -41,8 +43,8 @@ export default function App() {
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
+    <View style={[styles.container, { backgroundColor: screenMode === 'ON_BOARD' ? '#070b13' : '#f8fafc' }]}>
+      <StatusBar style={screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
 
       {/* 100% Pasto Viewport Background Map */}
       <MapContainer onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}>
@@ -95,8 +97,16 @@ export default function App() {
           <CommunityReportFeed />
           <OnBoardPanel />
         </View>
+      ) : screenMode === 'ROUTE_DETAILS' ? (
+        <View style={styles.bottomHomeWrap}>
+          <RouteDetailCard />
+          <BottomNavBar />
+        </View>
       ) : (
-        <RouteDetailCard />
+        <View style={styles.bottomHomeWrap}>
+          <RouteSummaryCard />
+          <BottomNavBar />
+        </View>
       )}
 
       {/* Crowdsourced Incident Modal */}
@@ -123,6 +133,13 @@ const styles = StyleSheet.create({
     zIndex: 40,
   },
   bottomBroadcasterWrap: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 35,
+  },
+  bottomHomeWrap: {
     position: 'absolute',
     bottom: 0,
     left: 0,
