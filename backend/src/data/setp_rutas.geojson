@@ -1,143 +1,79 @@
 {
   "type": "FeatureCollection",
   "features": [
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c1","name":"Ruta C1","description":"Altos de Chapalito - Obonuco","color":"#f97316"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.2725, 1.187], [-77.275, 1.196], [-77.268, 1.206], [-77.2735, 1.2095], [-77.279, 1.214],
-        [-77.286, 1.2155], [-77.2915, 1.214], [-77.295, 1.21], [-77.302, 1.198]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c2","name":"Ruta C2","description":"Altavista - La Paz","color":"#ea580c"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.28, 1.235], [-77.2815, 1.229], [-77.285, 1.218], [-77.276, 1.2165], [-77.2778, 1.2115],
-        [-77.2735, 1.2095], [-77.2662, 1.2018], [-77.266, 1.194], [-77.27, 1.185]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c3","name":"Ruta C3","description":"Arnulfo Guerrero - Gilberto Pabón","color":"#b91c1c"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.255, 1.208], [-77.265, 1.203], [-77.275, 1.205], [-77.2735, 1.2095], [-77.279, 1.214],
-        [-77.2845, 1.2145], [-77.2915, 1.214], [-77.298, 1.209], [-77.302, 1.203]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c4","name":"Ruta C4","description":"El Porvenir - Jongovito","color":"#d97706"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.256, 1.208], [-77.262, 1.207], [-77.268, 1.206], [-77.2735, 1.2095], [-77.2785, 1.2115],
-        [-77.2845, 1.2145], [-77.2915, 1.214], [-77.2965, 1.209], [-77.303, 1.203], [-77.31, 1.196]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c5","name":"Ruta C5","description":"Buesaquillo/Puente Tabla - Udenar","color":"#be185d"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.234, 1.2215], [-77.24, 1.215], [-77.2545, 1.2065], [-77.2596, 1.2057], [-77.275, 1.205],
-        [-77.2735, 1.2095], [-77.2765, 1.2125], [-77.2793, 1.216], [-77.295, 1.21], [-77.2915, 1.214],
-        [-77.287, 1.229], [-77.2918, 1.2312], [-77.296, 1.236]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c6","name":"Ruta C6","description":"Cam Anganoy - Catambuco/Coba Negra","color":"#0d9488"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.3009, 1.2115], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],
-        [-77.2791, 1.2045], [-77.2778, 1.198], [-77.276, 1.192], [-77.2845, 1.1732], [-77.294, 1.1649]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c7","name":"Ruta C7","description":"Altos De Chapalito - San Juan De Anganoy","color":"#7c3aed"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.2725, 1.187], [-77.274, 1.191], [-77.2755, 1.1935], [-77.276, 1.195], [-77.2778, 1.198],
-        [-77.2735, 1.2095], [-77.279, 1.214], [-77.2835, 1.2175], [-77.287, 1.229], [-77.287, 1.221],
-        [-77.3, 1.218]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c8","name":"Ruta C8","description":"Cujacal/Puente Tabla - San Martín","color":"#2563eb"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.234, 1.2215], [-77.2535, 1.2273], [-77.265, 1.23], [-77.2697, 1.219], [-77.2753, 1.2158],
-        [-77.2795, 1.2132], [-77.286, 1.2155], [-77.2735, 1.2095], [-77.262, 1.207]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c9","name":"Ruta C9","description":"Udenar/Briceño - Villa Nueva","color":"#10b981"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.296, 1.236], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.28, 1.2232], [-77.276, 1.2155],
-        [-77.2697, 1.219], [-77.2702, 1.2287], [-77.266, 1.2315]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c10","name":"Ruta C10","description":"Briceño - Jamondino","color":"#db2777"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.296, 1.236], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.28, 1.2232], [-77.274, 1.2106],
-        [-77.2778, 1.2115], [-77.2818, 1.2054], [-77.2778, 1.198], [-77.2708, 1.193], [-77.2554, 1.1786]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c11","name":"Ruta C11","description":"Mocondino - Villa Nueva","color":"#06b6d4"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.2495, 1.1939], [-77.2636, 1.1982], [-77.266, 1.194], [-77.2662, 1.2018], [-77.2735, 1.2095],
-        [-77.279, 1.214], [-77.276, 1.2155], [-77.2665, 1.229], [-77.267, 1.233], [-77.266, 1.2315]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c12","name":"Ruta C12","description":"Briceño - Villaflor","color":"#eab308"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.296, 1.236], [-77.2918, 1.2312], [-77.287, 1.229], [-77.287, 1.221], [-77.2855, 1.2185],
-        [-77.2915, 1.2115], [-77.2925, 1.2055], [-77.2778, 1.198], [-77.2708, 1.193], [-77.2635, 1.2025]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c13","name":"Ruta C13","description":"Hospital De Santa Mónica - Santa Rita","color":"#166534"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.2585, 1.2015], [-77.265, 1.203], [-77.269, 1.2045], [-77.275, 1.205], [-77.273, 1.2075],
-        [-77.276, 1.213], [-77.28, 1.2165], [-77.287, 1.2235], [-77.2855, 1.2295], [-77.289, 1.2335]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c14","name":"Ruta C14","description":"Altos De Daza - Lorenzo","color":"#9a3412"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.2785, 1.2664], [-77.2855, 1.2295], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.274, 1.2106],
-        [-77.273, 1.2075], [-77.275, 1.205], [-77.269, 1.199], [-77.266, 1.194]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c15","name":"Ruta C15","description":"Obonuco - Villanueva","color":"#1e3a8a"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.302, 1.198], [-77.2987, 1.1972], [-77.2925, 1.2055], [-77.2805, 1.2135], [-77.2765, 1.2125],
-        [-77.276, 1.2155], [-77.2697, 1.219], [-77.267, 1.233], [-77.266, 1.2315]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-c16","name":"Ruta C16","description":"Anganoy - Cabrera","color":"#4b5563"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.3, 1.218], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],
-        [-77.2735, 1.2095], [-77.268, 1.206], [-77.258, 1.202], [-77.252, 1.212], [-77.25, 1.225]
-      ]}
-    },
-    {
-      "type": "Feature",
-      "properties": {"id":"route-e1","name":"Ruta E1","description":"Dolores - Udenar","color":"#4338ca"},
-      "geometry": { "type": "LineString", "coordinates": [
-        [-77.23, 1.196], [-77.2405, 1.1938], [-77.244, 1.198], [-77.2485, 1.2021], [-77.2585, 1.2015],
-        [-77.275, 1.205], [-77.2735, 1.2095], [-77.2835, 1.2215], [-77.293, 1.233], [-77.295, 1.2355]
-      ]}
-    }
+    { "type": "Feature", "properties": {"id":"route-c1","name":"Ruta C1","description":"Altos de Chapalito - Obonuco","color":"#f97316"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.2725, 1.187], [-77.275, 1.196], [-77.268, 1.206], [-77.2735, 1.2095], [-77.279, 1.214],
+      [-77.286, 1.2155], [-77.2915, 1.214], [-77.295, 1.21], [-77.302, 1.198]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c2","name":"Ruta C2","description":"Altavista - La Paz","color":"#ea580c"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.28, 1.235], [-77.2815, 1.229], [-77.285, 1.218], [-77.276, 1.2165], [-77.2778, 1.2115],
+      [-77.2735, 1.2095], [-77.2662, 1.2018], [-77.266, 1.194], [-77.27, 1.185]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c3","name":"Ruta C3","description":"Arnulfo Guerrero - Gilberto Pabón","color":"#b91c1c"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.255, 1.208], [-77.265, 1.203], [-77.275, 1.205], [-77.2735, 1.2095], [-77.279, 1.214],
+      [-77.2845, 1.2145], [-77.2915, 1.214], [-77.298, 1.209], [-77.302, 1.203]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c4","name":"Ruta C4","description":"El Porvenir - Jongovito","color":"#d97706"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.256, 1.208], [-77.262, 1.207], [-77.268, 1.206], [-77.2735, 1.2095], [-77.2785, 1.2115],
+      [-77.2845, 1.2145], [-77.2915, 1.214], [-77.2965, 1.209], [-77.303, 1.203], [-77.31, 1.196]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c5","name":"Ruta C5","description":"Buesaquillo/Puente Tabla - Udenar","color":"#be185d"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.234, 1.2215], [-77.24, 1.215], [-77.2545, 1.2065], [-77.2596, 1.2057], [-77.275, 1.205],
+      [-77.2735, 1.2095], [-77.2765, 1.2125], [-77.2793, 1.216], [-77.295, 1.21], [-77.2915, 1.214],
+      [-77.287, 1.229], [-77.2918, 1.2312], [-77.296, 1.236]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c6","name":"Ruta C6","description":"Cam Anganoy - Catambuco/Coba Negra","color":"#0d9488"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.3009, 1.2115], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],
+      [-77.2791, 1.2045], [-77.2778, 1.198], [-77.276, 1.192], [-77.2845, 1.1732], [-77.294, 1.1649]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c7","name":"Ruta C7","description":"Altos De Chapalito - San Juan De Anganoy","color":"#7c3aed"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.2725, 1.187], [-77.274, 1.191], [-77.2755, 1.1935], [-77.276, 1.195], [-77.2778, 1.198],
+      [-77.2735, 1.2095], [-77.279, 1.214], [-77.2835, 1.2175], [-77.287, 1.229], [-77.287, 1.221],
+      [-77.3, 1.218]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c8","name":"Ruta C8","description":"Cujacal/Puente Tabla - San Martín","color":"#2563eb"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.234, 1.2215], [-77.2535, 1.2273], [-77.265, 1.23], [-77.2697, 1.219], [-77.2753, 1.2158],
+      [-77.2795, 1.2132], [-77.286, 1.2155], [-77.2735, 1.2095], [-77.262, 1.207]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c9","name":"Ruta C9","description":"Udenar/Briceño - Villa Nueva","color":"#10b981"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.296, 1.236], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.28, 1.2232], [-77.276, 1.2155],
+      [-77.2697, 1.219], [-77.2702, 1.2287], [-77.266, 1.2315]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c10","name":"Ruta C10","description":"Briceño - Jamondino","color":"#db2777"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.296, 1.236], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.28, 1.2232], [-77.274, 1.2106],
+      [-77.2778, 1.2115], [-77.2818, 1.2054], [-77.2778, 1.198], [-77.2708, 1.193], [-77.2554, 1.1786]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c11","name":"Ruta C11","description":"Mocondino - Villa Nueva","color":"#06b6d4"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.2495, 1.1939], [-77.2636, 1.1982], [-77.266, 1.194], [-77.2662, 1.2018], [-77.2735, 1.2095],
+      [-77.279, 1.214], [-77.276, 1.2155], [-77.2665, 1.229], [-77.267, 1.233], [-77.266, 1.2315]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c12","name":"Ruta C12","description":"Briceño - Villaflor","color":"#eab308"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.296, 1.236], [-77.2918, 1.2312], [-77.287, 1.229], [-77.287, 1.221], [-77.2855, 1.2185],
+      [-77.2915, 1.2115], [-77.2925, 1.2055], [-77.2778, 1.198], [-77.2708, 1.193], [-77.2635, 1.2025]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c13","name":"Ruta C13","description":"Hospital De Santa Mónica - Santa Rita","color":"#166534"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.2585, 1.2015], [-77.265, 1.203], [-77.269, 1.2045], [-77.275, 1.205], [-77.273, 1.2075],
+      [-77.276, 1.213], [-77.28, 1.2165], [-77.287, 1.2235], [-77.2855, 1.2295], [-77.289, 1.2335]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c14","name":"Ruta C14","description":"Altos De Daza - Lorenzo","color":"#9a3412"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.2785, 1.2664], [-77.2855, 1.2295], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.274, 1.2106],
+      [-77.273, 1.2075], [-77.275, 1.205], [-77.269, 1.199], [-77.266, 1.194]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c15","name":"Ruta C15","description":"Obonuco - Villanueva","color":"#1e3a8a"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.302, 1.198], [-77.2987, 1.1972], [-77.2925, 1.2055], [-77.2805, 1.2135], [-77.2765, 1.2125],
+      [-77.276, 1.2155], [-77.2697, 1.219], [-77.267, 1.233], [-77.266, 1.2315]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-c16","name":"Ruta C16","description":"Anganoy - Cabrera","color":"#4b5563"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.3, 1.218], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],
+      [-77.2735, 1.2095], [-77.268, 1.206], [-77.258, 1.202], [-77.252, 1.212], [-77.25, 1.225]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-e1","name":"Ruta E1","description":"Dolores - Udenar","color":"#4338ca"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.23, 1.196], [-77.2405, 1.1938], [-77.244, 1.198], [-77.2485, 1.2021], [-77.2585, 1.2015],
+      [-77.275, 1.205], [-77.2735, 1.2095], [-77.2835, 1.2215], [-77.293, 1.233], [-77.295, 1.2355]
+    ]}},
+    { "type": "Feature", "properties": {"id":"route-e2","name":"Ruta E2","description":"Altos De Chapalito - Udenar","color":"#f43f5e"}, "geometry": { "type": "LineString", "coordinates": [
+      [-77.2725, 1.187], [-77.275, 1.196], [-77.271, 1.19], [-77.275, 1.205], [-77.273, 1.2075],
+      [-77.279, 1.214], [-77.276, 1.213], [-77.2835, 1.2175], [-77.2855, 1.2255], [-77.295, 1.2355]
+    ]}}
   ]
 }

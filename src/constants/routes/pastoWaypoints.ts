@@ -107,4 +107,6 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   avLosEstudiantes: { latitude: 1.2215, longitude: -77.2835 },
   universidadCooperativa: { latitude: 1.2330, longitude: -77.2930 },
   udenarVeterinaria: { latitude: 1.2355, longitude: -77.2950 },
+  laMinga: { latitude: 1.1900, longitude: -77.2710 },
+  clinicaPalermo: { latitude: 1.2255, longitude: -77.2855 },
 };

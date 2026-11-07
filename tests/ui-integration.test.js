@@ -121,6 +121,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Altos De Daza - Lorenzo'), 'Debe incluir C14');
   assert.ok(allRoutesText.includes('Obonuco - Villanueva'), 'Debe incluir C15');
   assert.ok(allRoutesText.includes('Dolores - Udenar'), 'Debe incluir E1');
+  assert.ok(allRoutesText.includes('Altos De Chapalito - Udenar'), 'Debe incluir E2');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -379,7 +380,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(re.includes(stopName), `Debe contener el paradero E1: ${stopName}`);
   }
 
-  // 21. Validar que exista la migración RLS para lectura pública
+  // 21. Validar los 352 puntos de alta fidelidad OSRM y paradas para E2 (Altos De Chapalito - Udenar)
+  const e2Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/e2OsrmGeometry.json'), 'utf8'));
+  const parsedE2 = parsePostgisToCoordinates(e2Data);
+  assert.strictEqual(parsedE2.length, 352, 'Debe parsear exactamente 352 puntos de OSRM para E2');
+
+  assert.ok(re.includes("color: '#f43f5e'"), 'E2 debe tener color tematico salmon/coral #f43f5e');
+  const expectedStopsE2 = ['Altos De Chapalito', 'Chambú', 'La Minga', 'Hospital Departamental', 'Parque Bolívar', 'Alcaldía Centro', 'Cristo Rey', 'Policía Calle 20', 'Clínica Palermo', 'Udenar - Facultad de Veterinaria'];
+  for (const stopName of expectedStopsE2) {
+    assert.ok(re.includes(stopName), `Debe contener el paradero E2: ${stopName}`);
+  }
+
+  // 22. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');
