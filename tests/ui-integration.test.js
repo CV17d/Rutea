@@ -105,7 +105,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   }
 
   assert.ok(allRoutesText.includes('Altavista - La Paz'), 'Debe incluir C2');
-  assert.ok(allRoutesText.includes('Puente Tabla - Briceño'), 'Debe incluir C5');
+  assert.ok(allRoutesText.includes('Buesaquillo/Puente Tabla - Udenar'), 'Debe incluir C5');
   assert.ok(allRoutesText.includes('Anganoy - Cabrera'), 'Debe incluir C16');
   assert.ok(allRoutesText.includes('Altos de Chapalito - Obonuco'), 'Debe incluir C1');
   assert.ok(allRoutesText.includes('Arnulfo Guerrero - Gilberto Pabón'), 'Debe incluir C3');
@@ -235,7 +235,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r1.includes(stopName), `Debe contener el paradero C4: ${stopName}`);
   }
 
-  // 9. Validar que exista la migración RLS para lectura pública
+  // 9. Validar los 716 puntos de alta fidelidad OSRM y paradas para C5 (Buesaquillo/Puente Tabla - Udenar)
+  const c5Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c5OsrmGeometry.json'), 'utf8'));
+  const parsedC5 = parsePostgisToCoordinates(c5Data);
+  assert.strictEqual(parsedC5.length, 716, 'Debe parsear exactamente 716 puntos de OSRM para C5');
+
+  assert.ok(r1.includes("color: '#be185d'"), 'C5 debe tener color tematico magenta carmesi #be185d');
+  const expectedStopsC5 = ['Puente Tabla', 'Buesaquillo', 'Sena', 'Único', 'Hospital Departamental', 'San Juan Bosco', 'San Andresito', 'Éxito', 'Tamasagra', 'Mijitayo', 'Unicentro', 'Udenar Torobajo', 'Briceño'];
+  for (const stopName of expectedStopsC5) {
+    assert.ok(r1.includes(stopName), `Debe contener el paradero C5: ${stopName}`);
+  }
+
+  // 10. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

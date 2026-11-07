@@ -97,6 +97,25 @@
     {
       "type": "Feature",
       "properties": {
+        "id": "route-c5",
+        "name": "Ruta C5",
+        "description": "Buesaquillo/Puente Tabla - Udenar",
+        "color": "#be185d"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-77.2340, 1.2215], [-77.2400, 1.2150], [-77.2545, 1.2065],
+          [-77.2596, 1.2057], [-77.2750, 1.2050], [-77.2735, 1.2095],
+          [-77.2765, 1.2125], [-77.2793, 1.2160], [-77.2950, 1.2100],
+          [-77.2915, 1.2140], [-77.2870, 1.2290], [-77.2918, 1.2312],
+          [-77.2960, 1.2360]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "id": "route-c16",
         "name": "Ruta C16",
         "description": "Anganoy - Cabrera",
