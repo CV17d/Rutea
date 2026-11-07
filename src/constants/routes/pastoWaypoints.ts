@@ -109,4 +109,8 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   udenarVeterinaria: { latitude: 1.2355, longitude: -77.2950 },
   laMinga: { latitude: 1.1900, longitude: -77.2710 },
   clinicaPalermo: { latitude: 1.2255, longitude: -77.2855 },
+  altamira: { latitude: 1.1992, longitude: -77.2961 },
+  gualcala: { latitude: 1.2145, longitude: -77.2655 },
+  carlosPizarro: { latitude: 1.2166, longitude: -77.2646 },
+  sanEzequiel: { latitude: 1.2197, longitude: -77.2663 },
 };

@@ -122,6 +122,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Obonuco - Villanueva'), 'Debe incluir C15');
   assert.ok(allRoutesText.includes('Dolores - Udenar'), 'Debe incluir E1');
   assert.ok(allRoutesText.includes('Altos De Chapalito - Udenar'), 'Debe incluir E2');
+  assert.ok(allRoutesText.includes('Altamira - San Ezequiel Moreno'), 'Debe incluir E3');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -391,7 +392,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(re.includes(stopName), `Debe contener el paradero E2: ${stopName}`);
   }
 
-  // 22. Validar que exista la migración RLS para lectura pública
+  // 22. Validar los 432 puntos de alta fidelidad OSRM y paradas para E3 (Altamira - San Ezequiel Moreno)
+  const e3Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/e3OsrmGeometry.json'), 'utf8'));
+  const parsedE3 = parsePostgisToCoordinates(e3Data);
+  assert.strictEqual(parsedE3.length, 432, 'Debe parsear exactamente 432 puntos de OSRM para E3');
+
+  assert.ok(re.includes("color: '#65a30d'"), 'E3 debe tener color tematico lima oscuro #65a30d');
+  const expectedStopsE3 = ['Altamira', 'Tamasagra', 'Panamericana - Éxito', 'Teatro Imperial', 'San Agustín', 'Calle 17 Amorel', 'San Juan Bosco', 'Hospital Departamental', 'Gualcalá', 'Carlos Pizarro', 'San Ezequiel'];
+  for (const stopName of expectedStopsE3) {
+    assert.ok(re.includes(stopName), `Debe contener el paradero E3: ${stopName}`);
+  }
+
+  // 23. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

@@ -21,6 +21,7 @@ import { C14_FALLBACK_COORDINATES } from '../constants/routes/c14Geometry';
 import { C15_FALLBACK_COORDINATES } from '../constants/routes/c15Geometry';
 import { E1_FALLBACK_COORDINATES } from '../constants/routes/e1Geometry';
 import { E2_FALLBACK_COORDINATES } from '../constants/routes/e2Geometry';
+import { E3_FALLBACK_COORDINATES } from '../constants/routes/e3Geometry';
 
 const ROUTE_FALLBACKS: Record<string, LatLng[]> = {
   'route-c1': C1_FALLBACK_COORDINATES,
@@ -41,6 +42,7 @@ const ROUTE_FALLBACKS: Record<string, LatLng[]> = {
   'route-c16': C16_FALLBACK_COORDINATES,
   'route-e1': E1_FALLBACK_COORDINATES,
   'route-e2': E2_FALLBACK_COORDINATES,
+  'route-e3': E3_FALLBACK_COORDINATES,
 };
 
 export interface UseRouteQueryResult {
