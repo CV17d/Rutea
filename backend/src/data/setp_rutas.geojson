@@ -4,9 +4,33 @@
     {
       "type": "Feature",
       "properties": {
+        "id": "route-c1",
+        "name": "Ruta C1",
+        "description": "Altos de Chapalito - Obonuco",
+        "color": "#f97316"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-77.2725, 1.1870],
+          [-77.2750, 1.1960],
+          [-77.2680, 1.2060],
+          [-77.2735, 1.2095],
+          [-77.2790, 1.2140],
+          [-77.2860, 1.2155],
+          [-77.2915, 1.2140],
+          [-77.2950, 1.2100],
+          [-77.3020, 1.1980]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "id": "route-c16",
         "name": "Ruta C16",
-        "description": "Anganoy - Cabrera"
+        "description": "Anganoy - Cabrera",
+        "color": "#38bdf8"
       },
       "geometry": {
         "type": "LineString",

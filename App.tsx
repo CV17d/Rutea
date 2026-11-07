@@ -24,9 +24,10 @@ import { useRouteQuery } from './src/hooks/useRouteQuery';
 export default function App() {
   useSocketRoutes();
   useLocationTracking();
-  const { coordinates: c16Coordinates } = useRouteQuery('route-c16');
 
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
+  const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || 'route-c16');
+
   const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
   const {
     screenMode,
@@ -53,7 +54,7 @@ export default function App() {
       ) : (
         <>
           <MapContainer
-            routeCoordinates={selectedRoute?.id === 'route-c16' && c16Coordinates.length > 0 ? c16Coordinates : undefined}
+            routeCoordinates={routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates}
             routeColor={selectedRoute?.color}
             onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}
           >
@@ -61,7 +62,7 @@ export default function App() {
               <>
                 <RoutePolyline
                   route={selectedRoute}
-                  coordinates={selectedRoute.id === 'route-c16' && c16Coordinates.length > 0 ? c16Coordinates : undefined}
+                  coordinates={routeCoordinates.length > 0 ? routeCoordinates : undefined}
                 />
                 {selectedRoute.stops.map((stop) => (
                   <StopMarker key={stop.id} stop={stop} />

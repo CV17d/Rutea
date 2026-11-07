@@ -4,6 +4,7 @@ import { useRoutesStore } from '../store/useRoutesStore';
 import { parsePostgisToCoordinates } from '../utils/geo.utils';
 import { LatLng } from '../types/route.types';
 import { C16_FALLBACK_COORDINATES } from '../constants/routes/c16Geometry';
+import { C1_FALLBACK_COORDINATES } from '../constants/routes/c1Geometry';
 
 export interface UseRouteQueryResult {
   coordinates: LatLng[];
@@ -45,19 +46,21 @@ export function useRouteQuery(routeId: string = 'route-c16'): UseRouteQueryResul
         }
       }
 
-      // Si data está vacía por políticas de RLS de Supabase, cargar 128 puntos OSRM de alta fidelidad
-      if (routeId === 'route-c16') {
-        console.log(`[useRouteQuery] Fallback RLS activo: ${C16_FALLBACK_COORDINATES.length} puntos OSRM renderizados`);
-        setCoordinates(C16_FALLBACK_COORDINATES);
-        updateRouteCoordinates(routeId, C16_FALLBACK_COORDINATES);
+      // Si data está vacía por políticas de RLS de Supabase, cargar fallback OSRM
+      const fallback = routeId === 'route-c1' ? C1_FALLBACK_COORDINATES : routeId === 'route-c16' ? C16_FALLBACK_COORDINATES : null;
+      if (fallback && fallback.length > 0) {
+        console.log(`[useRouteQuery] Fallback RLS activo: ${fallback.length} puntos OSRM renderizados para ${routeId}`);
+        setCoordinates(fallback);
+        updateRouteCoordinates(routeId, fallback);
       }
     } catch (err: any) {
       console.warn(`[useRouteQuery] Error cargando geometria para ${routeId}:`, err?.message || err);
       setError(err?.message || 'Error al obtener la ruta de Supabase');
 
-      if (routeId === 'route-c16') {
-        setCoordinates(C16_FALLBACK_COORDINATES);
-        updateRouteCoordinates(routeId, C16_FALLBACK_COORDINATES);
+      const fallback = routeId === 'route-c1' ? C1_FALLBACK_COORDINATES : routeId === 'route-c16' ? C16_FALLBACK_COORDINATES : null;
+      if (fallback && fallback.length > 0) {
+        setCoordinates(fallback);
+        updateRouteCoordinates(routeId, fallback);
       }
     } finally {
       setIsLoading(false);

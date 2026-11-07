@@ -70,15 +70,19 @@ async function runAutoRouter() {
     realtime: { transport: WebSocket },
   });
 
-  // 1. Cargar coordenadas base de Ruta C16 desde GeoJSON
+  // 1. Cargar coordenadas base desde GeoJSON
   const geoJsonPath = path.resolve(__dirname, '../data/setp_rutas.geojson');
   console.log(`[Rutea] Leyendo waypoints desde: ${geoJsonPath}`);
   const rawData = fs.readFileSync(geoJsonPath, 'utf-8');
   const geojson = JSON.parse(rawData);
-  const feature = geojson.features.find((f: any) => f.properties.id === 'route-c16');
 
+  // Por defecto procesar 'route-c1' o argumento CLI
+  const targetRouteId = process.argv[2] || 'route-c1';
+  console.log(`[Rutea] Procesando ruta: ${targetRouteId}`);
+
+  const feature = geojson.features.find((f: any) => f.properties.id === targetRouteId);
   if (!feature || !feature.geometry?.coordinates) {
-    throw new Error('No se encontraron coordenadas para route-c16 en el GeoJSON');
+    throw new Error(`No se encontraron coordenadas para ${targetRouteId} en el GeoJSON`);
   }
 
   const baseWaypoints: CoordinatePair[] = feature.geometry.coordinates;
@@ -92,11 +96,11 @@ async function runAutoRouter() {
   console.log(`[Rutea] EWKT generado (${ewkt.length} caracteres)`);
 
   // 4. Inyectar / actualizar en Supabase PostGIS
-  console.log('[Supabase] Actualizando route-c16 en tabla routes...');
+  console.log(`[Supabase] Actualizando ${targetRouteId} en tabla routes...`);
   const { data, error } = await supabase
     .from('routes')
     .update({ path: ewkt })
-    .eq('id', 'route-c16')
+    .eq('id', targetRouteId)
     .select();
 
   if (error) {
@@ -104,13 +108,23 @@ async function runAutoRouter() {
     process.exit(1);
   }
 
-  // 5. Actualizar descripción a 'Anganoy - Cabrera'
-  await supabase
-    .from('routes')
-    .update({ description: 'Anganoy - Cabrera' })
-    .eq('id', 'route-c16');
+  // 5. Actualizar metadata de la ruta (descripción, nombre)
+  const { description, name } = feature.properties;
+  if (description || name) {
+    const { error: metaError } = await supabase
+      .from('routes')
+      .update({
+        ...(description ? { description } : {}),
+        ...(name ? { name } : {}),
+      })
+      .eq('id', targetRouteId);
 
-  console.log('✅ Base de datos actualizada con éxito con geometría OSRM:');
+    if (metaError) {
+      console.error('[Supabase] Error en update metadata:', metaError);
+    }
+  }
+
+  console.log(`✅ Base de datos actualizada con éxito para ${targetRouteId}:`);
   console.log(data);
 }
 
