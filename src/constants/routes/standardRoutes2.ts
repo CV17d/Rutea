@@ -24,9 +24,15 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c11', code: 'C11', name: 'San Albano - Torobajo', color: '#d946ef', description: 'San Albano - Torobajo',
-    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 10, isActive: true, coordinates: [L.sanAlbano, L.torobajoUdenar],
-    stops: [{ id: 's-c11-1', name: 'San Albano', orderIndex: 1, location: L.sanAlbano, estimatedWaitMinutes: 4, isTerminal: true }, { id: 's-c11-2', name: 'Torobajo', orderIndex: 2, location: L.torobajoUdenar, estimatedWaitMinutes: 15, isTerminal: true }],
+    id: 'route-c11', code: 'C11', name: 'Ruta C11', color: '#06b6d4', description: 'Mocondino - Villa Nueva',
+    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 10, isActive: true, coordinates: [],
+    stops: [
+      { id: 's-c11-1', name: 'Mocondino Alto', orderIndex: 1, location: L.mocondinoAlto, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c11-2', name: 'Mercado El Tejar', orderIndex: 2, location: L.mercadoElTejar, estimatedWaitMinutes: 5 },
+      { id: 's-c11-3', name: 'Lorenzo', orderIndex: 3, location: L.lorenzo, estimatedWaitMinutes: 8 }, { id: 's-c11-4', name: 'Terminal de Transportes', orderIndex: 4, location: L.terminalTransportes, estimatedWaitMinutes: 12 },
+      { id: 's-c11-5', name: 'San Juan Bosco', orderIndex: 5, location: L.sanJuanBosco, estimatedWaitMinutes: 15 }, { id: 's-c11-6', name: 'Alcaldía Centro', orderIndex: 6, location: L.alcaldiaCentro, estimatedWaitMinutes: 18 },
+      { id: 's-c11-7', name: 'Bomberos', orderIndex: 7, location: L.bomberos, estimatedWaitMinutes: 21 }, { id: 's-c11-8', name: 'Cementerio', orderIndex: 8, location: L.cementerio, estimatedWaitMinutes: 25 },
+      { id: 's-c11-9', name: 'Piscina Semiolímpica', orderIndex: 9, location: L.piscinaSemiolimpica, estimatedWaitMinutes: 28 }, { id: 's-c11-10', name: 'Villa Nueva', orderIndex: 10, location: L.villaNueva, estimatedWaitMinutes: 32, isTerminal: true },
+    ],
   },
   {
     id: 'route-c12', code: 'C12', name: 'Cabrera - Centro', color: '#0ea5e9', description: 'Cabrera - Centro',

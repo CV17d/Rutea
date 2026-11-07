@@ -81,4 +81,8 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   atahualpa: { latitude: 1.2054, longitude: -77.2818 },
   colegioCiudadDePasto: { latitude: 1.1930, longitude: -77.2708 },
   jamondinoAlto: { latitude: 1.1786, longitude: -77.2554 },
+  mocondinoAlto: { latitude: 1.1939, longitude: -77.2495 },
+  mercadoElTejar: { latitude: 1.1982, longitude: -77.2636 },
+  cementerio: { latitude: 1.2290, longitude: -77.2665 },
+  piscinaSemiolimpica: { latitude: 1.2330, longitude: -77.2670 },
 };

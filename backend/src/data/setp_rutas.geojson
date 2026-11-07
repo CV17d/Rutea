@@ -118,6 +118,18 @@
     },
     {
       "type": "Feature",
+      "properties": { "id": "route-c11", "name": "Ruta C11", "description": "Mocondino - Villa Nueva", "color": "#06b6d4" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-77.2495, 1.1939], [-77.2636, 1.1982], [-77.2660, 1.1940], [-77.2662, 1.2018],
+          [-77.2735, 1.2095], [-77.2790, 1.2140], [-77.2760, 1.2155], [-77.2665, 1.2290],
+          [-77.2670, 1.2330], [-77.2660, 1.2315]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
       "properties": { "id": "route-c16", "name": "Ruta C16", "description": "Anganoy - Cabrera", "color": "#38bdf8" },
       "geometry": {
         "type": "LineString",

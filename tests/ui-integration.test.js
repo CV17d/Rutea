@@ -115,6 +115,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Cujacal/Puente Tabla - San Martín'), 'Debe incluir C8');
   assert.ok(allRoutesText.includes('Udenar/Briceño - Villa Nueva'), 'Debe incluir C9');
   assert.ok(allRoutesText.includes('Briceño - Jamondino'), 'Debe incluir C10');
+  assert.ok(allRoutesText.includes('Mocondino - Villa Nueva'), 'Debe incluir C11');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -306,7 +307,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r2.includes(stopName), `Debe contener el paradero C10: ${stopName}`);
   }
 
-  // 15. Validar que exista la migración RLS para lectura pública
+  // 15. Validar los 396 puntos de alta fidelidad OSRM y paradas para C11 (Mocondino - Villa Nueva)
+  const c11Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c11OsrmGeometry.json'), 'utf8'));
+  const parsedC11 = parsePostgisToCoordinates(c11Data);
+  assert.strictEqual(parsedC11.length, 396, 'Debe parsear exactamente 396 puntos de OSRM para C11');
+
+  assert.ok(r2.includes("color: '#06b6d4'"), 'C11 debe tener color tematico cian #06b6d4');
+  const expectedStopsC11 = ['Mocondino Alto', 'Mercado El Tejar', 'Lorenzo', 'Terminal de Transportes', 'San Juan Bosco', 'Alcaldía Centro', 'Bomberos', 'Cementerio', 'Piscina Semiolímpica', 'Villa Nueva'];
+  for (const stopName of expectedStopsC11) {
+    assert.ok(r2.includes(stopName), `Debe contener el paradero C11: ${stopName}`);
+  }
+
+  // 16. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');
