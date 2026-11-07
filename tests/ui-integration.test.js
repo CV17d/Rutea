@@ -114,6 +114,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Altos De Chapalito - San Juan De Anganoy'), 'Debe incluir C7');
   assert.ok(allRoutesText.includes('Cujacal/Puente Tabla - San Martín'), 'Debe incluir C8');
   assert.ok(allRoutesText.includes('Udenar/Briceño - Villa Nueva'), 'Debe incluir C9');
+  assert.ok(allRoutesText.includes('Briceño - Jamondino'), 'Debe incluir C10');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -294,7 +295,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r2.includes(stopName), `Debe contener el paradero C9: ${stopName}`);
   }
 
-  // 14. Validar que exista la migración RLS para lectura pública
+  // 14. Validar los 442 puntos de alta fidelidad OSRM y paradas para C10 (Briceño - Jamondino)
+  const c10Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c10OsrmGeometry.json'), 'utf8'));
+  const parsedC10 = parsePostgisToCoordinates(c10Data);
+  assert.strictEqual(parsedC10.length, 442, 'Debe parsear exactamente 442 puntos de OSRM para C10');
+
+  assert.ok(r2.includes("color: '#db2777'"), 'C10 debe tener color tematico fucsia #db2777');
+  const expectedStopsC10 = ['Briceño', 'Udenar Torobajo', 'Universidad Mariana', 'Hospital Infantil', 'Parque de los Periodistas', 'Plaza del Carnaval', 'Atahualpa', 'Estadio Libertad', 'Colegio Ciudad de Pasto', 'Jamondino Alto'];
+  for (const stopName of expectedStopsC10) {
+    assert.ok(r2.includes(stopName), `Debe contener el paradero C10: ${stopName}`);
+  }
+
+  // 15. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

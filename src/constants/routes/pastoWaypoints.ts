@@ -77,4 +77,8 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   bomberos: { latitude: 1.2155, longitude: -77.2760 },
   nuevaAranda: { latitude: 1.2287, longitude: -77.2702 },
   villaNueva: { latitude: 1.2315, longitude: -77.2660 },
+  parquePeriodistas: { latitude: 1.2106, longitude: -77.2740 },
+  atahualpa: { latitude: 1.2054, longitude: -77.2818 },
+  colegioCiudadDePasto: { latitude: 1.1930, longitude: -77.2708 },
+  jamondinoAlto: { latitude: 1.1786, longitude: -77.2554 },
 };

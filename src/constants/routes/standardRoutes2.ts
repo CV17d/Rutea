@@ -13,9 +13,15 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c10', code: 'C10', name: 'Chamba - Centro - Chapal', color: '#a855f7', description: 'Chamba - Centro - Chapal',
-    type: 'STANDARD', direction: 'CIRCULAR', estimatedFrequencyMinutes: 12, isActive: true, coordinates: [L.chamba, L.parqueChapal],
-    stops: [{ id: 's-c10-1', name: 'Chamba', orderIndex: 1, location: L.chamba, estimatedWaitMinutes: 5, isTerminal: true }, { id: 's-c10-2', name: 'Chapal', orderIndex: 2, location: L.parqueChapal, estimatedWaitMinutes: 16, isTerminal: true }],
+    id: 'route-c10', code: 'C10', name: 'Ruta C10', color: '#db2777', description: 'Briceño - Jamondino',
+    type: 'STANDARD', direction: 'NORTE_SUR', estimatedFrequencyMinutes: 12, isActive: true, coordinates: [],
+    stops: [
+      { id: 's-c10-1', name: 'Briceño', orderIndex: 1, location: L.briceno, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c10-2', name: 'Udenar Torobajo', orderIndex: 2, location: L.torobajoUdenar, estimatedWaitMinutes: 5 },
+      { id: 's-c10-3', name: 'Universidad Mariana', orderIndex: 3, location: L.universidadMariana, estimatedWaitMinutes: 9 }, { id: 's-c10-4', name: 'Hospital Infantil', orderIndex: 4, location: L.hospitalInfantil, estimatedWaitMinutes: 12 },
+      { id: 's-c10-5', name: 'Parque de los Periodistas', orderIndex: 5, location: L.parquePeriodistas, estimatedWaitMinutes: 16 }, { id: 's-c10-6', name: 'Plaza del Carnaval', orderIndex: 6, location: L.plazaCarnaval, estimatedWaitMinutes: 19 },
+      { id: 's-c10-7', name: 'Atahualpa', orderIndex: 7, location: L.atahualpa, estimatedWaitMinutes: 23 }, { id: 's-c10-8', name: 'Estadio Libertad', orderIndex: 8, location: L.estadioLibertad, estimatedWaitMinutes: 26 },
+      { id: 's-c10-9', name: 'Colegio Ciudad de Pasto', orderIndex: 9, location: L.colegioCiudadDePasto, estimatedWaitMinutes: 30 }, { id: 's-c10-10', name: 'Jamondino Alto', orderIndex: 10, location: L.jamondinoAlto, estimatedWaitMinutes: 35, isTerminal: true },
+    ],
   },
   {
     id: 'route-c11', code: 'C11', name: 'San Albano - Torobajo', color: '#d946ef', description: 'San Albano - Torobajo',

@@ -106,6 +106,18 @@
     },
     {
       "type": "Feature",
+      "properties": { "id": "route-c10", "name": "Ruta C10", "description": "Briceño - Jamondino", "color": "#db2777" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-77.2960, 1.2360], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.2800, 1.2232],
+          [-77.2740, 1.2106], [-77.2778, 1.2115], [-77.2818, 1.2054], [-77.2778, 1.1980],
+          [-77.2708, 1.1930], [-77.2554, 1.1786]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
       "properties": { "id": "route-c16", "name": "Ruta C16", "description": "Anganoy - Cabrera", "color": "#38bdf8" },
       "geometry": {
         "type": "LineString",
