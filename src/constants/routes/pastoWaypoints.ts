@@ -96,4 +96,7 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   galeriasCra27: { latitude: 1.2165, longitude: -77.2800 },
   clubColombia: { latitude: 1.2235, longitude: -77.2870 },
   santaRita: { latitude: 1.2335, longitude: -77.2890 },
+  daza: { latitude: 1.2664, longitude: -77.2785 },
+  pandiacoCalle19a: { latitude: 1.2295, longitude: -77.2855 },
+  bernal: { latitude: 1.1990, longitude: -77.2690 },
 };

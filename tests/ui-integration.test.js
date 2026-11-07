@@ -118,6 +118,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Mocondino - Villa Nueva'), 'Debe incluir C11');
   assert.ok(allRoutesText.includes('Briceño - Villaflor'), 'Debe incluir C12');
   assert.ok(allRoutesText.includes('Hospital De Santa Mónica - Santa Rita'), 'Debe incluir C13');
+  assert.ok(allRoutesText.includes('Altos De Daza - Lorenzo'), 'Debe incluir C14');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -342,7 +343,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r2.includes(stopName), `Debe contener el paradero C13: ${stopName}`);
   }
 
-  // 18. Validar que exista la migración RLS para lectura pública
+  // 18. Validar los 491 puntos de alta fidelidad OSRM y paradas para C14 (Altos De Daza - Lorenzo)
+  const c14Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c14OsrmGeometry.json'), 'utf8'));
+  const parsedC14 = parsePostgisToCoordinates(c14Data);
+  assert.strictEqual(parsedC14.length, 491, 'Debe parsear exactamente 491 puntos de OSRM para C14');
+
+  assert.ok(r2.includes("color: '#9a3412'"), 'C14 debe tener color tematico marron/arcilla #9a3412');
+  const expectedStopsC14 = ['Daza', 'Pandiaco Calle 19a', 'Udenar Torobajo', 'Universidad Mariana', 'Parque de Los Periodistas', 'Parque Bolívar', 'Hospital Departamental', 'Bernal', 'Lorenzo'];
+  for (const stopName of expectedStopsC14) {
+    assert.ok(r2.includes(stopName), `Debe contener el paradero C14: ${stopName}`);
+  }
+
+  // 19. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

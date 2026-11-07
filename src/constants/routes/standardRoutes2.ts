@@ -57,9 +57,15 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c14', code: 'C14', name: 'Catambuco - Terminal', color: '#f59e0b', description: 'Catambuco - Terminal',
-    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 12, isActive: true, coordinates: [L.portalCatambuco, L.terminalTransportes],
-    stops: [{ id: 's-c14-1', name: 'Catambuco', orderIndex: 1, location: L.portalCatambuco, estimatedWaitMinutes: 4, isTerminal: true }, { id: 's-c14-2', name: 'Terminal', orderIndex: 2, location: L.terminalTransportes, estimatedWaitMinutes: 16, isTerminal: true }],
+    id: 'route-c14', code: 'C14', name: 'Ruta C14', color: '#9a3412', description: 'Altos De Daza - Lorenzo',
+    type: 'STANDARD', direction: 'NORTE_SUR', estimatedFrequencyMinutes: 15, isActive: true, coordinates: [],
+    stops: [
+      { id: 's-c14-1', name: 'Daza', orderIndex: 1, location: L.daza, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c14-2', name: 'Pandiaco Calle 19a', orderIndex: 2, location: L.pandiacoCalle19a, estimatedWaitMinutes: 7 },
+      { id: 's-c14-3', name: 'Udenar Torobajo', orderIndex: 3, location: L.torobajoUdenar, estimatedWaitMinutes: 10 }, { id: 's-c14-4', name: 'Universidad Mariana', orderIndex: 4, location: L.universidadMariana, estimatedWaitMinutes: 14 },
+      { id: 's-c14-5', name: 'Parque de Los Periodistas', orderIndex: 5, location: L.parquePeriodistas, estimatedWaitMinutes: 18 }, { id: 's-c14-6', name: 'Parque Bolívar', orderIndex: 6, location: L.parqueBolivar, estimatedWaitMinutes: 22 },
+      { id: 's-c14-7', name: 'Hospital Departamental', orderIndex: 7, location: L.hospitalDepartamental, estimatedWaitMinutes: 25 }, { id: 's-c14-8', name: 'Bernal', orderIndex: 8, location: L.bernal, estimatedWaitMinutes: 29 },
+      { id: 's-c14-9', name: 'Lorenzo', orderIndex: 9, location: L.lorenzo, estimatedWaitMinutes: 34, isTerminal: true },
+    ],
   },
   {
     id: 'route-c15', code: 'C15', name: 'San Fernando - Maridíaz', color: '#ef4444', description: 'San Fernando - Maridíaz',

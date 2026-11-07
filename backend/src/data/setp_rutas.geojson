@@ -109,6 +109,14 @@
     },
     {
       "type": "Feature",
+      "properties": {"id":"route-c14","name":"Ruta C14","description":"Altos De Daza - Lorenzo","color":"#9a3412"},
+      "geometry": { "type": "LineString", "coordinates": [
+        [-77.2785, 1.2664], [-77.2855, 1.2295], [-77.2918, 1.2312], [-77.2831, 1.2236], [-77.274, 1.2106],
+        [-77.273, 1.2075], [-77.275, 1.205], [-77.269, 1.199], [-77.266, 1.194]
+      ]}
+    },
+    {
+      "type": "Feature",
       "properties": {"id":"route-c16","name":"Ruta C16","description":"Anganoy - Cabrera","color":"#38bdf8"},
       "geometry": { "type": "LineString", "coordinates": [
         [-77.3, 1.218], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],
