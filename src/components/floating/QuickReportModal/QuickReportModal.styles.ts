@@ -12,6 +12,10 @@ export const quickReportModalStyles = StyleSheet.create({
     width: '100%',
     maxWidth: 360,
     padding: 20,
+    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   header: {
     flexDirection: 'row',
@@ -20,8 +24,9 @@ export const quickReportModalStyles = StyleSheet.create({
   },
   title: {
     color: '#ffffff',
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '800',
+    letterSpacing: -0.3,
   },
   closeBtn: {
     width: 28,
@@ -37,43 +42,45 @@ export const quickReportModalStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   subtitle: {
-    color: '#38bdf8',
+    color: '#94a3b8',
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: 4,
     marginBottom: 16,
   },
-  buttonsList: {
+  horizontalPillsRow: {
+    flexDirection: 'row',
     gap: 12,
     marginBottom: 8,
   },
-  bigReportBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  darkHorizontalPill: {
+    flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.16)',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    gap: 14,
+    borderColor: 'rgba(255, 255, 255, 0.14)',
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  bigBtnIcon: {
-    fontSize: 28,
+  pillIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
-  bigBtnTextWrap: {
-    flex: 1,
+  pillIconText: {
+    fontSize: 22,
   },
-  bigBtnTitle: {
+  pillLabelText: {
     color: '#ffffff',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
-  },
-  bigBtnSub: {
-    color: '#94a3b8',
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 2,
+    marginBottom: 6,
   },
   rewardTag: {
     backgroundColor: 'rgba(16, 185, 129, 0.20)',
@@ -102,7 +109,7 @@ export const quickReportModalStyles = StyleSheet.create({
   toastText: {
     color: '#ffffff',
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: '700',
     textAlign: 'center',
   },
 });

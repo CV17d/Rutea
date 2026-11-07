@@ -9,9 +9,8 @@ import { ReportMarker } from './src/components/map/ReportMarker';
 import { FloatingSearchBar } from './src/components/floating/FloatingSearchBar';
 import { RouteSummaryCard } from './src/components/floating/RouteSummaryCard';
 import { RouteHeaderToggle, RouteHeroCard, StopTimeline } from './src/components/routeDetail';
+import { ActiveTrackingView } from './src/components/activeTracking';
 import { BottomNavBar } from './src/components/navigation/BottomNavBar';
-import { OnBoardPanel } from './src/components/floating/OnBoardPanel';
-import { CommunityReportFeed } from './src/components/floating/CommunityReportFeed';
 import { QuickReportModal } from './src/components/floating/QuickReportModal';
 import { AvatarCard } from './src/components/avatar/AvatarCard';
 import { UserProfileCard } from './src/components/profile/UserProfileCard';
@@ -44,80 +43,75 @@ export default function App() {
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
-    <View style={[styles.container, { backgroundColor: screenMode === 'ON_BOARD' ? '#070b13' : '#f8fafc' }]}>
+    <View style={[styles.container, { backgroundColor: screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
       <StatusBar style={screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
 
-      {/* 100% Pasto Viewport Background Map */}
-      <MapContainer onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}>
-        {selectedRoute && (
-          <>
-            <RoutePolyline route={selectedRoute} />
-            {selectedRoute.stops.map((stop) => (
-              <StopMarker key={stop.id} stop={stop} />
-            ))}
-          </>
-        )}
-
-        {currentBusList.map((bus) => (
-          <BusMarker
-            key={bus.busId}
-            bus={bus}
-            onPress={() => {
-              setSelectedBusId(bus.busId);
-              if (bus.broadcasterAlias) {
-                openAvatarModal(bus.busId);
-              }
-            }}
-          />
-        ))}
-
-        {reports.map((report) => (
-          <ReportMarker key={report.id} report={report} />
-        ))}
-      </MapContainer>
-
-      {/* Floating Glassmorphic Top Controls */}
-      {screenMode === 'ROUTE_DETAILS' ? (
-        <RouteHeaderToggle onBack={() => setScreenMode('HOME')} />
-      ) : screenMode === 'HOME' ? (
-        <FloatingSearchBar />
-      ) : null}
-
-      {/* Floating Broadcaster Avatar Detail Card on Map Tap */}
-      {isAvatarModalOpen && selectedBus && selectedBus.broadcasterAlias && (
-        <View style={styles.floatingAvatarWrap}>
-          <AvatarCard
-            alias={selectedBus.broadcasterAlias}
-            avatarSeed={selectedBus.broadcasterAvatarSeed || 'default'}
-            points={selectedBus.broadcasterPoints || 100}
-            levelTitle="Vigía del Galeras"
-            onClose={closeAvatarModal}
-          />
-        </View>
-      )}
-
-      {/* Dynamic Bottom Panels according to Mode */}
       {screenMode === 'ON_BOARD' ? (
-        <View style={styles.bottomBroadcasterWrap}>
-          <CommunityReportFeed />
-          <OnBoardPanel />
-        </View>
-      ) : screenMode === 'ROUTE_DETAILS' ? (
-        <View style={styles.bottomDetailWrap}>
-          <RouteHeroCard />
-          <StopTimeline onPressDetails={() => setScreenMode('ON_BOARD')} />
-        </View>
+        <ActiveTrackingView />
       ) : (
-        <View style={styles.bottomHomeWrap}>
-          <RouteSummaryCard />
-          <BottomNavBar />
-        </View>
+        <>
+          <MapContainer onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}>
+            {selectedRoute && (
+              <>
+                <RoutePolyline route={selectedRoute} />
+                {selectedRoute.stops.map((stop) => (
+                  <StopMarker key={stop.id} stop={stop} />
+                ))}
+              </>
+            )}
+
+            {currentBusList.map((bus) => (
+              <BusMarker
+                key={bus.busId}
+                bus={bus}
+                onPress={() => {
+                  setSelectedBusId(bus.busId);
+                  if (bus.broadcasterAlias) {
+                    openAvatarModal(bus.busId);
+                  }
+                }}
+              />
+            ))}
+
+            {reports.map((report) => (
+              <ReportMarker key={report.id} report={report} />
+            ))}
+          </MapContainer>
+
+          {screenMode === 'ROUTE_DETAILS' ? (
+            <RouteHeaderToggle onBack={() => setScreenMode('HOME')} />
+          ) : (
+            <FloatingSearchBar />
+          )}
+
+          {isAvatarModalOpen && selectedBus && selectedBus.broadcasterAlias && (
+            <View style={styles.floatingAvatarWrap}>
+              <AvatarCard
+                alias={selectedBus.broadcasterAlias}
+                avatarSeed={selectedBus.broadcasterAvatarSeed || 'default'}
+                points={selectedBus.broadcasterPoints || 100}
+                levelTitle="Vigía del Galeras"
+                onClose={closeAvatarModal}
+              />
+            </View>
+          )}
+
+          {screenMode === 'ROUTE_DETAILS' ? (
+            <View style={styles.bottomDetailWrap}>
+              <RouteHeroCard />
+              <StopTimeline onPressDetails={() => setScreenMode('ON_BOARD')} />
+            </View>
+          ) : (
+            <View style={styles.bottomHomeWrap}>
+              <RouteSummaryCard />
+              <BottomNavBar />
+            </View>
+          )}
+        </>
       )}
 
-      {/* Crowdsourced Incident Modal */}
       <QuickReportModal />
 
-      {/* User Gamification Profile & Leaderboard Modal */}
       {isProfileModalOpen && (
         <UserProfileCard onClose={closeProfileModal} />
       )}
@@ -128,7 +122,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#070b13',
+    backgroundColor: '#0f172a',
   },
   floatingAvatarWrap: {
     position: 'absolute',
@@ -136,13 +130,6 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     zIndex: 40,
-  },
-  bottomBroadcasterWrap: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 35,
   },
   bottomHomeWrap: {
     position: 'absolute',
