@@ -123,6 +123,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Dolores - Udenar'), 'Debe incluir E1');
   assert.ok(allRoutesText.includes('Altos De Chapalito - Udenar'), 'Debe incluir E2');
   assert.ok(allRoutesText.includes('Altamira - San Ezequiel Moreno'), 'Debe incluir E3');
+  assert.ok(allRoutesText.includes('Genoy - Jamondino'), 'Debe incluir E4');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -403,7 +404,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(re.includes(stopName), `Debe contener el paradero E3: ${stopName}`);
   }
 
-  // 23. Validar que exista la migración RLS para lectura pública
+  // 23. Validar los 742 puntos de alta fidelidad OSRM y paradas para E4 (Genoy - Jamondino)
+  const e4Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/e4OsrmGeometry.json'), 'utf8'));
+  const parsedE4 = parsePostgisToCoordinates(e4Data);
+  assert.strictEqual(parsedE4.length, 742, 'Debe parsear exactamente 742 puntos de OSRM para E4');
+
+  assert.ok(re.includes("color: '#475569'"), 'E4 debe tener color tematico acero #475569');
+  const expectedStopsE4 = ['Genoy', 'Udenar Torobajo', 'Hospital San Rafael', 'Panamericana Calle 14', 'San Andresito', 'San Juan Bosco', 'Las Lunas Carrera 9', 'Colegio Ciudad de Pasto', 'Miraflores', 'Jamondino'];
+  for (const stopName of expectedStopsE4) {
+    assert.ok(re.includes(stopName), `Debe contener el paradero E4: ${stopName}`);
+  }
+
+  // 24. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

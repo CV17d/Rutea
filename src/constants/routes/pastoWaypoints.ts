@@ -113,4 +113,8 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   gualcala: { latitude: 1.2145, longitude: -77.2655 },
   carlosPizarro: { latitude: 1.2166, longitude: -77.2646 },
   sanEzequiel: { latitude: 1.2197, longitude: -77.2663 },
+  genoy: { latitude: 1.2674, longitude: -77.3358 },
+  lasLunasCra9: { latitude: 1.2060, longitude: -77.2680 },
+  mirafloresSur: { latitude: 1.1890, longitude: -77.2630 },
+  jamondino: { latitude: 1.1786, longitude: -77.2554 },
 };
