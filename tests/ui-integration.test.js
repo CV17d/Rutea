@@ -111,6 +111,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Arnulfo Guerrero - Gilberto Pabón'), 'Debe incluir C3');
   assert.ok(allRoutesText.includes('El Porvenir - Jongovito'), 'Debe incluir C4');
   assert.ok(allRoutesText.includes('Cam Anganoy - Catambuco/Coba Negra'), 'Debe incluir C6');
+  assert.ok(allRoutesText.includes('Altos De Chapalito - San Juan De Anganoy'), 'Debe incluir C7');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -258,7 +259,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r1.includes(stopName), `Debe contener el paradero C6: ${stopName}`);
   }
 
-  // 11. Validar que exista la migración RLS para lectura pública
+  // 11. Validar los 388 puntos de alta fidelidad OSRM y paradas para C7 (Altos De Chapalito - San Juan De Anganoy)
+  const c7Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c7OsrmGeometry.json'), 'utf8'));
+  const parsedC7 = parsePostgisToCoordinates(c7Data);
+  assert.strictEqual(parsedC7.length, 388, 'Debe parsear exactamente 388 puntos de OSRM para C7');
+
+  assert.ok(r1.includes("color: '#7c3aed'"), 'C7 debe tener color tematico purpura violeta #7c3aed');
+  const expectedStopsC7 = ['Altos de Chapalito', 'Chambú', 'La Rosa', 'Chapal', 'Estadio Libertad', 'San Juan Bosco', 'Alcaldía Centro', 'Policía Calle 20', 'Unicentro', 'Liceo Udenar', 'Anganoy'];
+  for (const stopName of expectedStopsC7) {
+    assert.ok(r1.includes(stopName), `Debe contener el paradero C7: ${stopName}`);
+  }
+
+  // 12. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

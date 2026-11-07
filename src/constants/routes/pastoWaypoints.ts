@@ -64,4 +64,6 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   chapal: { latitude: 1.1920, longitude: -77.2760 },
   catambuco: { latitude: 1.1732, longitude: -77.2845 },
   cobaNegra: { latitude: 1.1649, longitude: -77.2940 },
+  laRosa: { latitude: 1.1935, longitude: -77.2755 },
+  policiaCalle20: { latitude: 1.2175, longitude: -77.2835 },
 };
