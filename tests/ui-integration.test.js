@@ -117,6 +117,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Briceño - Jamondino'), 'Debe incluir C10');
   assert.ok(allRoutesText.includes('Mocondino - Villa Nueva'), 'Debe incluir C11');
   assert.ok(allRoutesText.includes('Briceño - Villaflor'), 'Debe incluir C12');
+  assert.ok(allRoutesText.includes('Hospital De Santa Mónica - Santa Rita'), 'Debe incluir C13');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -330,7 +331,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r2.includes(stopName), `Debe contener el paradero C12: ${stopName}`);
   }
 
-  // 17. Validar que exista la migración RLS para lectura pública
+  // 17. Validar los 265 puntos de alta fidelidad OSRM y paradas para C13 (Hospital De Santa Mónica - Santa Rita)
+  const c13Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c13OsrmGeometry.json'), 'utf8'));
+  const parsedC13 = parsePostgisToCoordinates(c13Data);
+  assert.strictEqual(parsedC13.length, 265, 'Debe parsear exactamente 265 puntos de OSRM para C13');
+
+  assert.ok(r2.includes("color: '#166534'"), 'C13 debe tener color tematico verde bosque #166534');
+  const expectedStopsC13 = ['Santa Mónica', 'Villa Flor II', 'Las Mercedes', 'Hospital Departamental', 'Parque Bolívar', 'Cristo Rey', 'Galerías Carrera 27', 'Club Colombia', 'Pandiaco', 'Santa Rita'];
+  for (const stopName of expectedStopsC13) {
+    assert.ok(r2.includes(stopName), `Debe contener el paradero C13: ${stopName}`);
+  }
+
+  // 18. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

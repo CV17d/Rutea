@@ -89,4 +89,11 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   bienestarSocial: { latitude: 1.2115, longitude: -77.2915 },
   sumatamboCalle4: { latitude: 1.2055, longitude: -77.2925 },
   villaFlor2Cra9e: { latitude: 1.2025, longitude: -77.2635 },
+  santaMonica: { latitude: 1.2015, longitude: -77.2585 },
+  lasMercedes: { latitude: 1.2045, longitude: -77.2690 },
+  parqueBolivar: { latitude: 1.2075, longitude: -77.2730 },
+  cristoRey: { latitude: 1.2130, longitude: -77.2760 },
+  galeriasCra27: { latitude: 1.2165, longitude: -77.2800 },
+  clubColombia: { latitude: 1.2235, longitude: -77.2870 },
+  santaRita: { latitude: 1.2335, longitude: -77.2890 },
 };

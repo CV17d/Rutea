@@ -101,6 +101,14 @@
     },
     {
       "type": "Feature",
+      "properties": {"id":"route-c13","name":"Ruta C13","description":"Hospital De Santa Mónica - Santa Rita","color":"#166534"},
+      "geometry": { "type": "LineString", "coordinates": [
+        [-77.2585, 1.2015], [-77.265, 1.203], [-77.269, 1.2045], [-77.275, 1.205], [-77.273, 1.2075],
+        [-77.276, 1.213], [-77.28, 1.2165], [-77.287, 1.2235], [-77.2855, 1.2295], [-77.289, 1.2335]
+      ]}
+    },
+    {
+      "type": "Feature",
       "properties": {"id":"route-c16","name":"Ruta C16","description":"Anganoy - Cabrera","color":"#38bdf8"},
       "geometry": { "type": "LineString", "coordinates": [
         [-77.3, 1.218], [-77.294, 1.2195], [-77.287, 1.221], [-77.2805, 1.2135], [-77.2765, 1.2125],

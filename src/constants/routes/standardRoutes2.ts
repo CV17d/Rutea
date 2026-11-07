@@ -46,9 +46,15 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c13', code: 'C13', name: 'Buesaquillo - Pandiaco', color: '#10b981', description: 'Buesaquillo - Pandiaco',
-    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 15, isActive: true, coordinates: [L.buesaquillo, L.pandiaco],
-    stops: [{ id: 's-c13-1', name: 'Buesaquillo', orderIndex: 1, location: L.buesaquillo, estimatedWaitMinutes: 6, isTerminal: true }, { id: 's-c13-2', name: 'Pandiaco', orderIndex: 2, location: L.pandiaco, estimatedWaitMinutes: 20, isTerminal: true }],
+    id: 'route-c13', code: 'C13', name: 'Ruta C13', color: '#166534', description: 'Hospital De Santa Mónica - Santa Rita',
+    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 10, isActive: true, coordinates: [],
+    stops: [
+      { id: 's-c13-1', name: 'Santa Mónica', orderIndex: 1, location: L.santaMonica, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c13-2', name: 'Villa Flor II', orderIndex: 2, location: L.villaFlor2, estimatedWaitMinutes: 5 },
+      { id: 's-c13-3', name: 'Las Mercedes', orderIndex: 3, location: L.lasMercedes, estimatedWaitMinutes: 8 }, { id: 's-c13-4', name: 'Hospital Departamental', orderIndex: 4, location: L.hospitalDepartamental, estimatedWaitMinutes: 11 },
+      { id: 's-c13-5', name: 'Parque Bolívar', orderIndex: 5, location: L.parqueBolivar, estimatedWaitMinutes: 14 }, { id: 's-c13-6', name: 'Cristo Rey', orderIndex: 6, location: L.cristoRey, estimatedWaitMinutes: 17 },
+      { id: 's-c13-7', name: 'Galerías Carrera 27', orderIndex: 7, location: L.galeriasCra27, estimatedWaitMinutes: 20 }, { id: 's-c13-8', name: 'Club Colombia', orderIndex: 8, location: L.clubColombia, estimatedWaitMinutes: 24 },
+      { id: 's-c13-9', name: 'Pandiaco', orderIndex: 9, location: L.pandiaco, estimatedWaitMinutes: 28 }, { id: 's-c13-10', name: 'Santa Rita', orderIndex: 10, location: L.santaRita, estimatedWaitMinutes: 32, isTerminal: true },
+    ],
   },
   {
     id: 'route-c14', code: 'C14', name: 'Catambuco - Terminal', color: '#f59e0b', description: 'Catambuco - Terminal',
