@@ -33,19 +33,23 @@ export const RoutePolyline: React.FC<RoutePolylineProps> = ({
     return null;
   }
 
+  const mainStrokeColor = route.color || '#3b82f6';
+
   return (
     <>
+      {/* Halo de resplandor para contraste máximo en Dark Mode */}
       <NativePolyline
         coordinates={polylineCoordinates}
-        strokeColor={isSelected ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.25)'}
-        strokeWidth={isSelected ? 7 : 4}
+        strokeColor={isSelected ? 'rgba(59, 130, 246, 0.45)' : 'rgba(0, 0, 0, 0.25)'}
+        strokeWidth={isSelected ? 8 : 6}
         lineCap="round"
         lineJoin="round"
       />
+      {/* Línea principal azul brillante / neón de alta visibilidad */}
       <NativePolyline
         coordinates={polylineCoordinates}
-        strokeColor={route.color}
-        strokeWidth={isSelected ? 4 : 2.5}
+        strokeColor={mainStrokeColor}
+        strokeWidth={5}
         lineCap="round"
         lineJoin="round"
       />

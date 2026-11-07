@@ -94,17 +94,21 @@ export function parsePostgisToCoordinates(path: any): LatLng[] {
   if (!path) return [];
 
   try {
-    let rawPath = path;
-    if (typeof rawPath === 'string') {
-      const trimmed = rawPath.trim();
-      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-        rawPath = JSON.parse(trimmed);
-      } else if (trimmed.includes('LINESTRING')) {
-        const match = trimmed.match(/LINESTRING\s*\(([^)]+)\)/i);
+    let raw = path;
+    if (typeof raw === 'string') {
+      let str = raw.trim();
+      if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+        str = str.slice(1, -1).trim();
+      }
+      if (str.startsWith('{') || str.startsWith('[')) {
+        try { raw = JSON.parse(str); } catch { /* noop */ }
+      } else if (str.toUpperCase().includes('LINESTRING')) {
+        // Soporta EWKT: "SRID=4326;LINESTRING(lng lat, ...)" y WKT: "LINESTRING(...)"
+        const match = str.match(/LINESTRING\s*\(([^)]+)\)/i);
         if (match && match[1]) {
           return match[1]
             .split(',')
-            .map((pair) => pair.trim().split(/\s+/))
+            .map((p) => p.trim().split(/\s+/))
             .filter((p) => p.length >= 2)
             .map(([lngStr, latStr]) => ({
               latitude: parseFloat(latStr),
@@ -115,18 +119,15 @@ export function parsePostgisToCoordinates(path: any): LatLng[] {
       }
     }
 
-    const coords = rawPath?.coordinates || (Array.isArray(rawPath) ? rawPath : null);
+    const coords = raw?.coordinates || (Array.isArray(raw) ? raw : null);
     if (Array.isArray(coords)) {
       return coords
-        .map((coord: any) => {
-          if (Array.isArray(coord) && coord.length >= 2) {
-            return {
-              latitude: Number(coord[1]),
-              longitude: Number(coord[0]),
-            };
+        .map((c: any) => {
+          if (Array.isArray(c) && c.length >= 2) {
+            return { latitude: Number(c[1]), longitude: Number(c[0]) };
           }
-          if (coord && typeof coord.latitude === 'number' && typeof coord.longitude === 'number') {
-            return coord as LatLng;
+          if (c && typeof c.latitude === 'number' && typeof c.longitude === 'number') {
+            return c as LatLng;
           }
           return null;
         })

@@ -32,7 +32,7 @@ if (Platform.OS !== 'web') {
 export const MapContainer: React.FC<MapContainerProps> = ({
   children,
   routeCoordinates,
-  routeColor = '#38bdf8',
+  routeColor = '#3b82f6',
   onPressMap,
   onRecenter,
 }) => {
@@ -103,7 +103,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
           <NativePolyline
             coordinates={routeCoordinates}
             strokeColor={routeColor}
-            strokeWidth={4}
+            strokeWidth={5}
             lineCap="round"
             lineJoin="round"
           />

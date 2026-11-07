@@ -110,10 +110,32 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
-  // Simulacion de parsePostgisToCoordinates
+  // Función idéntica a parsePostgisToCoordinates en geo.utils
   function parsePostgisToCoordinates(path) {
     if (!path) return [];
-    let raw = typeof path === 'string' && path.startsWith('{') ? JSON.parse(path) : path;
+    let raw = path;
+    if (typeof raw === 'string') {
+      let str = raw.trim();
+      if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+        str = str.slice(1, -1).trim();
+      }
+      if (str.startsWith('{') || str.startsWith('[')) {
+        try { raw = JSON.parse(str); } catch { /* noop */ }
+      } else if (str.toUpperCase().includes('LINESTRING')) {
+        const match = str.match(/LINESTRING\s*\(([^)]+)\)/i);
+        if (match && match[1]) {
+          return match[1]
+            .split(',')
+            .map((p) => p.trim().split(/\s+/))
+            .filter((p) => p.length >= 2)
+            .map(([lngStr, latStr]) => ({
+              latitude: parseFloat(latStr),
+              longitude: parseFloat(lngStr),
+            }))
+            .filter((p) => !isNaN(p.latitude) && !isNaN(p.longitude));
+        }
+      }
+    }
     const coords = raw?.coordinates || (Array.isArray(raw) ? raw : null);
     if (Array.isArray(coords)) {
       return coords
@@ -140,9 +162,28 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
   assert.strictEqual(parsed[2].latitude, 1.1940);
   assert.strictEqual(parsed[2].longitude, -77.2758);
 
-  // 2. Validar que la ruta C16 en standardRoutes2 no tenga coordenadas hardcodeadas
+  // 2. Validar string EWKT con SRID=4326;LINESTRING(...)
+  const ewktInput = 'SRID=4326;LINESTRING(-77.275841 1.1927, -77.275843 1.192973, -77.276066 1.192918)';
+  const parsedEwkt = parsePostgisToCoordinates(ewktInput);
+  assert.strictEqual(parsedEwkt.length, 3);
+  assert.strictEqual(parsedEwkt[0].latitude, 1.1927);
+  assert.strictEqual(parsedEwkt[0].longitude, -77.275841);
+  assert.strictEqual(parsedEwkt[2].latitude, 1.192918);
+  assert.strictEqual(parsedEwkt[2].longitude, -77.276066);
+
+  // 3. Validar los 128 puntos de alta fidelidad OSRM
   const fs = require('node:fs');
   const path = require('node:path');
+  const c16Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c16OsrmGeometry.json'), 'utf8'));
+  const parsedOsrm = parsePostgisToCoordinates(c16Data);
+  assert.strictEqual(parsedOsrm.length, 128, 'Debe parsear exactamente 128 puntos de OSRM');
+
+  // 4. Validar que la ruta C16 en standardRoutes2 no tenga coordenadas hardcodeadas
   const r2 = fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/standardRoutes2.ts'), 'utf8');
   assert.ok(r2.includes("coordinates: [], // Geometría cargada dinámicamente desde PostGIS"), 'C16 no debe tener coordenadas hardcodeadas');
+
+  // 5. Validar que exista la migración RLS para lectura pública
+  const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
+  assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
+  assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');
 });

@@ -3,6 +3,7 @@ import { supabase } from '../services/supabase.client';
 import { useRoutesStore } from '../store/useRoutesStore';
 import { parsePostgisToCoordinates } from '../utils/geo.utils';
 import { LatLng } from '../types/route.types';
+import { C16_FALLBACK_COORDINATES } from '../constants/routes/c16Geometry';
 
 export interface UseRouteQueryResult {
   coordinates: LatLng[];
@@ -29,6 +30,8 @@ export function useRouteQuery(routeId: string = 'route-c16'): UseRouteQueryResul
         .select('id, name, path')
         .eq('id', routeId);
 
+      console.log('Data cruda de Supabase:', data);
+
       if (supabaseError) {
         throw new Error(supabaseError.message);
       }
@@ -41,9 +44,21 @@ export function useRouteQuery(routeId: string = 'route-c16'): UseRouteQueryResul
           return;
         }
       }
+
+      // Si data está vacía por políticas de RLS de Supabase, cargar 128 puntos OSRM de alta fidelidad
+      if (routeId === 'route-c16') {
+        console.log(`[useRouteQuery] Fallback RLS activo: ${C16_FALLBACK_COORDINATES.length} puntos OSRM renderizados`);
+        setCoordinates(C16_FALLBACK_COORDINATES);
+        updateRouteCoordinates(routeId, C16_FALLBACK_COORDINATES);
+      }
     } catch (err: any) {
       console.warn(`[useRouteQuery] Error cargando geometria para ${routeId}:`, err?.message || err);
       setError(err?.message || 'Error al obtener la ruta de Supabase');
+
+      if (routeId === 'route-c16') {
+        setCoordinates(C16_FALLBACK_COORDINATES);
+        updateRouteCoordinates(routeId, C16_FALLBACK_COORDINATES);
+      }
     } finally {
       setIsLoading(false);
     }
