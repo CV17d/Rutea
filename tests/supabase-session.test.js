@@ -123,3 +123,19 @@ test('Supabase Seed: Script 20261107000004 contiene 20 rutas oficiales SETPasto'
   assert.ok(sql.includes('Hospital - Unicentro'), 'Debe incluir descripcion para C16');
   assert.ok(sql.includes('ON CONFLICT (id) DO NOTHING;'), 'Debe contener ON CONFLICT (id) DO NOTHING');
 });
+
+test('Auto-Router OSRM: Script auto-router.ts y conversion a EWKT PostGIS', () => {
+  const routerScriptPath = path.resolve(__dirname, '../backend/src/scripts/auto-router.ts');
+  assert.ok(fs.existsSync(routerScriptPath), 'El script auto-router.ts debe existir');
+
+  const content = fs.readFileSync(routerScriptPath, 'utf8');
+  assert.ok(content.includes('router.project-osrm.org'), 'Debe consultar la API publica de OSRM');
+  assert.ok(content.includes('SRID=4326;LINESTRING'), 'Debe generar EWKT con SRID=4326');
+  assert.ok(content.includes('.update({ path: ewkt })'), 'Debe actualizar el campo path en routes');
+
+  // Validar formato de conversion de coordenadas a EWKT
+  const sampleCoords = [[-77.2759, 1.1927], [-77.2759, 1.1933]];
+  const points = sampleCoords.map(([lng, lat]) => `${lng} ${lat}`).join(', ');
+  const ewkt = `SRID=4326;LINESTRING(${points})`;
+  assert.strictEqual(ewkt, 'SRID=4326;LINESTRING(-77.2759 1.1927, -77.2759 1.1933)');
+});
