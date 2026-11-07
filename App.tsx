@@ -8,7 +8,7 @@ import { BusMarker } from './src/components/map/BusMarker';
 import { ReportMarker } from './src/components/map/ReportMarker';
 import { FloatingSearchBar } from './src/components/floating/FloatingSearchBar';
 import { RouteSummaryCard } from './src/components/floating/RouteSummaryCard';
-import { RouteDetailCard } from './src/components/floating/RouteDetailCard';
+import { RouteHeaderToggle, RouteHeroCard, StopTimeline } from './src/components/routeDetail';
 import { BottomNavBar } from './src/components/navigation/BottomNavBar';
 import { OnBoardPanel } from './src/components/floating/OnBoardPanel';
 import { CommunityReportFeed } from './src/components/floating/CommunityReportFeed';
@@ -29,6 +29,7 @@ export default function App() {
   const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
   const {
     screenMode,
+    setScreenMode,
     isAvatarModalOpen,
     closeAvatarModal,
     openAvatarModal,
@@ -76,7 +77,11 @@ export default function App() {
       </MapContainer>
 
       {/* Floating Glassmorphic Top Controls */}
-      <FloatingSearchBar />
+      {screenMode === 'ROUTE_DETAILS' ? (
+        <RouteHeaderToggle onBack={() => setScreenMode('HOME')} />
+      ) : screenMode === 'HOME' ? (
+        <FloatingSearchBar />
+      ) : null}
 
       {/* Floating Broadcaster Avatar Detail Card on Map Tap */}
       {isAvatarModalOpen && selectedBus && selectedBus.broadcasterAlias && (
@@ -98,9 +103,9 @@ export default function App() {
           <OnBoardPanel />
         </View>
       ) : screenMode === 'ROUTE_DETAILS' ? (
-        <View style={styles.bottomHomeWrap}>
-          <RouteDetailCard />
-          <BottomNavBar />
+        <View style={styles.bottomDetailWrap}>
+          <RouteHeroCard />
+          <StopTimeline onPressDetails={() => setScreenMode('ON_BOARD')} />
         </View>
       ) : (
         <View style={styles.bottomHomeWrap}>
@@ -142,6 +147,13 @@ const styles = StyleSheet.create({
   bottomHomeWrap: {
     position: 'absolute',
     bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 35,
+  },
+  bottomDetailWrap: {
+    position: 'absolute',
+    bottom: 24,
     left: 0,
     right: 0,
     zIndex: 35,
