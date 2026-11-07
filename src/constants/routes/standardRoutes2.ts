@@ -124,16 +124,7 @@ export const STANDARD_ROUTES_PART2: TransitRoute[] = [
     direction: 'SUR_NORTE',
     estimatedFrequencyMinutes: 10,
     isActive: true,
-    coordinates: [
-      { latitude: 1.1920, longitude: -77.2760 },
-      { latitude: 1.2010, longitude: -77.2750 },
-      L.hospitalDepartamental,
-      L.plazaCarnaval,
-      L.parqueInfantil,
-      L.plazaNarino,
-      L.unicentro,
-      L.pandiaco,
-    ],
+    coordinates: [], // Geometría cargada dinámicamente desde PostGIS (Supabase)
     stops: [
       { id: 's-c16-1', name: 'Hospital Departamental', orderIndex: 1, location: L.hospitalDepartamental, estimatedWaitMinutes: 2, isTerminal: true },
       { id: 's-c16-2', name: 'Parque Infantil', orderIndex: 2, location: L.parqueInfantil, estimatedWaitMinutes: 5 },

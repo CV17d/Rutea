@@ -2,14 +2,19 @@ import React, { useRef } from 'react';
 import { View, StyleSheet, Platform, TouchableWithoutFeedback, Text, TouchableOpacity } from 'react-native';
 import { PASTO_COORDINATES } from '../../../constants/pastoCoordinates';
 import { useUiStore } from '../../../store/useUiStore';
+import { LatLng } from '../../../types/route.types';
+import { styles } from './MapContainer.styles';
 
 export interface MapContainerProps {
   children?: React.ReactNode;
+  routeCoordinates?: LatLng[];
+  routeColor?: string;
   onPressMap?: () => void;
   onRecenter?: () => void;
 }
 
 let NativeMapView: any = null;
+let NativePolyline: any = null;
 let PROVIDER_DEFAULT: any = null;
 
 if (Platform.OS !== 'web') {
@@ -17,13 +22,17 @@ if (Platform.OS !== 'web') {
     const Maps = require('react-native-maps');
     NativeMapView = Maps.default;
     PROVIDER_DEFAULT = Maps.PROVIDER_DEFAULT;
+    NativePolyline = Maps.Polyline;
   } catch (e) {
     NativeMapView = null;
+    NativePolyline = null;
   }
 }
 
 export const MapContainer: React.FC<MapContainerProps> = ({
   children,
+  routeCoordinates,
+  routeColor = '#38bdf8',
   onPressMap,
   onRecenter,
 }) => {
@@ -55,24 +64,15 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         })}
 
         <View
-          style={[
-            styles.webVignette,
-            { backgroundColor: isDark ? 'rgba(7, 11, 19, 0.45)' : 'rgba(255, 255, 255, 0.08)' },
-          ]}
+          style={[styles.webVignette, { backgroundColor: isDark ? 'rgba(7, 11, 19, 0.45)' : 'rgba(255, 255, 255, 0.08)' }]}
           pointerEvents="none"
         />
 
         <TouchableWithoutFeedback onPress={onPressMap}>
           <View style={StyleSheet.absoluteFill}>
             {children}
-
-            {/* Botón flotante de recentrado / ubicación */}
             {!isDark && (
-              <TouchableOpacity
-                onPress={onRecenter || onPressMap}
-                style={styles.recenterBtn}
-                activeOpacity={0.8}
-              >
+              <TouchableOpacity onPress={onRecenter || onPressMap} style={styles.recenterBtn} activeOpacity={0.8}>
                 <Text style={styles.recenterIcon}>⌖</Text>
               </TouchableOpacity>
             )}
@@ -99,55 +99,23 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         showsCompass={false}
         onPress={onPressMap}
       >
+        {routeCoordinates && routeCoordinates.length > 0 && NativePolyline && (
+          <NativePolyline
+            coordinates={routeCoordinates}
+            strokeColor={routeColor}
+            strokeWidth={4}
+            lineCap="round"
+            lineJoin="round"
+          />
+        )}
         {children}
       </NativeMapView>
 
       {!isDark && (
-        <TouchableOpacity
-          onPress={onRecenter || onPressMap}
-          style={styles.recenterBtn}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity onPress={onRecenter || onPressMap} style={styles.recenterBtn} activeOpacity={0.8}>
           <Text style={styles.recenterIcon}>⌖</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFill,
-  },
-  webContainer: {
-    ...StyleSheet.absoluteFill,
-    overflow: 'hidden',
-  },
-  webVignette: {
-    ...StyleSheet.absoluteFill,
-  },
-  recenterBtn: {
-    position: 'absolute',
-    right: 20,
-    bottom: 215,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.90)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.98)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    elevation: 5,
-    zIndex: 20,
-  },
-  recenterIcon: {
-    fontSize: 22,
-    color: '#0f172a',
-    fontWeight: '900',
-  },
-});

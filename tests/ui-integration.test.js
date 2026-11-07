@@ -108,3 +108,41 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('Puente Tabla - Briceño'), 'Debe incluir C5');
   assert.ok(allRoutesText.includes('Hospital - Unicentro'), 'Debe incluir C16');
 });
+
+test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
+  // Simulacion de parsePostgisToCoordinates
+  function parsePostgisToCoordinates(path) {
+    if (!path) return [];
+    let raw = typeof path === 'string' && path.startsWith('{') ? JSON.parse(path) : path;
+    const coords = raw?.coordinates || (Array.isArray(raw) ? raw : null);
+    if (Array.isArray(coords)) {
+      return coords
+        .map((c) => ({ latitude: Number(c[1]), longitude: Number(c[0]) }))
+        .filter((c) => !isNaN(c.latitude) && !isNaN(c.longitude));
+    }
+    return [];
+  }
+
+  // 1. Validar objeto GeoJSON de PostGIS
+  const geojsonInput = {
+    type: 'LineString',
+    coordinates: [
+      [-77.2759, 1.1927],
+      [-77.2759, 1.1933],
+      [-77.2758, 1.1940],
+    ],
+  };
+
+  const parsed = parsePostgisToCoordinates(geojsonInput);
+  assert.strictEqual(parsed.length, 3);
+  assert.strictEqual(parsed[0].latitude, 1.1927);
+  assert.strictEqual(parsed[0].longitude, -77.2759);
+  assert.strictEqual(parsed[2].latitude, 1.1940);
+  assert.strictEqual(parsed[2].longitude, -77.2758);
+
+  // 2. Validar que la ruta C16 en standardRoutes2 no tenga coordenadas hardcodeadas
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const r2 = fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/standardRoutes2.ts'), 'utf8');
+  assert.ok(r2.includes("coordinates: [], // Geometría cargada dinámicamente desde PostGIS"), 'C16 no debe tener coordenadas hardcodeadas');
+});

@@ -85,3 +85,56 @@ export function snapPointToRoute(point: LatLng, routeCoords: LatLng[], maxTolera
     bearing: bestBearing,
   };
 }
+
+/**
+ * Convierte una geometría de PostGIS (GeoJSON LineString, EWKT o array de pares)
+ * al formato { latitude, longitude } requerido por react-native-maps.
+ */
+export function parsePostgisToCoordinates(path: any): LatLng[] {
+  if (!path) return [];
+
+  try {
+    let rawPath = path;
+    if (typeof rawPath === 'string') {
+      const trimmed = rawPath.trim();
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        rawPath = JSON.parse(trimmed);
+      } else if (trimmed.includes('LINESTRING')) {
+        const match = trimmed.match(/LINESTRING\s*\(([^)]+)\)/i);
+        if (match && match[1]) {
+          return match[1]
+            .split(',')
+            .map((pair) => pair.trim().split(/\s+/))
+            .filter((p) => p.length >= 2)
+            .map(([lngStr, latStr]) => ({
+              latitude: parseFloat(latStr),
+              longitude: parseFloat(lngStr),
+            }))
+            .filter((p) => !isNaN(p.latitude) && !isNaN(p.longitude));
+        }
+      }
+    }
+
+    const coords = rawPath?.coordinates || (Array.isArray(rawPath) ? rawPath : null);
+    if (Array.isArray(coords)) {
+      return coords
+        .map((coord: any) => {
+          if (Array.isArray(coord) && coord.length >= 2) {
+            return {
+              latitude: Number(coord[1]),
+              longitude: Number(coord[0]),
+            };
+          }
+          if (coord && typeof coord.latitude === 'number' && typeof coord.longitude === 'number') {
+            return coord as LatLng;
+          }
+          return null;
+        })
+        .filter((c): c is LatLng => c !== null && !isNaN(c.latitude) && !isNaN(c.longitude));
+    }
+  } catch (err) {
+    console.warn('[parsePostgisToCoordinates] Error parseando geometria:', err);
+  }
+
+  return [];
+}

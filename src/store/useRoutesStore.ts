@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { TransitRoute } from '../types/route.types';
+import { TransitRoute, LatLng } from '../types/route.types';
 import { MOCK_PASTO_ROUTES } from '../constants/mockRoutes';
 
 interface RoutesState {
@@ -10,12 +10,21 @@ interface RoutesState {
   setSearchQuery: (query: string) => void;
   getSelectedRoute: () => TransitRoute | undefined;
   getFilteredRoutes: () => TransitRoute[];
+  updateRouteCoordinates: (routeId: string, coordinates: LatLng[]) => void;
 }
 
 export const useRoutesStore = create<RoutesState>((set, get) => ({
   routes: MOCK_PASTO_ROUTES,
   selectedRouteId: 'route-c16', // Por defecto seleccionada Ruta C16 (Hospital - Unicentro)
   searchQuery: '',
+
+  updateRouteCoordinates: (routeId: string, coordinates: LatLng[]) => {
+    set((state) => ({
+      routes: state.routes.map((r) =>
+        r.id === routeId ? { ...r, coordinates } : r
+      ),
+    }));
+  },
 
   selectRoute: (routeId: string | null) => {
     set({ selectedRouteId: routeId });

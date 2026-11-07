@@ -19,10 +19,12 @@ import { useTrackingStore } from './src/store/useTrackingStore';
 import { useUiStore } from './src/store/useUiStore';
 import { useSocketRoutes } from './src/hooks/useSocketRoutes';
 import { useLocationTracking } from './src/hooks/useLocationTracking';
+import { useRouteQuery } from './src/hooks/useRouteQuery';
 
 export default function App() {
   useSocketRoutes();
   useLocationTracking();
+  const { coordinates: c16Coordinates } = useRouteQuery('route-c16');
 
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
@@ -50,10 +52,17 @@ export default function App() {
         <ActiveTrackingView />
       ) : (
         <>
-          <MapContainer onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}>
+          <MapContainer
+            routeCoordinates={selectedRoute?.id === 'route-c16' && c16Coordinates.length > 0 ? c16Coordinates : undefined}
+            routeColor={selectedRoute?.color}
+            onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}
+          >
             {selectedRoute && (
               <>
-                <RoutePolyline route={selectedRoute} />
+                <RoutePolyline
+                  route={selectedRoute}
+                  coordinates={selectedRoute.id === 'route-c16' && c16Coordinates.length > 0 ? c16Coordinates : undefined}
+                />
                 {selectedRoute.stops.map((stop) => (
                   <StopMarker key={stop.id} stop={stop} />
                 ))}
