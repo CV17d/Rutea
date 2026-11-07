@@ -66,4 +66,10 @@ export const PASTO_LOCATIONS: Record<string, LatLng> = {
   cobaNegra: { latitude: 1.1649, longitude: -77.2940 },
   laRosa: { latitude: 1.1935, longitude: -77.2755 },
   policiaCalle20: { latitude: 1.2175, longitude: -77.2835 },
+  viaCujacal: { latitude: 1.2273, longitude: -77.2535 },
+  pradosDelNorte: { latitude: 1.2300, longitude: -77.2650 },
+  hospitalCivil: { latitude: 1.2190, longitude: -77.2697 },
+  dosPuentes: { latitude: 1.2158, longitude: -77.2753 },
+  sanAgustin: { latitude: 1.2132, longitude: -77.2795 },
+  calle17Amorel: { latitude: 1.2155, longitude: -77.2860 },
 };

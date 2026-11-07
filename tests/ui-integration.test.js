@@ -112,6 +112,7 @@ test('Frontend Routes Catalog: 20 rutas oficiales SETPasto (C1 a C16 y E1 a E4)'
   assert.ok(allRoutesText.includes('El Porvenir - Jongovito'), 'Debe incluir C4');
   assert.ok(allRoutesText.includes('Cam Anganoy - Catambuco/Coba Negra'), 'Debe incluir C6');
   assert.ok(allRoutesText.includes('Altos De Chapalito - San Juan De Anganoy'), 'Debe incluir C7');
+  assert.ok(allRoutesText.includes('Cujacal/Puente Tabla - San Martín'), 'Debe incluir C8');
 });
 
 test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline { latitude, longitude }', () => {
@@ -270,7 +271,18 @@ test('PostGIS to Coordinates Parser: Convierte GeoJSON y EWKT a formato Polyline
     assert.ok(r1.includes(stopName), `Debe contener el paradero C7: ${stopName}`);
   }
 
-  // 12. Validar que exista la migración RLS para lectura pública
+  // 12. Validar los 509 puntos de alta fidelidad OSRM y paradas para C8 (Cujacal/Puente Tabla - San Martín)
+  const c8Data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/constants/routes/c8OsrmGeometry.json'), 'utf8'));
+  const parsedC8 = parsePostgisToCoordinates(c8Data);
+  assert.strictEqual(parsedC8.length, 509, 'Debe parsear exactamente 509 puntos de OSRM para C8');
+
+  assert.ok(r1.includes("color: '#2563eb'"), 'C8 debe tener color tematico azul rey #2563eb');
+  const expectedStopsC8 = ['Puente Tabla', 'Vía Cujacal', 'Prados Del Norte', 'Hospital Civil', 'Dos Puentes', 'San Agustín', 'Calle 17 Amorel', 'San Juan Bosco', 'San Martín'];
+  for (const stopName of expectedStopsC8) {
+    assert.ok(r1.includes(stopName), `Debe contener el paradero C8: ${stopName}`);
+  }
+
+  // 13. Validar que exista la migración RLS para lectura pública
   const rlsSql = fs.readFileSync(path.resolve(__dirname, '../supabase/migrations/20261107000005_enable_public_read_routes.sql'), 'utf8');
   assert.ok(rlsSql.includes('ENABLE ROW LEVEL SECURITY'), 'Debe habilitar RLS');
   assert.ok(rlsSql.includes('FOR SELECT'), 'Debe permitir SELECT público');

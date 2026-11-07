@@ -107,6 +107,20 @@
     {
       "type": "Feature",
       "properties": {
+        "id": "route-c8", "name": "Ruta C8", "description": "Cujacal/Puente Tabla - San Martín", "color": "#2563eb"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-77.2340, 1.2215], [-77.2535, 1.2273], [-77.2650, 1.2300],
+          [-77.2697, 1.2190], [-77.2753, 1.2158], [-77.2795, 1.2132],
+          [-77.2860, 1.2155], [-77.2735, 1.2095], [-77.2620, 1.2070]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "id": "route-c16", "name": "Ruta C16", "description": "Anganoy - Cabrera", "color": "#38bdf8"
       },
       "geometry": {

@@ -83,11 +83,14 @@ export const STANDARD_ROUTES_PART1: TransitRoute[] = [
     ],
   },
   {
-    id: 'route-c8', code: 'C8', name: 'Anganoy - Centro', color: '#14b8a6', description: 'Anganoy - Centro',
-    type: 'STANDARD', direction: 'SUR_NORTE', estimatedFrequencyMinutes: 15, isActive: true, coordinates: [L.anganoy, L.plazaNarino],
+    id: 'route-c8', code: 'C8', name: 'Ruta C8', color: '#2563eb', description: 'Cujacal/Puente Tabla - San Martín',
+    type: 'STANDARD', direction: 'NORTE_SUR', estimatedFrequencyMinutes: 11, isActive: true, coordinates: [],
     stops: [
-      { id: 's-c8-1', name: 'Anganoy', orderIndex: 1, location: L.anganoy, estimatedWaitMinutes: 6, isTerminal: true },
-      { id: 's-c8-2', name: 'Plaza Nariño', orderIndex: 2, location: L.plazaNarino, estimatedWaitMinutes: 15, isTerminal: true },
+      { id: 's-c8-1', name: 'Puente Tabla', orderIndex: 1, location: L.puenteTabla, estimatedWaitMinutes: 2, isTerminal: true }, { id: 's-c8-2', name: 'Vía Cujacal', orderIndex: 2, location: L.viaCujacal, estimatedWaitMinutes: 5 },
+      { id: 's-c8-3', name: 'Prados Del Norte', orderIndex: 3, location: L.pradosDelNorte, estimatedWaitMinutes: 8 }, { id: 's-c8-4', name: 'Hospital Civil', orderIndex: 4, location: L.hospitalCivil, estimatedWaitMinutes: 11 },
+      { id: 's-c8-5', name: 'Dos Puentes', orderIndex: 5, location: L.dosPuentes, estimatedWaitMinutes: 14 }, { id: 's-c8-6', name: 'San Agustín', orderIndex: 6, location: L.sanAgustin, estimatedWaitMinutes: 16 },
+      { id: 's-c8-7', name: 'Calle 17 Amorel', orderIndex: 7, location: L.calle17Amorel, estimatedWaitMinutes: 19 }, { id: 's-c8-8', name: 'San Juan Bosco', orderIndex: 8, location: L.sanJuanBosco, estimatedWaitMinutes: 22 },
+      { id: 's-c8-9', name: 'San Martín', orderIndex: 9, location: L.sanMartin, estimatedWaitMinutes: 26, isTerminal: true },
     ],
   },
 ];
