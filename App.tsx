@@ -14,6 +14,7 @@ import { BottomNavBar } from './src/components/navigation/BottomNavBar';
 import { QuickReportModal } from './src/components/floating/QuickReportModal';
 import { AvatarCard } from './src/components/avatar/AvatarCard';
 import { UserProfileCard } from './src/components/profile/UserProfileCard';
+import { TripPlanner } from './src/components/tripPlanner';
 import { useRoutesStore } from './src/store/useRoutesStore';
 import { useTrackingStore } from './src/store/useTrackingStore';
 import { useUiStore } from './src/store/useUiStore';
@@ -37,6 +38,8 @@ export default function App() {
     openAvatarModal,
     isProfileModalOpen,
     closeProfileModal,
+    isTripPlannerOpen,
+    closeTripPlanner,
   } = useUiStore();
 
   const currentBusList = Object.values(activeBuses).filter(
@@ -124,6 +127,10 @@ export default function App() {
 
       {isProfileModalOpen && (
         <UserProfileCard onClose={closeProfileModal} />
+      )}
+
+      {isTripPlannerOpen && (
+        <TripPlanner onClose={closeTripPlanner} />
       )}
     </View>
   );

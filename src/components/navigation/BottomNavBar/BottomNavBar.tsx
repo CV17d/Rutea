@@ -9,6 +9,7 @@ export const BottomNavBar: React.FC = () => {
     setScreenMode,
     openReportModal,
     openProfileModal,
+    openTripPlanner,
   } = useUiStore();
 
   return (
@@ -35,13 +36,13 @@ export const BottomNavBar: React.FC = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* 3. Mapa */}
+      {/* 3. Planificador de Viaje */}
       <TouchableOpacity
-        onPress={() => setScreenMode('HOME')}
+        onPress={openTripPlanner}
         style={styles.navItem}
         activeOpacity={0.7}
       >
-        <Text style={styles.icon}>🗺️</Text>
+        <Text style={styles.icon}>🧭</Text>
       </TouchableOpacity>
 
       {/* 4. Reportes */}

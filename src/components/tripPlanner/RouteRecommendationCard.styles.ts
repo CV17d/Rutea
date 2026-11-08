@@ -1,0 +1,47 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 10,
+  },
+  codeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  codeText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  titleCol: { flex: 1 },
+  routeName: { fontSize: 15, fontWeight: '700', color: '#0f172a' },
+  walkingText: { fontSize: 12, color: '#0284c7', fontWeight: '600', marginTop: 2 },
+  itineraryBox: { backgroundColor: '#f8fafc', borderRadius: 10, padding: 10 },
+  stopRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  indicatorDot: { width: 9, height: 9, borderRadius: 5 },
+  stopInfo: { flex: 1 },
+  stopLabel: { fontSize: 10, color: '#64748b', fontWeight: '600', textTransform: 'uppercase' },
+  stopName: { fontSize: 13, color: '#1e293b', fontWeight: '600' },
+  itineraryLine: { width: 2, height: 12, backgroundColor: '#cbd5e1', marginLeft: 3.5, marginVertical: 2 },
+  footerRow: { marginTop: 10, alignItems: 'flex-end' },
+  selectBtnText: { color: '#0284c7', fontSize: 12, fontWeight: '700' },
+});

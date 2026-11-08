@@ -7,7 +7,7 @@ import { floatingSearchBarStyles as styles } from './FloatingSearchBar.styles';
 
 export const FloatingSearchBar: React.FC = () => {
   const { searchQuery, setSearchQuery, getFilteredRoutes, selectRoute } = useRoutesStore();
-  const setScreenMode = useUiStore((s) => s.setScreenMode);
+  const { setScreenMode, openTripPlanner } = useUiStore();
 
   const filteredRoutes = getFilteredRoutes();
   const showDropdown = searchQuery.trim().length > 0;
@@ -33,9 +33,13 @@ export const FloatingSearchBar: React.FC = () => {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        {searchQuery.length > 0 && (
+        {searchQuery.length > 0 ? (
           <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearBtn}>
             <Text style={styles.clearText}>✕</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={openTripPlanner} style={styles.clearBtn}>
+            <Text style={{ fontSize: 15 }}>🧭</Text>
           </TouchableOpacity>
         )}
       </View>
