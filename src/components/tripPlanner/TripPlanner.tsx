@@ -6,11 +6,14 @@ import { useUiStore } from '../../store/useUiStore';
 import { findBestRoutes, resolvePastoLocation } from '../../services/tripRecommendation.service';
 import { RouteRecommendation } from '../../types/trip.types';
 import { RouteRecommendationCard } from './RouteRecommendationCard';
+import { TripDetailsModal } from './TripDetailsModal';
 import { styles } from './TripPlanner.styles';
 
 interface Props {
   onClose?: () => void;
 }
+
+const CHIPS = ['Torobajo', 'Hospital Departamental', 'Catambuco', 'Terminal'];
 
 export const TripPlanner: React.FC<Props> = ({ onClose }) => {
   const currentLocation = useTrackingStore((s) => s.currentLocation);
@@ -21,40 +24,30 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
   const [destText, setDestText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<RouteRecommendation[] | null>(null);
+  const [selectedRec, setSelectedRec] = useState<RouteRecommendation | null>(null);
 
   const handleUseGps = () => {
-    if (currentLocation) {
-      setOriginText('Mi Ubicación GPS');
-    } else {
-      setOriginText('Plaza de Nariño');
-    }
+    setOriginText(currentLocation ? 'Mi Ubicación GPS' : 'Plaza de Nariño');
   };
 
   const handleSearch = async () => {
     if (!destText.trim()) return;
-
     setIsLoading(true);
     setRecommendations(null);
 
-    const origCoord =
-      originText === 'Mi Ubicación GPS' && currentLocation
-        ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
-        : resolvePastoLocation(originText) || { latitude: 1.2145, longitude: -77.2783 }; // Default Plaza Nariño
+    const origCoord = originText === 'Mi Ubicación GPS' && currentLocation
+      ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
+      : resolvePastoLocation(originText) || { latitude: 1.2145, longitude: -77.2783 };
+    const destCoord = resolvePastoLocation(destText) || { latitude: 1.2312, longitude: -77.2918 };
 
-    const destCoord = resolvePastoLocation(destText) || { latitude: 1.2312, longitude: -77.2918 }; // Default Torobajo
-
-    const results = await findBestRoutes({
-      origin: origCoord,
-      destination: destCoord,
-      radiusMeters: 1200,
-    });
-
+    const results = await findBestRoutes({ origin: origCoord, destination: destCoord, radiusMeters: 1200 });
     setRecommendations(results);
     setIsLoading(false);
   };
 
-  const handleSelectRoute = (rec: RouteRecommendation) => {
+  const handleConfirmRoute = (rec: RouteRecommendation) => {
     selectRoute(rec.routeId);
+    setSelectedRec(null);
     if (onClose) onClose();
     setScreenMode('ROUTE_DETAILS');
   };
@@ -63,7 +56,6 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
     <View style={styles.modalOverlay}>
       <View style={styles.modalContent}>
         <View style={styles.dragHandle} />
-
         <View style={styles.headerRow}>
           <Text style={styles.titleText}>Planificador de Viaje</Text>
           {onClose && (
@@ -87,9 +79,7 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
               <Text style={styles.gpsBtnText}>📍 GPS</Text>
             </TouchableOpacity>
           </View>
-
           <View style={styles.divider} />
-
           <View style={styles.inputRow}>
             <Text style={styles.inputIcon}>🔴</Text>
             <TextInput
@@ -103,7 +93,7 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
         </View>
 
         <View style={styles.chipsRow}>
-          {['Torobajo', 'Hospital Departamental', 'Catambuco', 'Terminal'].map((chip) => (
+          {CHIPS.map((chip) => (
             <TouchableOpacity key={chip} style={styles.chip} onPress={() => setDestText(chip)}>
               <Text style={styles.chipText}>{chip}</Text>
             </TouchableOpacity>
@@ -115,15 +105,11 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
           onPress={handleSearch}
           disabled={!destText.trim() || isLoading}
         >
-          {isLoading ? (
-            <ActivityIndicator color="#ffffff" size="small" />
-          ) : (
-            <Text style={styles.searchBtnText}>Buscar Rutas Directas</Text>
-          )}
+          {isLoading ? <ActivityIndicator color="#ffffff" size="small" /> : <Text style={styles.searchBtnText}>Buscar Rutas Directas</Text>}
         </TouchableOpacity>
 
         {recommendations !== null && (
-          <ScrollView style={{ maxHeight: 260 }} nestedScrollEnabled keyboardShouldPersistTaps="handled">
+          <ScrollView style={{ maxHeight: 250 }} nestedScrollEnabled keyboardShouldPersistTaps="handled">
             <Text style={styles.resultsHeader}>
               {recommendations.length > 0 ? `Rutas sugeridas (${recommendations.length})` : 'Sin rutas directas'}
             </Text>
@@ -133,11 +119,18 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
               </View>
             ) : (
               recommendations.map((rec, index) => (
-                <RouteRecommendationCard key={`${rec.routeId}-${index}`} recommendation={rec} onSelect={handleSelectRoute} />
+                <RouteRecommendationCard key={`${rec.routeId}-${index}`} recommendation={rec} onSelect={(r) => setSelectedRec(r)} />
               ))
             )}
           </ScrollView>
         )}
+
+        <TripDetailsModal
+          visible={selectedRec !== null}
+          recommendation={selectedRec}
+          onClose={() => setSelectedRec(null)}
+          onSelectRoute={handleConfirmRoute}
+        />
       </View>
     </View>
   );
