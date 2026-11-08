@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { RouteRecommendation } from '../../types/trip.types';
 import { STANDARD_ROUTES_PART2 } from '../../constants/routes/standardRoutes2';
+import { LiveArrivalBadge } from '../ui/LiveArrivalBadge';
 import { styles } from './RouteRecommendationCard.styles';
 
 interface Props {
@@ -66,6 +67,10 @@ export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSel
             </Text>
           </View>
         </View>
+      </View>
+
+      <View style={{ marginTop: 8 }}>
+        <LiveArrivalBadge routeId={routeId} targetLocation={originStop.location} />
       </View>
 
       <View style={styles.footerRow}>

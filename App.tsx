@@ -22,6 +22,7 @@ import { useSocketRoutes } from './src/hooks/useSocketRoutes';
 import { useLocationTracking } from './src/hooks/useLocationTracking';
 import { useRouteQuery } from './src/hooks/useRouteQuery';
 import { useBusSimulator } from './src/hooks/useBusSimulator';
+import { useProximityAlert } from './src/hooks/useProximityAlert';
 
 export default function App() {
   useSocketRoutes();
@@ -30,6 +31,12 @@ export default function App() {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || 'route-c16');
   useBusSimulator(selectedRoute, routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates);
+
+  useProximityAlert({
+    routeId: selectedRoute?.id,
+    targetLocation: selectedRoute?.stops?.[0]?.location,
+    thresholdMeters: 400,
+  });
 
   const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
   const {

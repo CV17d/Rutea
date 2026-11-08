@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useUiStore } from '../../../store/useUiStore';
+import { LiveArrivalBadge } from '../../ui/LiveArrivalBadge';
 import { routeSummaryCardStyles as styles } from './RouteSummaryCard.styles';
 
 export const RouteSummaryCard: React.FC = () => {
@@ -12,6 +13,8 @@ export const RouteSummaryCard: React.FC = () => {
   const displayTitle = selectedRoute
     ? `Ruta ${selectedRoute.code} • ${selectedRoute.name}`
     : 'Ruta C16 • Anganoy - Cabrera';
+
+  const firstStopLoc = selectedRoute?.stops?.[0]?.location;
 
   return (
     <TouchableOpacity
@@ -30,6 +33,10 @@ export const RouteSummaryCard: React.FC = () => {
         >
           <Text style={styles.favoriteHeart}>{isFavorite ? '❤️' : '🤍'}</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={{ marginBottom: 10 }}>
+        <LiveArrivalBadge routeId={selectedRoute?.id} targetLocation={firstStopLoc} />
       </View>
 
       <View style={styles.statsRow}>
