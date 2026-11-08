@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { MapContainer } from './src/components/map/MapContainer';
 import { RoutePolyline } from './src/components/map/RoutePolyline';
 import { StopMarker } from './src/components/map/StopMarker';
-import { BusMarker } from './src/components/map/BusMarker';
+import { LiveBusMarker } from './src/components/map/LiveBusMarker';
 import { ReportMarker } from './src/components/map/ReportMarker';
 import { FloatingSearchBar } from './src/components/floating/FloatingSearchBar';
 import { RouteSummaryCard } from './src/components/floating/RouteSummaryCard';
@@ -21,6 +21,7 @@ import { useUiStore } from './src/store/useUiStore';
 import { useSocketRoutes } from './src/hooks/useSocketRoutes';
 import { useLocationTracking } from './src/hooks/useLocationTracking';
 import { useRouteQuery } from './src/hooks/useRouteQuery';
+import { useBusSimulator } from './src/hooks/useBusSimulator';
 
 export default function App() {
   useSocketRoutes();
@@ -28,6 +29,7 @@ export default function App() {
 
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || 'route-c16');
+  useBusSimulator(selectedRoute, routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates);
 
   const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
   const {
@@ -74,7 +76,7 @@ export default function App() {
             )}
 
             {currentBusList.map((bus) => (
-              <BusMarker
+              <LiveBusMarker
                 key={bus.busId}
                 bus={bus}
                 onPress={() => {
