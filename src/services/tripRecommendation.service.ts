@@ -6,6 +6,32 @@ import { STANDARD_ROUTES_PART2 } from '../constants/routes/standardRoutes2';
 import { PASTO_LOCATIONS } from '../constants/routes/pastoWaypoints';
 import { calculateDistanceMeters } from '../utils/geo.utils';
 
+export const PASTO_CENTROID: LatLng = { latitude: 1.2136, longitude: -77.2811 };
+export const MAX_COVERAGE_METERS = 15000; // 15 kilómetros de radio
+
+export interface CoverageCheckResult {
+  isOutOfArea: boolean;
+  distanceKm: number;
+  message?: string;
+}
+
+export function checkCoverageArea(location?: LatLng | null): CoverageCheckResult {
+  if (!location || location.latitude == null || location.longitude == null) {
+    return { isOutOfArea: true, distanceKm: 0, message: 'Ubicación no disponible' };
+  }
+  const distMeters = calculateDistanceMeters(location, PASTO_CENTROID);
+  const distanceKm = Math.round((distMeters / 1000) * 10) / 10;
+  const isOutOfArea = distMeters > MAX_COVERAGE_METERS;
+
+  return {
+    isOutOfArea,
+    distanceKm,
+    message: isOutOfArea
+      ? 'Parece que estás fuera de San Juan de Pasto. Por favor, ingresa un punto de origen manualmente'
+      : undefined,
+  };
+}
+
 export function resolvePastoLocation(input: string): LatLng | null {
   const norm = input.trim().toLowerCase();
   const directKey = Object.keys(PASTO_LOCATIONS).find((k) => k.toLowerCase() === norm);
@@ -24,6 +50,7 @@ export function resolvePastoLocation(input: string): LatLng | null {
 }
 
 export function findLocalBestRoutes(query: TripQuery): RouteRecommendation[] {
+  if (checkCoverageArea(query.origin).isOutOfArea) return [];
   const radius = query.radiusMeters || 1000;
   const results: RouteRecommendation[] = [];
 
@@ -41,8 +68,6 @@ export function findLocalBestRoutes(query: TripQuery): RouteRecommendation[] {
         if (orig.stop.orderIndex < dest.stop.orderIndex) {
           const s2Match = STANDARD_ROUTES_PART2.find((r) => r.id === route.id);
           const color = s2Match ? s2Match.color : route.color;
-          const walkingMin = Math.max(1, Math.round(orig.dist / 80));
-
           results.push({
             routeId: route.id,
             routeCode: route.code,
@@ -53,7 +78,7 @@ export function findLocalBestRoutes(query: TripQuery): RouteRecommendation[] {
             destStop: { id: dest.stop.id, name: dest.stop.name, location: dest.stop.location },
             walkingDistanceMeters: Math.round(orig.dist),
             destWalkingDistanceMeters: Math.round(dest.dist),
-            estimatedWalkingMinutes: walkingMin,
+            estimatedWalkingMinutes: Math.max(1, Math.round(orig.dist / 80)),
           });
         }
       }
@@ -64,6 +89,7 @@ export function findLocalBestRoutes(query: TripQuery): RouteRecommendation[] {
 }
 
 export async function findBestRoutes(query: TripQuery): Promise<RouteRecommendation[]> {
+  if (checkCoverageArea(query.origin).isOutOfArea) return [];
   const radius = query.radiusMeters || 1000;
 
   try {
@@ -78,23 +104,14 @@ export async function findBestRoutes(query: TripQuery): Promise<RouteRecommendat
     if (!error && Array.isArray(data) && data.length > 0) {
       return data.map((row: any) => {
         const s2Match = STANDARD_ROUTES_PART2.find((r) => r.id === row.route_id || r.code === row.route_code);
-        const color = s2Match?.color || row.route_color || '#0284c7';
         const walkDist = Number(row.walking_distance_meters || 0);
         return {
           routeId: row.route_id,
           routeCode: row.route_code || row.route_id.replace('route-', '').toUpperCase(),
           routeName: row.route_name || `Ruta ${row.route_code}`,
-          routeColor: color,
-          originStop: {
-            id: row.origin_stop_id,
-            name: row.origin_stop_name,
-            location: { latitude: row.origin_stop_lat, longitude: row.origin_stop_lng },
-          },
-          destStop: {
-            id: row.dest_stop_id,
-            name: row.dest_stop_name,
-            location: { latitude: row.dest_stop_lat, longitude: row.dest_stop_lng },
-          },
+          routeColor: s2Match?.color || row.route_color || '#0284c7',
+          originStop: { id: row.origin_stop_id, name: row.origin_stop_name, location: { latitude: row.origin_stop_lat, longitude: row.origin_stop_lng } },
+          destStop: { id: row.dest_stop_id, name: row.dest_stop_name, location: { latitude: row.dest_stop_lat, longitude: row.dest_stop_lng } },
           walkingDistanceMeters: Math.round(walkDist),
           destWalkingDistanceMeters: Math.round(Number(row.dest_walking_distance_meters || 0)),
           estimatedWalkingMinutes: Math.max(1, Math.round(walkDist / 80)),
@@ -102,7 +119,7 @@ export async function findBestRoutes(query: TripQuery): Promise<RouteRecommendat
       });
     }
   } catch (err) {
-    console.warn('[TripRecommendation] Error en RPC find_best_routes, fallback local:', err);
+    console.warn('[TripRecommendation] Fallback local:', err);
   }
 
   return findLocalBestRoutes(query);
