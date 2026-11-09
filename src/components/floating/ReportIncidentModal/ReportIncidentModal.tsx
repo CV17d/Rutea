@@ -25,9 +25,8 @@ export const INCIDENT_OPTIONS: IncidentOption[] = [
 
 export const ReportIncidentModal: React.FC = () => {
   const { isReportModalOpen, closeReportModal } = useUiStore();
-  const { currentLocation, totalPoints, setGamification, currentRank } = useTrackingStore();
+  const { currentLocation } = useTrackingStore();
   const authUser = useAuthStore((s) => s.user);
-  const addAuthPoints = useAuthStore((s) => s.addPoints);
   const selectedRouteId = useRoutesStore((s) => s.selectedRouteId);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,10 +46,8 @@ export const ReportIncidentModal: React.FC = () => {
       lng,
     });
 
-    setGamification(totalPoints + 15, currentRank);
-    addAuthPoints(15);
     setIsSubmitting(false);
-    setToastMessage(`¡+15 Puntos por tu reporte de ${option.label}!`);
+    setToastMessage(`¡+10 Puntos por tu reporte de ${option.label}!`);
 
     setTimeout(() => {
       setToastMessage(null);
@@ -86,7 +83,7 @@ export const ReportIncidentModal: React.FC = () => {
                 style={styles.optionCard}
               >
                 <View style={styles.rewardTag}>
-                  <Text style={styles.rewardText}>+15 PTS</Text>
+                  <Text style={styles.rewardText}>+10 PTS</Text>
                 </View>
                 <View style={[styles.iconBadge, { backgroundColor: `${opt.color}20` }]}>
                   <MaterialCommunityIcons name={opt.icon} size={22} color={opt.color} />

@@ -3,8 +3,6 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { GlassCard } from '../../ui/GlassCard';
 import { GlassBadge } from '../../ui/GlassBadge';
 import { ProceduralAvatar } from '../../avatar/ProceduralAvatar';
-import { useTrackingStore } from '../../../store/useTrackingStore';
-import { useUserSessionStore } from '../../../store/useUserSessionStore';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { userProfileCardStyles as styles } from './UserProfileCard.styles';
 
@@ -12,49 +10,44 @@ export interface UserProfileCardProps {
   onClose: () => void;
 }
 
-interface RankTier {
-  min: number;
-  max: number;
-  current: string;
-  next: string;
+export interface UserProgressResult {
+  currentRank: string;
+  nextRank: string;
+  pct: number;
+  needed: number;
+  badgeIcon: string;
 }
 
-function calculateProgress(points: number): { nextRank: string; pct: number; needed: number } {
-  const tiers: RankTier[] = [
-    { min: 0, max: 30, current: 'Cuy Novato', next: 'Pasajero Frecuente' },
-    { min: 30, max: 75, current: 'Pasajero Frecuente', next: 'Vigía del Galeras' },
-    { min: 75, max: 150, current: 'Vigía del Galeras', next: 'Chasqui Urbano' },
-    { min: 150, max: 300, current: 'Chasqui Urbano', next: 'Embajador Supremo' },
-  ];
-
-  for (const tier of tiers) {
-    if (points < tier.max) {
-      const earnedInTier = points - tier.min;
-      const range = tier.max - tier.min;
-      const pct = Math.min(100, Math.max(0, Math.round((earnedInTier / range) * 100)));
-      return { nextRank: tier.next, pct, needed: tier.max - points };
-    }
+export function calculateProgress(points: number): UserProgressResult {
+  if (points < 100) {
+    const pct = Math.min(100, Math.max(0, Math.round((points / 100) * 100)));
+    return { currentRank: 'Pasajero Novato', nextRank: 'Guía Local', pct, needed: 100 - points, badgeIcon: '🌱' };
   }
-
-  return { nextRank: 'Nivel Máximo', pct: 100, needed: 0 };
+  if (points < 500) {
+    const pct = Math.min(100, Math.max(0, Math.round(((points - 100) / 400) * 100)));
+    return { currentRank: 'Pasajero Frecuente', nextRank: 'Guía Local', pct, needed: 500 - points, badgeIcon: '🧭' };
+  }
+  if (points < 1000) {
+    const pct = Math.min(100, Math.max(0, Math.round(((points - 500) / 500) * 100)));
+    return { currentRank: 'Guía Local', nextRank: 'Cuy Leyenda', pct, needed: 1000 - points, badgeIcon: '⭐' };
+  }
+  return { currentRank: 'Cuy Leyenda', nextRank: 'Nivel Máximo', pct: 100, needed: 0, badgeIcon: '👑' };
 }
 
 const PASTUSO_LEADERBOARD = [
-  { rank: '🥇', alias: 'Don_Pastuso99', pts: 380 },
-  { rank: '🥈', alias: 'CuyVeloz42', pts: 340 },
-  { rank: '🥉', alias: 'GalerasRunner19', pts: 195 },
+  { rank: '🥇', alias: 'Don_Pastuso99', pts: 1250, badge: '👑' },
+  { rank: '🥈', alias: 'CuyVeloz42', pts: 680, badge: '⭐' },
+  { rank: '🥉', alias: 'GalerasRunner19', pts: 320, badge: '🧭' },
 ];
 
 export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => {
-  const totalPoints = useTrackingStore((s) => s.totalPoints);
-  const currentRank = useTrackingStore((s) => s.currentRank);
-  const profile = useUserSessionStore((s) => s.profile);
+  const points = useAuthStore((s) => s.points);
   const authUser = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
-  const displayName = authUser?.displayName || profile.alias;
-  const avatarSeed = authUser?.avatarSeed || profile.avatarSeed || 'user-seed';
-  const { nextRank, pct, needed } = calculateProgress(totalPoints);
+  const displayName = authUser?.displayName || 'Pasajero Pastuso';
+  const avatarSeed = authUser?.avatarSeed || 'user-seed';
+  const { currentRank, nextRank, pct, needed, badgeIcon } = calculateProgress(points);
 
   const handleLogout = async () => {
     onClose();
@@ -69,7 +62,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
             <ProceduralAvatar seed={avatarSeed} size={44} />
             <View style={styles.userInfo}>
               <Text style={styles.alias}>{displayName}</Text>
-              <Text style={styles.rankText}>{currentRank}</Text>
+              <Text style={styles.rankText}>{badgeIcon} {currentRank}</Text>
             </View>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
@@ -78,7 +71,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
         </View>
 
         <View style={styles.pointsBox}>
-          <Text style={styles.pointsNumber}>{totalPoints}</Text>
+          <Text style={styles.pointsNumber}>{points}</Text>
           <Text style={styles.pointsLabel}>PTS acumulados</Text>
           <View style={{ marginLeft: 'auto' }}>
             <GlassBadge type="POINTS" label="EN VIVO" />
@@ -110,10 +103,10 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
           ))}
           <View style={[styles.leaderRow, { backgroundColor: 'rgba(16, 185, 129, 0.12)', borderRadius: 8, paddingHorizontal: 6 }]}>
             <View style={styles.leaderLeft}>
-              <Text style={styles.leaderMedal}>⭐</Text>
+              <Text style={styles.leaderMedal}>{badgeIcon}</Text>
               <Text style={[styles.leaderName, { color: '#10b981' }]}>{displayName} (Tú)</Text>
             </View>
-            <Text style={[styles.leaderPoints, { color: '#10b981' }]}>{totalPoints} PTS</Text>
+            <Text style={[styles.leaderPoints, { color: '#10b981' }]}>{points} PTS</Text>
           </View>
         </View>
 

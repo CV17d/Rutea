@@ -1,5 +1,6 @@
 import { supabase } from './supabase.client';
 import { useTrackingStore } from '../store/useTrackingStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { CommunityReport, IncidentCategory } from '../types/user.types';
 
 export type IncidentType = 'FULL_BUS' | 'TRAFFIC' | 'ACCIDENT' | 'DETOUR';
@@ -54,7 +55,7 @@ function incidentToCommunityReport(inc: IncidentReport): CommunityReport {
 
 export const reportService = {
   /**
-   * Inserta un nuevo reporte de incidente en Supabase y actualiza el mapa local
+   * Inserta un nuevo reporte de incidente en Supabase, incrementa +10 puntos y actualiza el mapa
    */
   async createIncidentReport(payload: CreateIncidentPayload): Promise<{ data: IncidentReport | null; error: string | null }> {
     try {
@@ -79,8 +80,25 @@ export const reportService = {
         ...record,
       };
 
-      // Reflejar inmediatamente en el almacén de marcadores del mapa
+      // 1. Reflejar marcador en el mapa local
       useTrackingStore.getState().addReport(incidentToCommunityReport(created));
+
+      // 2. Incrementar puntos en Supabase (+10 por reporte colaborativo)
+      if (userId) {
+        try {
+          await supabase.rpc('increment_user_points', {
+            target_user_id: userId,
+            points_to_add: 10,
+          });
+        } catch {
+          // Ignorar fallback silencioso
+        }
+      }
+
+      // 3. Recompensa inmediata en almacenes locales (+10 puntos)
+      useAuthStore.getState().addPoints(10);
+      const tracking = useTrackingStore.getState();
+      tracking.setGamification(tracking.totalPoints + 10, tracking.currentRank);
 
       if (error) {
         console.warn('[ReportService] Inserción offline fallback:', error.message);
@@ -98,6 +116,10 @@ export const reportService = {
         created_at: new Date().toISOString(),
       };
       useTrackingStore.getState().addReport(incidentToCommunityReport(fallback));
+      useAuthStore.getState().addPoints(10);
+      const tracking = useTrackingStore.getState();
+      tracking.setGamification(tracking.totalPoints + 10, tracking.currentRank);
+
       return { data: fallback, error: null };
     }
   },
@@ -122,7 +144,6 @@ export const reportService = {
       if (error || !data) return [];
 
       const reports = data as IncidentReport[];
-      // Sincronizar marcadores del mapa
       reports.forEach((rep) => {
         useTrackingStore.getState().addReport(incidentToCommunityReport(rep));
       });
