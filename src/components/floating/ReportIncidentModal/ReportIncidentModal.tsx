@@ -27,6 +27,7 @@ export const ReportIncidentModal: React.FC = () => {
   const { isReportModalOpen, closeReportModal } = useUiStore();
   const { currentLocation } = useTrackingStore();
   const authUser = useAuthStore((s) => s.user);
+  const isGuest = useAuthStore((s) => s.isGuest);
   const selectedRouteId = useRoutesStore((s) => s.selectedRouteId);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +39,7 @@ export const ReportIncidentModal: React.FC = () => {
     const lng = currentLocation?.longitude || -77.2783;
     const routeId = selectedRouteId || 'route-c16';
 
-    await reportService.createIncidentReport({
+    const res = await reportService.createIncidentReport({
       routeId,
       userId: authUser?.id || null,
       type: option.type,
@@ -47,12 +48,16 @@ export const ReportIncidentModal: React.FC = () => {
     });
 
     setIsSubmitting(false);
-    setToastMessage(`¡+10 Puntos por tu reporte de ${option.label}!`);
+    if (isGuest || res?.isGuest) {
+      setToastMessage('Reporte enviado. Inicia sesión para ganar puntos por tu colaboración');
+    } else {
+      setToastMessage(`¡+10 Puntos por tu reporte de ${option.label}!`);
+    }
 
     setTimeout(() => {
       setToastMessage(null);
       closeReportModal();
-    }, 1200);
+    }, 1800);
   };
 
   const handleClose = () => {
@@ -83,7 +88,7 @@ export const ReportIncidentModal: React.FC = () => {
                 style={styles.optionCard}
               >
                 <View style={styles.rewardTag}>
-                  <Text style={styles.rewardText}>+10 PTS</Text>
+                  <Text style={styles.rewardText}>{isGuest ? 'INVITADO' : '+10 PTS'}</Text>
                 </View>
                 <View style={[styles.iconBadge, { backgroundColor: `${opt.color}20` }]}>
                   <MaterialCommunityIcons name={opt.icon} size={22} color={opt.color} />
@@ -102,7 +107,7 @@ export const ReportIncidentModal: React.FC = () => {
 
           {toastMessage && (
             <View style={styles.toastBox}>
-              <MaterialCommunityIcons name="check-circle" size={18} color="#34d399" />
+              <MaterialCommunityIcons name="information" size={18} color="#34d399" />
               <Text style={styles.toastText}>{toastMessage}</Text>
             </View>
           )}

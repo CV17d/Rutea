@@ -5,11 +5,18 @@ import { GlassCard } from '../../ui/GlassCard';
 import { GlassBadge } from '../../ui/GlassBadge';
 import { ProceduralAvatar } from '../../avatar/ProceduralAvatar';
 import { useAuthStore } from '../../../store/useAuthStore';
-import { calculateProgress, PASTUSO_LEADERBOARD, UserProgressResult } from './userProfile.utils';
+import {
+  calculateRank,
+  calculateProgress,
+  calculateUserPosition,
+  calculateLeaderboard,
+  PASTUSO_LEADERBOARD,
+  UserProgressResult,
+} from './userProfile.utils';
 import { userProfileCardStyles as styles } from './UserProfileCard.styles';
 
-// Rangos dinámicos oficiales: Pasajero Novato (<100 pt), Guía Local (>500 pt), Cuy Leyenda (>1000 pt)
-export { calculateProgress, UserProgressResult };
+// Rangos oficiales: Pasajero Novato (<100 pt), Guía Local (>500 pt), Cuy Leyenda (>1000 pt)
+export { calculateRank, calculateProgress, calculateUserPosition, calculateLeaderboard, PASTUSO_LEADERBOARD, UserProgressResult };
 
 export interface UserProfileCardProps {
   onClose: () => void;
@@ -22,7 +29,11 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
 
   const displayName = authUser?.displayName || 'Pasajero Pastuso';
   const avatarSeed = authUser?.avatarSeed || 'user-seed';
-  const { currentRank, nextRank, pct, needed, badgeVectorIcon, badgeColor } = calculateProgress(points);
+
+  const currentRank = calculateRank(points);
+  const currentPosition = calculateUserPosition(points);
+  const { nextRank, pct, needed, badgeVectorIcon, badgeColor } = calculateProgress(points);
+  const leaderboard = calculateLeaderboard(points, displayName, badgeVectorIcon);
 
   const handleLogout = async () => {
     onClose();
@@ -40,6 +51,9 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
                 <MaterialCommunityIcons name={badgeVectorIcon} size={15} color={badgeColor} />
                 <Text style={styles.rankText}>{currentRank}</Text>
+                <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '700', marginLeft: 2 }}>
+                  #{currentPosition}
+                </Text>
               </View>
             </View>
           </View>
@@ -73,26 +87,27 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
             <MaterialCommunityIcons name="trophy-outline" size={15} color="#eab308" />
             <Text style={styles.leaderboardTitle}>TOP PASAJEROS PASTO</Text>
           </View>
-          {PASTUSO_LEADERBOARD.map((item) => (
-            <View key={item.pos} style={styles.leaderRow}>
+          {leaderboard.map((item) => (
+            <View
+              key={`${item.pos}-${item.alias}`}
+              style={[
+                styles.leaderRow,
+                item.isUser && { backgroundColor: 'rgba(16, 185, 129, 0.12)', borderRadius: 8, paddingHorizontal: 6 },
+              ]}
+            >
               <View style={styles.leaderLeft}>
                 <View style={{ width: 22, alignItems: 'center' }}>
                   <MaterialCommunityIcons name={item.icon} size={16} color={item.iconColor} />
                 </View>
-                <Text style={styles.leaderName}>{item.alias}</Text>
+                <Text style={[styles.leaderName, item.isUser && { color: '#10b981', fontWeight: '800' }]}>
+                  {item.alias}
+                </Text>
               </View>
-              <Text style={styles.leaderPoints}>{item.pts} PTS</Text>
+              <Text style={[styles.leaderPoints, item.isUser && { color: '#10b981', fontWeight: '800' }]}>
+                {item.pts} PTS
+              </Text>
             </View>
           ))}
-          <View style={[styles.leaderRow, { backgroundColor: 'rgba(16, 185, 129, 0.12)', borderRadius: 8, paddingHorizontal: 6 }]}>
-            <View style={styles.leaderLeft}>
-              <View style={{ width: 22, alignItems: 'center' }}>
-                <MaterialCommunityIcons name={badgeVectorIcon} size={16} color="#10b981" />
-              </View>
-              <Text style={[styles.leaderName, { color: '#10b981' }]}>{displayName} (Tú)</Text>
-            </View>
-            <Text style={[styles.leaderPoints, { color: '#10b981' }]}>{points} PTS</Text>
-          </View>
         </View>
 
         <TouchableOpacity

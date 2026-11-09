@@ -10,13 +10,45 @@ export interface UserProgressResult {
   badgeIcon?: string;
 }
 
+export interface LeaderboardRival {
+  id: string;
+  alias: string;
+  pts: number;
+}
+
+export interface DynamicLeaderboardEntry {
+  pos: number;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  iconColor: string;
+  alias: string;
+  pts: number;
+  isUser: boolean;
+}
+
+export const PREDEFINED_RIVALS: LeaderboardRival[] = [
+  { id: 'rival-1', alias: 'Don_Pastuso99', pts: 1250 },
+  { id: 'rival-2', alias: 'CuyVeloz42', pts: 680 },
+  { id: 'rival-3', alias: 'Galeras Runner', pts: 320 },
+];
+
+export function calculateRank(points: number): string {
+  if (points < 100) return 'Pasajero Novato';
+  if (points < 500) return 'Pasajero Frecuente';
+  if (points < 1000) return 'Guía Local';
+  return 'Cuy Leyenda';
+}
+
+export function calculateUserPosition(points: number): number {
+  return PREDEFINED_RIVALS.filter((r) => r.pts > points).length + 1;
+}
+
 export function calculateProgress(points: number): UserProgressResult {
+  const currentRank = calculateRank(points);
   if (points < 100) {
-    const pct = Math.min(100, Math.max(0, Math.round((points / 100) * 100)));
     return {
-      currentRank: 'Pasajero Novato',
+      currentRank,
       nextRank: 'Guía Local',
-      pct,
+      pct: Math.min(100, Math.max(0, Math.round((points / 100) * 100))),
       needed: 100 - points,
       badgeVectorIcon: 'sprout',
       badgeColor: '#10b981',
@@ -24,11 +56,10 @@ export function calculateProgress(points: number): UserProgressResult {
     };
   }
   if (points < 500) {
-    const pct = Math.min(100, Math.max(0, Math.round(((points - 100) / 400) * 100)));
     return {
-      currentRank: 'Pasajero Frecuente',
+      currentRank,
       nextRank: 'Guía Local',
-      pct,
+      pct: Math.min(100, Math.max(0, Math.round(((points - 100) / 400) * 100))),
       needed: 500 - points,
       badgeVectorIcon: 'compass-outline',
       badgeColor: '#38bdf8',
@@ -36,11 +67,10 @@ export function calculateProgress(points: number): UserProgressResult {
     };
   }
   if (points < 1000) {
-    const pct = Math.min(100, Math.max(0, Math.round(((points - 500) / 500) * 100)));
     return {
-      currentRank: 'Guía Local',
+      currentRank,
       nextRank: 'Cuy Leyenda',
-      pct,
+      pct: Math.min(100, Math.max(0, Math.round(((points - 500) / 500) * 100))),
       needed: 1000 - points,
       badgeVectorIcon: 'shield-star',
       badgeColor: '#f59e0b',
@@ -48,7 +78,7 @@ export function calculateProgress(points: number): UserProgressResult {
     };
   }
   return {
-    currentRank: 'Cuy Leyenda',
+    currentRank,
     nextRank: 'Nivel Máximo',
     pct: 100,
     needed: 0,
@@ -58,8 +88,44 @@ export function calculateProgress(points: number): UserProgressResult {
   };
 }
 
-export const PASTUSO_LEADERBOARD = [
-  { pos: 1, icon: 'trophy' as const, iconColor: '#eab308', alias: 'Don_Pastuso99', pts: 1250 },
-  { pos: 2, icon: 'medal' as const, iconColor: '#94a3b8', alias: 'CuyVeloz42', pts: 680 },
-  { pos: 3, icon: 'medal-outline' as const, iconColor: '#cd7f32', alias: 'GalerasRunner19', pts: 320 },
-];
+export function calculateLeaderboard(
+  userPoints: number,
+  userAlias: string = 'Tú',
+  userBadgeIcon: keyof typeof MaterialCommunityIcons.glyphMap = 'sprout'
+): DynamicLeaderboardEntry[] {
+  const combined = [
+    ...PREDEFINED_RIVALS.map((r) => ({ alias: r.alias, pts: r.pts, isUser: false })),
+    { alias: `${userAlias} (Tú)`, pts: userPoints, isUser: true },
+  ].sort((a, b) => b.pts - a.pts);
+
+  return combined.map((entry, idx) => {
+    const pos = idx + 1;
+    let icon: keyof typeof MaterialCommunityIcons.glyphMap = 'account-outline';
+    let iconColor = '#64748b';
+
+    if (pos === 1) {
+      icon = 'trophy';
+      iconColor = '#eab308';
+    } else if (pos === 2) {
+      icon = 'medal';
+      iconColor = '#94a3b8';
+    } else if (pos === 3) {
+      icon = 'medal-outline';
+      iconColor = '#cd7f32';
+    } else if (entry.isUser) {
+      icon = userBadgeIcon;
+      iconColor = '#10b981';
+    }
+
+    return {
+      pos,
+      icon,
+      iconColor,
+      alias: entry.alias,
+      pts: entry.pts,
+      isUser: entry.isUser,
+    };
+  });
+}
+
+export const PASTUSO_LEADERBOARD = calculateLeaderboard(85, 'Usuario');
