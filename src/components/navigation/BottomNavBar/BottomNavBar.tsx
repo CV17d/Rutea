@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useUiStore } from '../../../store/useUiStore';
 import { bottomNavBarStyles as styles } from './BottomNavBar.styles';
 
@@ -19,10 +20,14 @@ export const BottomNavBar: React.FC = () => {
         onPress={() => setScreenMode('HOME')}
         style={[styles.navItem, screenMode === 'HOME' && styles.navItemActive]}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Inicio"
       >
-        <Text style={[styles.icon, screenMode === 'HOME' && styles.iconActive]}>
-          🏠
-        </Text>
+        <MaterialCommunityIcons
+          name={screenMode === 'HOME' ? 'home' : 'home-outline'}
+          size={22}
+          color={screenMode === 'HOME' ? '#10b981' : '#64748b'}
+        />
       </TouchableOpacity>
 
       {/* 2. Bus (Route Details) */}
@@ -30,10 +35,14 @@ export const BottomNavBar: React.FC = () => {
         onPress={() => setScreenMode('ROUTE_DETAILS')}
         style={[styles.navItem, screenMode === 'ROUTE_DETAILS' && styles.navItemActive]}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Rutas"
       >
-        <Text style={[styles.icon, screenMode === 'ROUTE_DETAILS' && styles.iconActive]}>
-          🚍
-        </Text>
+        <MaterialCommunityIcons
+          name="bus"
+          size={22}
+          color={screenMode === 'ROUTE_DETAILS' ? '#10b981' : '#64748b'}
+        />
       </TouchableOpacity>
 
       {/* 3. Planificador de Viaje */}
@@ -41,8 +50,14 @@ export const BottomNavBar: React.FC = () => {
         onPress={openTripPlanner}
         style={styles.navItem}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Planificador de viaje"
       >
-        <Text style={styles.icon}>🧭</Text>
+        <MaterialCommunityIcons
+          name="compass-outline"
+          size={22}
+          color="#64748b"
+        />
       </TouchableOpacity>
 
       {/* 4. Reportes */}
@@ -50,8 +65,14 @@ export const BottomNavBar: React.FC = () => {
         onPress={openReportModal}
         style={styles.navItem}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Reportes"
       >
-        <Text style={styles.icon}>📋</Text>
+        <MaterialCommunityIcons
+          name="clipboard-alert-outline"
+          size={22}
+          color="#64748b"
+        />
       </TouchableOpacity>
 
       {/* 5. Perfil */}
@@ -59,8 +80,14 @@ export const BottomNavBar: React.FC = () => {
         onPress={openProfileModal}
         style={styles.navItem}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Perfil de usuario"
       >
-        <Text style={styles.icon}>👤</Text>
+        <MaterialCommunityIcons
+          name="account-outline"
+          size={22}
+          color="#64748b"
+        />
       </TouchableOpacity>
     </View>
   );

@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
-import { View, StyleSheet, Platform, TouchableWithoutFeedback, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Platform, TouchableWithoutFeedback } from 'react-native';
 import { PASTO_COORDINATES } from '../../../constants/pastoCoordinates';
 import { useUiStore } from '../../../store/useUiStore';
 import { LatLng } from '../../../types/route.types';
+import { CenterLocationButton } from '../CenterLocationButton';
 import { styles } from './MapContainer.styles';
 
 export interface MapContainerProps {
@@ -11,6 +12,7 @@ export interface MapContainerProps {
   routeColor?: string;
   onPressMap?: () => void;
   onRecenter?: () => void;
+  mapRef?: React.RefObject<any>;
 }
 
 let NativeMapView: any = null;
@@ -35,8 +37,10 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   routeColor = '#3b82f6',
   onPressMap,
   onRecenter,
+  mapRef: externalMapRef,
 }) => {
-  const mapRef = useRef<any>(null);
+  const internalMapRef = useRef<any>(null);
+  const activeMapRef = externalMapRef || internalMapRef;
   const screenMode = useUiStore((s) => s.screenMode);
   const isDark = screenMode === 'ON_BOARD';
 
@@ -72,9 +76,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
           <View style={StyleSheet.absoluteFill}>
             {children}
             {!isDark && (
-              <TouchableOpacity onPress={onRecenter || onPressMap} style={styles.recenterBtn} activeOpacity={0.8}>
-                <Text style={styles.recenterIcon}>⌖</Text>
-              </TouchableOpacity>
+              <CenterLocationButton mapRef={activeMapRef} onRecenter={onRecenter || onPressMap} />
             )}
           </View>
         </TouchableWithoutFeedback>
@@ -85,7 +87,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: isDark ? '#070b13' : '#f8fafc' }]}>
       <NativeMapView
-        ref={mapRef}
+        ref={activeMapRef}
         style={StyleSheet.absoluteFill}
         provider={PROVIDER_DEFAULT}
         initialRegion={{
@@ -112,9 +114,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       </NativeMapView>
 
       {!isDark && (
-        <TouchableOpacity onPress={onRecenter || onPressMap} style={styles.recenterBtn} activeOpacity={0.8}>
-          <Text style={styles.recenterIcon}>⌖</Text>
-        </TouchableOpacity>
+        <CenterLocationButton mapRef={activeMapRef} onRecenter={onRecenter || onPressMap} />
       )}
     </View>
   );

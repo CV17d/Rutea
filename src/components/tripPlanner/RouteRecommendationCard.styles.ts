@@ -34,7 +34,13 @@ export const styles = StyleSheet.create({
   },
   titleCol: { flex: 1 },
   routeName: { fontSize: 15, fontWeight: '700', color: '#0f172a' },
-  walkingText: { fontSize: 12, color: '#0284c7', fontWeight: '600', marginTop: 2 },
+  walkingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  walkingText: { fontSize: 12, color: '#0284c7', fontWeight: '600' },
   itineraryBox: { backgroundColor: '#f8fafc', borderRadius: 10, padding: 10 },
   stopRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   indicatorDot: { width: 9, height: 9, borderRadius: 5 },
@@ -42,6 +48,12 @@ export const styles = StyleSheet.create({
   stopLabel: { fontSize: 10, color: '#64748b', fontWeight: '600', textTransform: 'uppercase' },
   stopName: { fontSize: 13, color: '#1e293b', fontWeight: '600' },
   itineraryLine: { width: 2, height: 12, backgroundColor: '#cbd5e1', marginLeft: 3.5, marginVertical: 2 },
-  footerRow: { marginTop: 10, alignItems: 'flex-end' },
+  footerRow: {
+    marginTop: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 4,
+  },
   selectBtnText: { color: '#0284c7', fontSize: 12, fontWeight: '700' },
 });

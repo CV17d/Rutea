@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleProp, ViewStyle } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LatLng } from '../../../types/route.types';
 import { useTrackingStore } from '../../../store/useTrackingStore';
 import { findClosestApproachingBus } from '../../../services/etaCalculator.service';
@@ -24,7 +25,8 @@ export const LiveArrivalBadge: React.FC<LiveArrivalBadgeProps> = ({
   if (!targetLocation) {
     return (
       <View style={[styles.fallbackContainer, style]}>
-        <Text style={styles.fallbackText}>🚍 Frecuencia estimada: ~10 min</Text>
+        <MaterialCommunityIcons name="bus" size={13} color="#64748b" />
+        <Text style={styles.fallbackText}>Frecuencia estimada: ~10 min</Text>
       </View>
     );
   }
@@ -34,8 +36,9 @@ export const LiveArrivalBadge: React.FC<LiveArrivalBadgeProps> = ({
   if (!arrivalInfo) {
     return (
       <View style={[styles.fallbackContainer, style]}>
+        <MaterialCommunityIcons name="bus" size={13} color="#64748b" />
         <Text style={styles.fallbackText}>
-          {customLabel || '🚍 Próximo bus en camino (~8-12 min)'}
+          {customLabel || 'Próximo bus en camino (~8-12 min)'}
         </Text>
       </View>
     );
@@ -47,6 +50,7 @@ export const LiveArrivalBadge: React.FC<LiveArrivalBadgeProps> = ({
   return (
     <View style={[styles.container, style]}>
       <View style={styles.pulseDot} />
+      <MaterialCommunityIcons name="bus" size={13} color="#15803d" />
       <Text style={styles.text} numberOfLines={1}>
         {displayText}
       </Text>

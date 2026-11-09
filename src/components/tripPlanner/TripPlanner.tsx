@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTrackingStore } from '../../store/useTrackingStore';
 import { useRoutesStore } from '../../store/useRoutesStore';
 import { useUiStore } from '../../store/useUiStore';
@@ -77,23 +78,35 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
         <View style={styles.dragHandle} />
         <View style={styles.headerRow}>
           <Text style={styles.titleText}>Planificador de Viaje</Text>
-          {onClose && <TouchableOpacity onPress={onClose} style={styles.closeBtn}><Text style={styles.closeText}>✕</Text></TouchableOpacity>}
+          {onClose && (
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <MaterialCommunityIcons name="close" size={18} color="#64748b" />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.inputWrap}>
           <View style={styles.inputRow}>
-            <Text style={styles.inputIcon}>🟢</Text>
+            <MaterialCommunityIcons name="circle-slice-8" size={16} color="#10b981" />
             <TextInput style={styles.textInput} value={originText} onChangeText={(t) => { setOriginText(t); setCoverageWarning(null); }} placeholder="Punto de partida" placeholderTextColor="#94a3b8" />
-            <TouchableOpacity onPress={handleUseGps} style={styles.gpsBtn}><Text style={styles.gpsBtnText}>📍 GPS</Text></TouchableOpacity>
+            <TouchableOpacity onPress={handleUseGps} style={styles.gpsBtn}>
+              <MaterialCommunityIcons name="crosshairs-gps" size={13} color="#0284c7" />
+              <Text style={styles.gpsBtnText}>GPS</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.divider} />
           <View style={styles.inputRow}>
-            <Text style={styles.inputIcon}>🔴</Text>
+            <MaterialCommunityIcons name="map-marker" size={18} color="#ef4444" />
             <TextInput style={styles.textInput} value={destText} onChangeText={setDestText} placeholder="¿A dónde vas?" placeholderTextColor="#94a3b8" />
           </View>
         </View>
 
-        {coverageWarning && <View style={styles.warningBox}><Text style={styles.warningText}>⚠️ {coverageWarning}</Text></View>}
+        {coverageWarning && (
+          <View style={styles.warningBox}>
+            <MaterialCommunityIcons name="alert-circle-outline" size={16} color="#b45309" />
+            <Text style={styles.warningText}>{coverageWarning}</Text>
+          </View>
+        )}
 
         <View style={styles.chipsRow}>
           {CHIPS.map((chip) => (

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RouteRecommendation } from '../../types/trip.types';
 import { STANDARD_ROUTES_PART2 } from '../../constants/routes/standardRoutes2';
 import { MOCK_PASTO_ROUTES } from '../../constants/mockRoutes';
@@ -47,7 +48,7 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
       <View style={styles.stepRow}>
         <View style={styles.leftCol}>
           <View style={[styles.iconCircle, styles.walkCircle]}>
-            <Text style={styles.iconEmoji}>🚶</Text>
+            <MaterialCommunityIcons name="walk" size={18} color="#0284c7" />
           </View>
           <View style={styles.trackLine} />
         </View>
@@ -65,7 +66,7 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
       <View style={styles.stepRow}>
         <View style={styles.leftCol}>
           <View style={[styles.iconCircle, styles.busCircle, { backgroundColor: badgeColor }]}>
-            <Text style={styles.iconEmoji}>🚍</Text>
+            <MaterialCommunityIcons name="bus" size={18} color="#ffffff" />
           </View>
           <View style={styles.trackLine} />
         </View>
@@ -84,8 +85,13 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
             activeOpacity={0.7}
           >
             <Text style={styles.intermediateToggleText}>
-              Viaja durante {intermediateCount} paradas {isStopsExpanded ? '▲' : '▼'}
+              Viaja durante {intermediateCount} paradas
             </Text>
+            <MaterialCommunityIcons
+              name={isStopsExpanded ? 'chevron-up' : 'chevron-down'}
+              size={16}
+              color="#334155"
+            />
           </TouchableOpacity>
 
           {isStopsExpanded && intermediateStops.length > 0 && (
@@ -104,7 +110,7 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
       <View style={styles.stepRow}>
         <View style={styles.leftCol}>
           <View style={[styles.iconCircle, styles.destCircle]}>
-            <Text style={styles.iconEmoji}>🏁</Text>
+            <MaterialCommunityIcons name="flag-checkered" size={18} color="#ef4444" />
           </View>
         </View>
         <View style={styles.contentCol}>

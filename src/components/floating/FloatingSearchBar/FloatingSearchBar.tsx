@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TextInput, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useUiStore } from '../../../store/useUiStore';
 import { TransitRoute } from '../../../types/route.types';
@@ -25,7 +26,7 @@ export const FloatingSearchBar: React.FC = () => {
 
       {/* Píldora translúcida blanca: ¿A dónde vas hoy? */}
       <View style={styles.searchPill}>
-        <Text style={styles.searchIcon}>🔍</Text>
+        <MaterialCommunityIcons name="magnify" size={20} color="#64748b" style={{ marginRight: 6 }} />
         <TextInput
           style={styles.input}
           placeholder="¿A dónde vas hoy?"
@@ -35,11 +36,11 @@ export const FloatingSearchBar: React.FC = () => {
         />
         {searchQuery.length > 0 ? (
           <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearBtn}>
-            <Text style={styles.clearText}>✕</Text>
+            <MaterialCommunityIcons name="close" size={16} color="#64748b" />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={openTripPlanner} style={styles.clearBtn}>
-            <Text style={{ fontSize: 15 }}>🧭</Text>
+            <MaterialCommunityIcons name="compass-outline" size={20} color="#0284c7" />
           </TouchableOpacity>
         )}
       </View>

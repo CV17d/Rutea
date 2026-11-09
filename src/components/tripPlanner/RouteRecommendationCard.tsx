@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RouteRecommendation } from '../../types/trip.types';
 import { STANDARD_ROUTES_PART2 } from '../../constants/routes/standardRoutes2';
 import { LiveArrivalBadge } from '../ui/LiveArrivalBadge';
@@ -39,9 +40,12 @@ export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSel
           <Text style={styles.routeName} numberOfLines={1}>
             {routeName}
           </Text>
-          <Text style={styles.walkingText}>
-            🚶 A {walkingDistanceMeters} m a pie (~{estimatedWalkingMinutes} min)
-          </Text>
+          <View style={styles.walkingRow}>
+            <MaterialCommunityIcons name="walk" size={14} color="#0284c7" />
+            <Text style={styles.walkingText}>
+              A {walkingDistanceMeters} m a pie (~{estimatedWalkingMinutes} min)
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -74,7 +78,8 @@ export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSel
       </View>
 
       <View style={styles.footerRow}>
-        <Text style={styles.selectBtnText}>Ver en mapa ➔</Text>
+        <Text style={styles.selectBtnText}>Ver en mapa</Text>
+        <MaterialCommunityIcons name="arrow-right" size={14} color="#0284c7" />
       </View>
     </TouchableOpacity>
   );
