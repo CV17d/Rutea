@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Rutea Pasto",
+    "name": "Rutea",
     "slug": "rutea-pasto",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,7 +8,7 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rutea.pasto",
+      "bundleIdentifier": "com.rutea.app",
       "infoPlist": {
         "UIBackgroundModes": [
           "location",
@@ -17,11 +17,11 @@
       }
     },
     "android": {
+      "package": "com.rutea.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f172a"
       },
-      "package": "com.rutea.pasto",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
