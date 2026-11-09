@@ -25,6 +25,7 @@
     "expo-splash-screen": "~58.0.13",
     "expo-status-bar": "~58.0.4",
     "expo-task-manager": "~58.0.13",
+    "expo-updates": "~58.0.21",
     "nativewind": "^2.0.11",
     "react": "19.3.0",
     "react-dom": "19.3.0",

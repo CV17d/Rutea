@@ -6,6 +6,13 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "updates": {
+      "url": "https://u.expo.dev/c07f43db-e325-45a8-9271-9ec7492c10aa",
+      "fallbackToCacheTimeout": 0
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rutea.app",
@@ -64,7 +71,13 @@
           "color": "#10b981"
         }
       ],
+      "expo-updates",
       "expo-status-bar"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c07f43db-e325-45a8-9271-9ec7492c10aa"
+      }
+    }
   }
 }
