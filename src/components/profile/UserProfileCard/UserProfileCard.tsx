@@ -5,6 +5,7 @@ import { GlassBadge } from '../../ui/GlassBadge';
 import { ProceduralAvatar } from '../../avatar/ProceduralAvatar';
 import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useUserSessionStore } from '../../../store/useUserSessionStore';
+import { useAuthStore } from '../../../store/useAuthStore';
 import { userProfileCardStyles as styles } from './UserProfileCard.styles';
 
 export interface UserProfileCardProps {
@@ -48,17 +49,26 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
   const totalPoints = useTrackingStore((s) => s.totalPoints);
   const currentRank = useTrackingStore((s) => s.currentRank);
   const profile = useUserSessionStore((s) => s.profile);
+  const authUser = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
+  const displayName = authUser?.displayName || profile.alias;
+  const avatarSeed = authUser?.avatarSeed || profile.avatarSeed || 'user-seed';
   const { nextRank, pct, needed } = calculateProgress(totalPoints);
+
+  const handleLogout = async () => {
+    onClose();
+    await logout();
+  };
 
   return (
     <View style={styles.overlay}>
       <GlassCard isHighlighted style={styles.card}>
         <View style={styles.header}>
           <View style={styles.userRow}>
-            <ProceduralAvatar seed={profile.avatarSeed || 'user-seed'} size={44} />
+            <ProceduralAvatar seed={avatarSeed} size={44} />
             <View style={styles.userInfo}>
-              <Text style={styles.alias}>{profile.alias}</Text>
+              <Text style={styles.alias}>{displayName}</Text>
               <Text style={styles.rankText}>{currentRank}</Text>
             </View>
           </View>
@@ -101,11 +111,19 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
           <View style={[styles.leaderRow, { backgroundColor: 'rgba(16, 185, 129, 0.12)', borderRadius: 8, paddingHorizontal: 6 }]}>
             <View style={styles.leaderLeft}>
               <Text style={styles.leaderMedal}>⭐</Text>
-              <Text style={[styles.leaderName, { color: '#10b981' }]}>{profile.alias} (Tú)</Text>
+              <Text style={[styles.leaderName, { color: '#10b981' }]}>{displayName} (Tú)</Text>
             </View>
             <Text style={[styles.leaderPoints, { color: '#10b981' }]}>{totalPoints} PTS</Text>
           </View>
         </View>
+
+        <TouchableOpacity
+          style={{ marginTop: 12, paddingVertical: 10, alignItems: 'center', borderRadius: 10, backgroundColor: 'rgba(239, 68, 68, 0.12)' }}
+          onPress={handleLogout}
+          activeOpacity={0.7}
+        >
+          <Text style={{ color: '#ef4444', fontSize: 13, fontWeight: '700' }}>Cerrar Sesión</Text>
+        </TouchableOpacity>
       </GlassCard>
     </View>
   );

@@ -15,6 +15,8 @@ import { QuickReportModal } from './src/components/floating/QuickReportModal';
 import { AvatarCard } from './src/components/avatar/AvatarCard';
 import { UserProfileCard } from './src/components/profile/UserProfileCard';
 import { TripPlanner } from './src/components/tripPlanner';
+import { LoginScreen } from './src/components/auth/LoginScreen';
+import { useAuthStore } from './src/store/useAuthStore';
 import { useRoutesStore } from './src/store/useRoutesStore';
 import { useTrackingStore } from './src/store/useTrackingStore';
 import { useUiStore } from './src/store/useUiStore';
@@ -25,6 +27,7 @@ import { useBusSimulator } from './src/hooks/useBusSimulator';
 import { useProximityAlert } from './src/hooks/useProximityAlert';
 
 export default function App() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   useSocketRoutes();
   useLocationTracking();
 
@@ -51,10 +54,18 @@ export default function App() {
     closeTripPlanner,
   } = useUiStore();
 
+  if (!isAuthenticated) {
+    return (
+      <View style={styles.container}>
+        <StatusBar style="light" />
+        <LoginScreen />
+      </View>
+    );
+  }
+
   const currentBusList = Object.values(activeBuses).filter(
     (b) => !selectedRoute || b.routeId === selectedRoute.id
   );
-
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
@@ -133,14 +144,8 @@ export default function App() {
       )}
 
       <QuickReportModal />
-
-      {isProfileModalOpen && (
-        <UserProfileCard onClose={closeProfileModal} />
-      )}
-
-      {isTripPlannerOpen && (
-        <TripPlanner onClose={closeTripPlanner} />
-      )}
+      {isProfileModalOpen && <UserProfileCard onClose={closeProfileModal} />}
+      {isTripPlannerOpen && <TripPlanner onClose={closeTripPlanner} />}
     </View>
   );
 }
