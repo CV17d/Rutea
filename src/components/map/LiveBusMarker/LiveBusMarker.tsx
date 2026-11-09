@@ -80,7 +80,7 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
   const markerContent = (
     <View style={styles.wrapper}>
       <Animated.View style={[styles.emeraldHalo, { transform: [{ scale: pulseAnim }] }]} />
-      {/* Vista superior estricta (top-down view) del bus con orientación angular precisa */}
+      {/* Vista cenital realista del microbús con rotación angular de rumbo */}
       <Animated.View
         style={[
           styles.busChassis,
@@ -98,6 +98,7 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
         <View style={styles.roofCenter}>
           <Text style={styles.roofCodeText}>{bus.routeCode}</Text>
         </View>
+        <View style={styles.rearWindow} />
         <View style={styles.rearLightsRow}>
           <View style={styles.taillight} />
           <View style={styles.taillight} />
