@@ -44,6 +44,7 @@ export const RoutePolyline: React.FC<RoutePolylineProps> = ({
         strokeWidth={isSelected ? 8 : 6}
         lineCap="round"
         lineJoin="round"
+        simplify={true}
       />
       {/* Línea principal azul brillante / neón de alta visibilidad */}
       <NativePolyline
@@ -52,6 +53,7 @@ export const RoutePolyline: React.FC<RoutePolylineProps> = ({
         strokeWidth={5}
         lineCap="round"
         lineJoin="round"
+        simplify={true}
       />
     </>
   );

@@ -84,18 +84,14 @@ export default function App() {
           <MapContainer
             routeCoordinates={routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates}
             routeColor={selectedRoute?.color}
+            stops={selectedRoute?.stops}
             onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}
           >
             {selectedRoute && (
-              <>
-                <RoutePolyline
-                  route={selectedRoute}
-                  coordinates={routeCoordinates.length > 0 ? routeCoordinates : undefined}
-                />
-                {selectedRoute.stops.map((stop) => (
-                  <StopMarker key={stop.id} stop={stop} />
-                ))}
-              </>
+              <RoutePolyline
+                route={selectedRoute}
+                coordinates={routeCoordinates.length > 0 ? routeCoordinates : undefined}
+              />
             )}
 
             {currentBusList.map((bus) => (

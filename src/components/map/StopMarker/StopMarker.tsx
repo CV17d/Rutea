@@ -17,7 +17,7 @@ export interface StopMarkerProps {
   onPress?: () => void;
 }
 
-export const StopMarker: React.FC<StopMarkerProps> = ({ stop, onPress }) => {
+export const StopMarker: React.FC<StopMarkerProps> = React.memo(({ stop, onPress }) => {
   if (Platform.OS === 'web' || !NativeMarker) {
     return null;
   }
@@ -39,7 +39,7 @@ export const StopMarker: React.FC<StopMarkerProps> = ({ stop, onPress }) => {
       </View>
     </NativeMarker>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
