@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { styles } from './StopTimeline.styles';
 
@@ -9,12 +10,6 @@ export interface TimelineStop {
   eta: string;
   variant: 'pink' | 'green' | 'gray';
 }
-
-const DEFAULT_STOPS: TimelineStop[] = [
-  { id: '1', name: 'Anganoy', eta: '2 min', variant: 'pink' },
-  { id: '2', name: 'Teatro Imperial', eta: '11 min', variant: 'green' },
-  { id: '3', name: 'Cabrera', eta: '28 min', variant: 'gray' },
-];
 
 interface StopTimelineProps {
   stops?: TimelineStop[];
@@ -27,6 +22,11 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
 }) => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
 
+  // Si no hay ruta seleccionada ni paradas provistas, no renderizar paradas fantasma
+  if (!selectedRoute && (!stops || stops.length === 0)) {
+    return null;
+  }
+
   const activeStops: TimelineStop[] = stops || (selectedRoute?.stops && selectedRoute.stops.length > 0
     ? selectedRoute.stops.map((s, idx) => ({
         id: s.id,
@@ -34,7 +34,11 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
         eta: `${s.estimatedWaitMinutes} min`,
         variant: idx === 0 ? 'pink' : idx === selectedRoute.stops.length - 1 ? 'gray' : 'green',
       }))
-    : DEFAULT_STOPS);
+    : []);
+
+  if (activeStops.length === 0) {
+    return null;
+  }
 
   return (
     <View style={styles.card}>
@@ -55,7 +59,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
                 {!isLast && <View style={styles.trackLine} />}
                 {stop.variant === 'pink' ? (
                   <View style={[styles.iconCircle, styles.iconPink]}>
-                    <Text style={styles.iconEmoji}>🚌</Text>
+                    <MaterialCommunityIcons name="bus" size={14} color="#ec4899" />
                   </View>
                 ) : stop.variant === 'green' ? (
                   <View style={[styles.iconCircle, styles.iconGreen]}>
@@ -63,7 +67,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
                   </View>
                 ) : (
                   <View style={[styles.iconCircle, styles.iconGray]}>
-                    <Text style={styles.iconEmoji}>🚌</Text>
+                    <MaterialCommunityIcons name="bus" size={14} color="#64748b" />
                   </View>
                 )}
               </View>
@@ -73,12 +77,12 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
                   {stop.name}
                 </Text>
                 <View style={styles.stopSubtitleRow}>
-                  <Text style={styles.stopSubtitle}>📍 Paradero</Text>
+                  <Text style={styles.stopSubtitle}>Paradero SETP</Text>
                 </View>
               </View>
 
               <View style={styles.etaCol}>
-                <Text style={styles.clockIcon}>⏱</Text>
+                <MaterialCommunityIcons name="clock-outline" size={13} color="#94a3b8" />
                 <Text style={styles.etaText}>{stop.eta}</Text>
               </View>
             </View>

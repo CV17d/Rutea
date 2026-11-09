@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useUiStore } from '../../../store/useUiStore';
 import { LiveArrivalBadge } from '../../ui/LiveArrivalBadge';
@@ -10,11 +11,13 @@ export const RouteSummaryCard: React.FC = () => {
   const setScreenMode = useUiStore((s) => s.setScreenMode);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const displayTitle = selectedRoute
-    ? `Ruta ${selectedRoute.code} • ${selectedRoute.name}`
-    : 'Ruta C16 • Anganoy - Cabrera';
+  // Si no hay ruta seleccionada, no renderizar tarjeta fantasma
+  if (!selectedRoute) {
+    return null;
+  }
 
-  const firstStopLoc = selectedRoute?.stops?.[0]?.location;
+  const displayTitle = `Ruta ${selectedRoute.code} • ${selectedRoute.name}`;
+  const firstStopLoc = selectedRoute.stops?.[0]?.location;
 
   return (
     <TouchableOpacity
@@ -31,12 +34,16 @@ export const RouteSummaryCard: React.FC = () => {
           style={styles.favoriteBtn}
           activeOpacity={0.8}
         >
-          <Text style={styles.favoriteHeart}>{isFavorite ? '❤️' : '🤍'}</Text>
+          <MaterialCommunityIcons
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={18}
+            color={isFavorite ? '#ef4444' : '#64748b'}
+          />
         </TouchableOpacity>
       </View>
 
       <View style={{ marginBottom: 10 }}>
-        <LiveArrivalBadge routeId={selectedRoute?.id} targetLocation={firstStopLoc} />
+        <LiveArrivalBadge routeId={selectedRoute.id} targetLocation={firstStopLoc} />
       </View>
 
       <View style={styles.statsRow}>

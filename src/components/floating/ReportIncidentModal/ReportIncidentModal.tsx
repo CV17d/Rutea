@@ -37,7 +37,7 @@ export const ReportIncidentModal: React.FC = () => {
     setIsSubmitting(true);
     const lat = currentLocation?.latitude || 1.2145;
     const lng = currentLocation?.longitude || -77.2783;
-    const routeId = selectedRouteId || 'route-c16';
+    const routeId = selectedRouteId || 'general';
 
     const res = await reportService.createIncidentReport({
       routeId,

@@ -15,11 +15,16 @@ export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
   points = 50,
 }) => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
-  const displayCode = routeCode || (selectedRoute ? `Ruta ${selectedRoute.code}` : 'Ruta C16');
+
+  // Si no hay ruta seleccionada ni código provisto, no renderizar
+  if (!selectedRoute && !routeCode) {
+    return null;
+  }
+
+  const displayCode = routeCode || (selectedRoute ? `Ruta ${selectedRoute.code}` : '');
 
   return (
     <View style={styles.container}>
-      {/* Left Column: ETA */}
       <View style={styles.leftCol}>
         <View style={styles.etaRow}>
           <Text style={styles.etaNumber}>{etaMinutes}</Text>
@@ -28,10 +33,8 @@ export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
         <Text style={styles.etaLabel}>Espera aproximada</Text>
       </View>
 
-      {/* Vertical subtle divider */}
       <View style={styles.divider} />
 
-      {/* Right Column: Route Title and Gamification */}
       <View style={styles.rightCol}>
         <Text style={styles.routeTitle}>{displayCode}</Text>
         <View style={styles.pointsRow}>

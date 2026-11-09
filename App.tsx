@@ -132,12 +132,12 @@ export default function App() {
 
           {screenMode === 'ROUTE_DETAILS' ? (
             <View style={styles.bottomDetailWrap}>
-              <RouteHeroCard />
-              <StopTimeline onPressDetails={() => setScreenMode('ON_BOARD')} />
+              {selectedRoute && <RouteHeroCard />}
+              {selectedRoute && <StopTimeline onPressDetails={() => setScreenMode('ON_BOARD')} />}
             </View>
           ) : (
             <View style={styles.bottomHomeWrap}>
-              <RouteSummaryCard />
+              {selectedRoute && <RouteSummaryCard />}
               <BottomNavBar />
             </View>
           )}
