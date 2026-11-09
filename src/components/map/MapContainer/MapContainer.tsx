@@ -1,7 +1,8 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { View, StyleSheet, Platform, TouchableWithoutFeedback } from 'react-native';
 import { PASTO_COORDINATES } from '../../../constants/pastoCoordinates';
 import { useUiStore } from '../../../store/useUiStore';
+import { useTrackingStore } from '../../../store/useTrackingStore';
 import { LatLng, BusStop } from '../../../types/route.types';
 import { CenterLocationButton } from '../CenterLocationButton';
 import { StopMarker } from '../StopMarker';
@@ -37,27 +38,33 @@ if (Platform.OS !== 'web') {
 }
 
 export const MapContainer: React.FC<MapContainerProps> = ({
-  children,
-  routeCoordinates,
-  routeColor = '#3b82f6',
-  stops,
-  onStopPress,
-  onPressMap,
-  onRecenter,
-  mapRef: externalMapRef,
+  children, routeCoordinates, routeColor = '#3b82f6', stops, onStopPress, onPressMap, onRecenter, mapRef: externalMapRef,
 }) => {
   const internalMapRef = useRef<any>(null);
   const activeMapRef = externalMapRef || internalMapRef;
-  const screenMode = useUiStore((s) => s.screenMode);
-  const isDark = screenMode === 'ON_BOARD';
+  const isDark = useUiStore((s) => s.screenMode) === 'ON_BOARD';
+
+  const currentLocation = useTrackingStore((s) => s.currentLocation);
+  const isTrackingActive = useTrackingStore((s) => s.isTrackingActive);
+  const setTrackingActive = useTrackingStore((s) => s.setTrackingActive);
 
   const [regionDelta, setRegionDelta] = useState(PASTO_COORDINATES.defaultDelta.latitudeDelta);
 
-  // Optimización de 60 FPS: Memoización y Clustering de paraderos
+  // Follow Mode: Centrado suave ante nuevas coordenadas GPS
+  useEffect(() => {
+    if (!isTrackingActive || !currentLocation || !activeMapRef.current) return;
+    const center = { latitude: currentLocation.latitude, longitude: currentLocation.longitude };
+    if (typeof activeMapRef.current.animateCamera === 'function') {
+      activeMapRef.current.animateCamera({ center, zoom: 16 }, { duration: 600 });
+    } else if (typeof activeMapRef.current.animateToRegion === 'function') {
+      activeMapRef.current.animateToRegion({ ...center, latitudeDelta: 0.008, longitudeDelta: 0.008 }, 600);
+    }
+  }, [currentLocation, isTrackingActive]);
+
+  // Memoización y Clustering de paraderos para 60 FPS
   const renderedStopMarkers = useMemo(() => {
     if (!stops || stops.length === 0) return null;
-    const items = clusterBusStops(stops, regionDelta);
-    return items.map((item) => {
+    return clusterBusStops(stops, regionDelta).map((item) => {
       if (item.isCluster) {
         return (
           <ClusterMarker
@@ -81,9 +88,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
   if (Platform.OS === 'web' || !NativeMapView) {
     const pastoUrl = 'https://www.openstreetmap.org/export/embed.html?bbox=-77.315%2C1.185%2C-77.245%2C1.245&layer=mapnik';
-    const filterStyle = isDark
-      ? 'invert(92%) hue-rotate(190deg) brightness(80%) contrast(115%)'
-      : 'saturate(115%) contrast(98%) brightness(102%)';
+    const filterStyle = isDark ? 'invert(92%) hue-rotate(190deg) brightness(80%)' : 'saturate(115%) contrast(98%)';
 
     return (
       <View style={[styles.webContainer, { backgroundColor: isDark ? '#090e17' : '#f8fafc' }]}>
@@ -94,7 +99,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         })}
         <View style={[styles.webVignette, { backgroundColor: isDark ? 'rgba(7, 11, 19, 0.45)' : 'rgba(255, 255, 255, 0.08)' }]} pointerEvents="none" />
         <TouchableWithoutFeedback onPress={onPressMap}>
-          <View style={StyleSheet.absoluteFill}>
+          <View style={StyleSheet.absoluteFill} onTouchStart={() => isTrackingActive && setTrackingActive(false)}>
             {renderedStopMarkers}
             {children}
             {!isDark && <CenterLocationButton mapRef={activeMapRef} onRecenter={onRecenter || onPressMap} />}
@@ -120,17 +125,12 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         showsMyLocationButton={false}
         showsCompass={false}
         onPress={onPressMap}
+        onPanDrag={() => setTrackingActive(false)}
+        onTouchStart={() => isTrackingActive && setTrackingActive(false)}
         onRegionChangeComplete={(r: any) => setRegionDelta(r.latitudeDelta)}
       >
         {routeCoordinates && routeCoordinates.length > 0 && NativePolyline && (
-          <NativePolyline
-            coordinates={routeCoordinates}
-            strokeColor={routeColor}
-            strokeWidth={5}
-            lineCap="round"
-            lineJoin="round"
-            simplify={true}
-          />
+          <NativePolyline coordinates={routeCoordinates} strokeColor={routeColor} strokeWidth={5} lineCap="round" lineJoin="round" simplify={true} />
         )}
         {renderedStopMarkers}
         {children}

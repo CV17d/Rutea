@@ -16,10 +16,12 @@ interface TrackingState {
   reports: CommunityReport[];
   selectedBusId: string | null;
   currentLocation: CurrentUserLocation | null;
+  isTrackingActive: boolean;
   totalPoints: number;
   currentRank: string;
   setGamification: (points: number, rank: string) => void;
   setCurrentLocation: (loc: CurrentUserLocation | null) => void;
+  setTrackingActive: (active: boolean) => void;
   updateBusLocation: (bus: ProjectedBusLocation) => void;
   removeBus: (busId: string) => void;
   addReport: (report: CommunityReport) => void;
@@ -54,10 +56,12 @@ export const useTrackingStore = create<TrackingState>((set, get) => ({
   reports: INITIAL_REPORTS,
   selectedBusId: null,
   currentLocation: null,
+  isTrackingActive: false,
   totalPoints: 85,
   currentRank: 'Vigía del Galeras',
   setGamification: (points, rank) => set({ totalPoints: points, currentRank: rank }),
   setCurrentLocation: (loc) => set({ currentLocation: loc }),
+  setTrackingActive: (active) => set({ isTrackingActive: active }),
   addReport: (report) => set((s) => ({ reports: [report, ...s.reports] })),
 
   updateBusLocation: (bus) => {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity, ActivityIndicator, StyleProp, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import * as Haptics from 'expo-haptics';
 import { useTrackingStore, CurrentUserLocation } from '../../../store/useTrackingStore';
 import { PASTO_COORDINATES } from '../../../constants/pastoCoordinates';
 import { styles } from './CenterLocationButton.styles';
@@ -18,9 +19,21 @@ export const CenterLocationButton: React.FC<CenterLocationButtonProps> = ({
   style,
 }) => {
   const [isLocating, setIsLocating] = useState(false);
+  const isTrackingActive = useTrackingStore((s) => s.isTrackingActive);
+  const setTrackingActive = useTrackingStore((s) => s.setTrackingActive);
 
   const handleCenter = async () => {
     setIsLocating(true);
+    setTrackingActive(true);
+
+    try {
+      if (Haptics && typeof Haptics.impactAsync === 'function') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    } catch {
+      // Fallback si haptics no está disponible
+    }
+
     try {
       let target: { latitude: number; longitude: number } | null =
         useTrackingStore.getState().currentLocation;
@@ -81,18 +94,24 @@ export const CenterLocationButton: React.FC<CenterLocationButtonProps> = ({
     }
   };
 
+  const iconColor = isTrackingActive ? '#10b981' : '#64748b';
+
   return (
     <TouchableOpacity
-      style={[styles.fab, style]}
+      style={[
+        styles.fab,
+        isTrackingActive && { borderColor: '#10b981', shadowColor: '#10b981', shadowOpacity: 0.25 },
+        style,
+      ]}
       onPress={handleCenter}
       activeOpacity={0.8}
       accessibilityRole="button"
-      accessibilityLabel="Centrar ubicación GPS"
+      accessibilityLabel={isTrackingActive ? 'Rastreo GPS Activo' : 'Centrar ubicación GPS'}
     >
       {isLocating ? (
-        <ActivityIndicator size="small" color="#0284c7" />
+        <ActivityIndicator size="small" color="#10b981" />
       ) : (
-        <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#0f172a" />
+        <MaterialCommunityIcons name="crosshairs-gps" size={22} color={iconColor} />
       )}
     </TouchableOpacity>
   );
