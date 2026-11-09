@@ -26,9 +26,11 @@ import { useRouteQuery } from './src/hooks/useRouteQuery';
 import { useBusSimulator } from './src/hooks/useBusSimulator';
 import { useProximityAlert } from './src/hooks/useProximityAlert';
 import { useIncidentReports } from './src/hooks/useIncidentReports';
+import { useOfflineSync } from './src/hooks/useOfflineSync';
 
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  useOfflineSync();
   useSocketRoutes();
   useLocationTracking();
 
