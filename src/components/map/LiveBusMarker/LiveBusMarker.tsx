@@ -7,7 +7,7 @@ let NativeMarker: any = null;
 if (Platform.OS !== 'web') {
   try {
     NativeMarker = require('react-native-maps').Marker;
-  } catch (e) {
+  } catch {
     NativeMarker = null;
   }
 }
@@ -25,7 +25,6 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
   const headingAnim = useRef(new Animated.Value(bus.heading || 0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  // Escuchar valores animados para actualizar de forma continua y fluida la posición
   useEffect(() => {
     const latId = latAnim.addListener(({ value }) => {
       setCurrentCoord((prev) => ({ ...prev, latitude: value }));
@@ -39,7 +38,6 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
     };
   }, [latAnim, lngAnim]);
 
-  // Transición suave al recibir nueva coordenada OSRM
   useEffect(() => {
     Animated.parallel([
       Animated.timing(latAnim, {
@@ -63,7 +61,6 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
     ]).start();
   }, [bus.snappedPosition.latitude, bus.snappedPosition.longitude, bus.heading]);
 
-  // Halo esmeralda pulsante
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
@@ -83,13 +80,28 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
   const markerContent = (
     <View style={styles.wrapper}>
       <Animated.View style={[styles.emeraldHalo, { transform: [{ scale: pulseAnim }] }]} />
+      {/* Vista superior estricta (top-down view) del bus con orientación angular precisa */}
       <Animated.View
         style={[
-          styles.busCircle,
-          { backgroundColor: bus.routeColor || '#10b981', transform: [{ rotate: spin }] },
+          styles.busChassis,
+          {
+            backgroundColor: bus.routeColor || '#10b981',
+            transform: [{ rotate: spin }],
+          },
         ]}
       >
-        <Text style={styles.busIcon}>🚍</Text>
+        <View style={styles.frontLightsRow}>
+          <View style={styles.headlight} />
+          <View style={styles.headlight} />
+        </View>
+        <View style={styles.windshield} />
+        <View style={styles.roofCenter}>
+          <Text style={styles.roofCodeText}>{bus.routeCode}</Text>
+        </View>
+        <View style={styles.rearLightsRow}>
+          <View style={styles.taillight} />
+          <View style={styles.taillight} />
+        </View>
       </Animated.View>
       <View style={styles.badge}>
         <Text style={styles.badgeText}>
@@ -101,7 +113,7 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
 
   if (Platform.OS === 'web' || !NativeMarker) {
     const topPct = Math.max(10, Math.min(85, 45 + (currentCoord.latitude - 1.2136) * 600));
-    const leftPct = Math.max(10, Math.min(85, 50 + (currentCoord.longitude - (-77.2811)) * 600));
+    const leftPct = Math.max(10, Math.min(85, 50 + (currentCoord.longitude - -77.2811) * 600));
 
     return (
       <TouchableOpacity
@@ -119,7 +131,7 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
       coordinate={currentCoord}
       onPress={onPress}
       anchor={{ x: 0.5, y: 0.5 }}
-      flat={false}
+      flat={true}
       tracksViewChanges={false}
     >
       {markerContent}

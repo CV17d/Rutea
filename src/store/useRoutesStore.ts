@@ -22,7 +22,7 @@ interface RoutesState {
 
 export const useRoutesStore = create<RoutesState>((set, get) => ({
   routes: MOCK_PASTO_ROUTES,
-  selectedRouteId: 'route-c16',
+  selectedRouteId: null,
   searchQuery: '',
   isOffline: false,
   isCacheLoaded: false,

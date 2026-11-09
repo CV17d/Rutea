@@ -12,19 +12,26 @@ export interface UseRouteQueryResult {
   refetch: () => Promise<void>;
 }
 
-export function useRouteQuery(routeId: string = 'route-c16'): UseRouteQueryResult {
+export function useRouteQuery(routeId: string = ''): UseRouteQueryResult {
   const [coordinates, setCoordinates] = useState<LatLng[]>(() => {
+    if (!routeId) return [];
     const storeRoute = useRoutesStore.getState().routes.find((r) => r.id === routeId);
     return storeRoute?.coordinates && storeRoute.coordinates.length > 0
       ? storeRoute.coordinates
       : ROUTE_FALLBACK_GEOMETRIES[routeId] || [];
   });
-  const [isLoading, setIsLoading] = useState<boolean>(coordinates.length === 0);
+  const [isLoading, setIsLoading] = useState<boolean>(routeId ? coordinates.length === 0 : false);
   const [error, setError] = useState<string | null>(null);
 
   const updateRouteCoordinates = useRoutesStore((s) => s.updateRouteCoordinates);
 
   const fetchRouteGeometry = useCallback(async () => {
+    if (!routeId) {
+      setCoordinates([]);
+      setIsLoading(false);
+      return;
+    }
+
     // Si ya tenemos coordenadas cacheadas, mantenerlas activas inmediatamente
     const cached = useRoutesStore.getState().routes.find((r) => r.id === routeId);
     if (cached?.coordinates && cached.coordinates.length > 0) {

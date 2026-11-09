@@ -35,7 +35,7 @@ export default function App() {
   useLocationTracking();
 
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
-  const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || 'route-c16');
+  const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || '');
   useBusSimulator(selectedRoute, routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates);
 
   useProximityAlert({
@@ -68,9 +68,9 @@ export default function App() {
     );
   }
 
-  const currentBusList = Object.values(activeBuses).filter(
-    (b) => !selectedRoute || b.routeId === selectedRoute.id
-  );
+  const currentBusList = selectedRoute
+    ? Object.values(activeBuses).filter((b) => b.routeId === selectedRoute.id)
+    : [];
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
