@@ -1,14 +1,14 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const bottomNavBarStyles = StyleSheet.create({
   dock: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    justifyContent: 'space-around', // Distribuye equitativamente el espacio entre los 4 íconos
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
     borderRadius: 32,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderWidth: 1.5,
     borderColor: 'rgba(255, 255, 255, 0.98)',
     shadowColor: '#0f172a',
@@ -18,9 +18,9 @@ export const bottomNavBarStyles = StyleSheet.create({
     elevation: 8,
   },
   navItem: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -28,7 +28,7 @@ export const bottomNavBarStyles = StyleSheet.create({
     backgroundColor: 'rgba(16, 185, 129, 0.18)',
   },
   icon: {
-    fontSize: 20,
+    fontSize: 22,
     color: '#64748b',
   },
   iconActive: {

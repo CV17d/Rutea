@@ -46,7 +46,7 @@ test('MISIÓN 46 - Iconografía Vectorial: Reemplazo de emojis por @expo/vector-
   const navContent = fs.readFileSync(navBarPath, 'utf8');
   assert.ok(navContent.includes('@expo/vector-icons'), 'BottomNavBar debe importar @expo/vector-icons');
   assert.ok(navContent.includes('name={screenMode === \'HOME\' ? \'home\' : \'home-outline\'}'), 'BottomNavBar debe tener ícono de Home vectorial');
-  assert.ok(navContent.includes('name="compass-outline"'), 'BottomNavBar debe tener ícono de brújula vectorial');
+  assert.ok(navContent.includes('name="bus"'), 'BottomNavBar debe tener ícono de bus vectorial');
   assert.ok(navContent.includes('name="clipboard-alert-outline"'), 'BottomNavBar debe tener ícono de reportes vectorial');
   assert.ok(navContent.includes('name="account-outline"'), 'BottomNavBar debe tener ícono de perfil vectorial');
   assert.ok(!navContent.includes('🏠'), 'BottomNavBar no debe contener emoji 🏠');

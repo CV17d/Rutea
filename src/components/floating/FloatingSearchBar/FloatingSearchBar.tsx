@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useUiStore } from '../../../store/useUiStore';
@@ -24,26 +24,22 @@ export const FloatingSearchBar: React.FC = () => {
       {/* Header Central: Rutas Pasto */}
       <Text style={styles.headerTitle}>Rutas Pasto</Text>
 
-      {/* Píldora translúcida blanca: ¿A dónde vas hoy? */}
-      <View style={styles.searchPill}>
+      {/* Píldora translúcida blanca: "¿A dónde vas hoy?" que acciona TripPlanner */}
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={openTripPlanner}
+        style={styles.searchPill}
+        accessibilityRole="button"
+        accessibilityLabel="¿A dónde vas hoy? Abrir planificador de viaje"
+      >
         <MaterialCommunityIcons name="magnify" size={20} color="#64748b" style={{ marginRight: 6 }} />
-        <TextInput
-          style={styles.input}
-          placeholder="¿A dónde vas hoy?"
-          placeholderTextColor="#94a3b8"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery.length > 0 ? (
-          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearBtn}>
-            <MaterialCommunityIcons name="close" size={16} color="#64748b" />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={openTripPlanner} style={styles.clearBtn}>
-            <MaterialCommunityIcons name="compass-outline" size={20} color="#0284c7" />
-          </TouchableOpacity>
-        )}
-      </View>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <Text style={styles.placeholderText}>¿A dónde vas hoy?</Text>
+        </View>
+        <View style={styles.clearBtn}>
+          <MaterialCommunityIcons name="routes" size={20} color="#0284c7" />
+        </View>
+      </TouchableOpacity>
 
       {/* Dropdown Glassmorphic con resultados de búsqueda */}
       {showDropdown && (

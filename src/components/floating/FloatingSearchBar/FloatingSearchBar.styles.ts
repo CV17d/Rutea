@@ -42,6 +42,11 @@ export const floatingSearchBarStyles = StyleSheet.create({
     fontWeight: '600',
     paddingVertical: 0,
   },
+  placeholderText: {
+    color: '#94a3b8',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   clearBtn: {
     padding: 4,
   },

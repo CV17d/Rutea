@@ -1,44 +1,19 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from '../../ui/GlassCard';
 import { GlassBadge } from '../../ui/GlassBadge';
 import { ProceduralAvatar } from '../../avatar/ProceduralAvatar';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { calculateProgress, PASTUSO_LEADERBOARD, UserProgressResult } from './userProfile.utils';
 import { userProfileCardStyles as styles } from './UserProfileCard.styles';
+
+// Rangos dinámicos oficiales: Pasajero Novato (<100 pt), Guía Local (>500 pt), Cuy Leyenda (>1000 pt)
+export { calculateProgress, UserProgressResult };
 
 export interface UserProfileCardProps {
   onClose: () => void;
 }
-
-export interface UserProgressResult {
-  currentRank: string;
-  nextRank: string;
-  pct: number;
-  needed: number;
-  badgeIcon: string;
-}
-
-export function calculateProgress(points: number): UserProgressResult {
-  if (points < 100) {
-    const pct = Math.min(100, Math.max(0, Math.round((points / 100) * 100)));
-    return { currentRank: 'Pasajero Novato', nextRank: 'Guía Local', pct, needed: 100 - points, badgeIcon: '🌱' };
-  }
-  if (points < 500) {
-    const pct = Math.min(100, Math.max(0, Math.round(((points - 100) / 400) * 100)));
-    return { currentRank: 'Pasajero Frecuente', nextRank: 'Guía Local', pct, needed: 500 - points, badgeIcon: '🧭' };
-  }
-  if (points < 1000) {
-    const pct = Math.min(100, Math.max(0, Math.round(((points - 500) / 500) * 100)));
-    return { currentRank: 'Guía Local', nextRank: 'Cuy Leyenda', pct, needed: 1000 - points, badgeIcon: '⭐' };
-  }
-  return { currentRank: 'Cuy Leyenda', nextRank: 'Nivel Máximo', pct: 100, needed: 0, badgeIcon: '👑' };
-}
-
-const PASTUSO_LEADERBOARD = [
-  { rank: '🥇', alias: 'Don_Pastuso99', pts: 1250, badge: '👑' },
-  { rank: '🥈', alias: 'CuyVeloz42', pts: 680, badge: '⭐' },
-  { rank: '🥉', alias: 'GalerasRunner19', pts: 320, badge: '🧭' },
-];
 
 export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => {
   const points = useAuthStore((s) => s.points);
@@ -47,7 +22,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
 
   const displayName = authUser?.displayName || 'Pasajero Pastuso';
   const avatarSeed = authUser?.avatarSeed || 'user-seed';
-  const { currentRank, nextRank, pct, needed, badgeIcon } = calculateProgress(points);
+  const { currentRank, nextRank, pct, needed, badgeVectorIcon, badgeColor } = calculateProgress(points);
 
   const handleLogout = async () => {
     onClose();
@@ -62,11 +37,14 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
             <ProceduralAvatar seed={avatarSeed} size={44} />
             <View style={styles.userInfo}>
               <Text style={styles.alias}>{displayName}</Text>
-              <Text style={styles.rankText}>{badgeIcon} {currentRank}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                <MaterialCommunityIcons name={badgeVectorIcon} size={15} color={badgeColor} />
+                <Text style={styles.rankText}>{currentRank}</Text>
+              </View>
             </View>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <Text style={styles.closeText}>✕</Text>
+            <MaterialCommunityIcons name="close" size={16} color="#cbd5e1" />
           </TouchableOpacity>
         </View>
 
@@ -91,11 +69,16 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
         </View>
 
         <View style={styles.leaderboardSection}>
-          <Text style={styles.leaderboardTitle}>🏆 TOP PASAJEROS PASTO</Text>
-          {PASTUSO_LEADERBOARD.map((item, idx) => (
-            <View key={idx} style={styles.leaderRow}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <MaterialCommunityIcons name="trophy-outline" size={15} color="#eab308" />
+            <Text style={styles.leaderboardTitle}>TOP PASAJEROS PASTO</Text>
+          </View>
+          {PASTUSO_LEADERBOARD.map((item) => (
+            <View key={item.pos} style={styles.leaderRow}>
               <View style={styles.leaderLeft}>
-                <Text style={styles.leaderMedal}>{item.rank}</Text>
+                <View style={{ width: 22, alignItems: 'center' }}>
+                  <MaterialCommunityIcons name={item.icon} size={16} color={item.iconColor} />
+                </View>
                 <Text style={styles.leaderName}>{item.alias}</Text>
               </View>
               <Text style={styles.leaderPoints}>{item.pts} PTS</Text>
@@ -103,7 +86,9 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
           ))}
           <View style={[styles.leaderRow, { backgroundColor: 'rgba(16, 185, 129, 0.12)', borderRadius: 8, paddingHorizontal: 6 }]}>
             <View style={styles.leaderLeft}>
-              <Text style={styles.leaderMedal}>{badgeIcon}</Text>
+              <View style={{ width: 22, alignItems: 'center' }}>
+                <MaterialCommunityIcons name={badgeVectorIcon} size={16} color="#10b981" />
+              </View>
               <Text style={[styles.leaderName, { color: '#10b981' }]}>{displayName} (Tú)</Text>
             </View>
             <Text style={[styles.leaderPoints, { color: '#10b981' }]}>{points} PTS</Text>

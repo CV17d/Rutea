@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from '../../ui/GlassCard';
 import { ProceduralAvatar } from '../ProceduralAvatar';
 import { GlassBadge } from '../../ui/GlassBadge';
@@ -32,7 +33,7 @@ export const AvatarCard: React.FC<AvatarCardProps> = ({
           </View>
         </View>
         <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-          <Text style={styles.closeText}>✕</Text>
+          <MaterialCommunityIcons name="close" size={16} color="#cbd5e1" />
         </TouchableOpacity>
       </View>
 
