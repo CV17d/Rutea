@@ -60,13 +60,13 @@ export const BottomNavBar: React.FC = () => {
         />
       </TouchableOpacity>
 
-      {/* 4. Reportes */}
+      {/* 4. Reportar Novedad */}
       <TouchableOpacity
         onPress={openReportModal}
         style={styles.navItem}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel="Reportes"
+        accessibilityLabel="Reportar novedad"
       >
         <MaterialCommunityIcons
           name="clipboard-alert-outline"

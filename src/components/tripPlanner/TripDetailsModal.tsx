@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RouteRecommendation } from '../../types/trip.types';
 import { STANDARD_ROUTES_PART2 } from '../../constants/routes/standardRoutes2';
+import { useUiStore } from '../../store/useUiStore';
 import { TripTimeline } from './TripTimeline';
 import { styles } from './TripDetailsModal.styles';
 
@@ -19,6 +20,8 @@ export const TripDetailsModal: React.FC<TripDetailsModalProps> = ({
   onClose,
   onSelectRoute,
 }) => {
+  const openReportModal = useUiStore((s) => s.openReportModal);
+
   if (!visible || !recommendation) return null;
 
   const { routeId, routeCode, routeName } = recommendation;
@@ -52,14 +55,25 @@ export const TripDetailsModal: React.FC<TripDetailsModalProps> = ({
           <TripTimeline recommendation={recommendation} />
         </ScrollView>
 
-        <TouchableOpacity
-          style={styles.startTripBtn}
-          onPress={() => onSelectRoute(recommendation)}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.startTripText}>Ver Ruta en el Mapa</Text>
-          <MaterialCommunityIcons name="arrow-right" size={16} color="#ffffff" style={{ marginLeft: 6 }} />
-        </TouchableOpacity>
+        <View style={styles.actionBtnRow}>
+          <TouchableOpacity
+            style={styles.reportBtn}
+            onPress={openReportModal}
+            activeOpacity={0.8}
+          >
+            <MaterialCommunityIcons name="alert-circle-outline" size={16} color="#d97706" />
+            <Text style={styles.reportBtnText}>Reportar Novedad</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.startTripBtn}
+            onPress={() => onSelectRoute(recommendation)}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.startTripText}>Ver Ruta en el Mapa</Text>
+            <MaterialCommunityIcons name="arrow-right" size={16} color="#ffffff" style={{ marginLeft: 4 }} />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

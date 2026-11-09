@@ -11,7 +11,7 @@ import { RouteSummaryCard } from './src/components/floating/RouteSummaryCard';
 import { RouteHeaderToggle, RouteHeroCard, StopTimeline } from './src/components/routeDetail';
 import { ActiveTrackingView } from './src/components/activeTracking';
 import { BottomNavBar } from './src/components/navigation/BottomNavBar';
-import { QuickReportModal } from './src/components/floating/QuickReportModal';
+import { ReportIncidentModal } from './src/components/floating/ReportIncidentModal';
 import { AvatarCard } from './src/components/avatar/AvatarCard';
 import { UserProfileCard } from './src/components/profile/UserProfileCard';
 import { TripPlanner } from './src/components/tripPlanner';
@@ -25,6 +25,7 @@ import { useLocationTracking } from './src/hooks/useLocationTracking';
 import { useRouteQuery } from './src/hooks/useRouteQuery';
 import { useBusSimulator } from './src/hooks/useBusSimulator';
 import { useProximityAlert } from './src/hooks/useProximityAlert';
+import { useIncidentReports } from './src/hooks/useIncidentReports';
 
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -40,6 +41,8 @@ export default function App() {
     targetLocation: selectedRoute?.stops?.[0]?.location,
     thresholdMeters: 400,
   });
+
+  useIncidentReports(selectedRoute?.id);
 
   const { activeBuses, selectedBusId, setSelectedBusId, reports } = useTrackingStore();
   const {
@@ -143,7 +146,7 @@ export default function App() {
         </>
       )}
 
-      <QuickReportModal />
+      <ReportIncidentModal />
       {isProfileModalOpen && <UserProfileCard onClose={closeProfileModal} />}
       {isTripPlannerOpen && <TripPlanner onClose={closeTripPlanner} />}
     </View>

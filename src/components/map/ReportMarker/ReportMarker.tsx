@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { CommunityReport } from '../../../types/user.types';
 
 let NativeMarker: any = null;
@@ -16,23 +17,25 @@ export interface ReportMarkerProps {
   onPress?: () => void;
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  TRAFFIC_JAM: '🚗',
-  ROAD_BLOCK: '🚧',
-  BUS_FULL: '🚌',
-  DETOUR: '↪️',
-  ACCIDENT: '💥',
-  POLICE_CHECK: '👮',
+const CATEGORY_CONFIG: Record<string, { icon: keyof typeof MaterialCommunityIcons.glyphMap; color: string }> = {
+  TRAFFIC_JAM: { icon: 'car-multiple', color: '#ef4444' },
+  TRAFFIC: { icon: 'car-multiple', color: '#ef4444' },
+  ROAD_BLOCK: { icon: 'road-variant', color: '#f59e0b' },
+  BUS_FULL: { icon: 'bus-alert', color: '#f59e0b' },
+  FULL_BUS: { icon: 'bus-alert', color: '#f59e0b' },
+  DETOUR: { icon: 'routes', color: '#8b5cf6' },
+  ACCIDENT: { icon: 'car-emergency', color: '#dc2626' },
+  POLICE_CHECK: { icon: 'shield-alert', color: '#3b82f6' },
 };
 
 export const ReportMarker: React.FC<ReportMarkerProps> = ({ report, onPress }) => {
-  const icon = CATEGORY_ICONS[report.category] || '⚠️';
+  const conf = CATEGORY_CONFIG[report.category] || { icon: 'alert-circle', color: '#f59e0b' };
   const lat = report.latitude || 1.2145;
   const lng = report.longitude || -77.2783;
 
   const markerContent = (
-    <View style={styles.card}>
-      <Text style={styles.icon}>{icon}</Text>
+    <View style={[styles.card, { borderColor: conf.color }]}>
+      <MaterialCommunityIcons name={conf.icon} size={15} color={conf.color} style={{ marginRight: 6 }} />
       <View style={styles.textWrap}>
         <Text style={styles.title} numberOfLines={1}>
           {report.title}
@@ -74,22 +77,17 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.92)',
+    backgroundColor: 'rgba(15, 23, 42, 0.95)',
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.6)',
+    borderWidth: 1.5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 5,
     elevation: 6,
     maxWidth: 160,
-  },
-  icon: {
-    fontSize: 16,
-    marginRight: 6,
   },
   textWrap: {
     flexShrink: 1,
