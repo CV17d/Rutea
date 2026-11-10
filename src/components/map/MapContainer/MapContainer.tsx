@@ -21,6 +21,7 @@ export interface MapContainerProps {
   onPressMap?: () => void;
   onRecenter?: () => void;
   mapRef?: React.RefObject<any>;
+  isDark?: boolean;
 }
 
 let NativeMapView: any = null;
@@ -40,18 +41,15 @@ if (Platform.OS !== 'web') {
 }
 
 export const MapContainer: React.FC<MapContainerProps> = ({
-  children, routeCoordinates, routeColor = '#3b82f6', stops, onStopPress, onPressMap, onRecenter, mapRef: externalMapRef,
+  children, routeCoordinates, routeColor = '#3b82f6', stops, onStopPress, onPressMap, onRecenter, mapRef: externalMapRef, isDark: propIsDark,
 }) => {
   const internalMapRef = useRef<any>(null);
   const activeMapRef = externalMapRef || internalMapRef;
-  const { isDark: isThemeDark } = useAppTheme();
-  const isDark = isThemeDark || useUiStore((s) => s.screenMode) === 'ON_BOARD';
+  const { isDark: themeIsDark } = useAppTheme();
+  const screenMode = useUiStore((s) => s.screenMode);
+  const isDark = propIsDark !== undefined ? propIsDark : (themeIsDark || screenMode === 'ON_BOARD');
 
-  const currentLocation = useTrackingStore((s) => s.currentLocation);
-  const isTrackingActive = useTrackingStore((s) => s.isTrackingActive);
-  const setTrackingActive = useTrackingStore((s) => s.setTrackingActive);
-  const tripPhase = useTrackingStore((s) => s.tripPhase);
-  const originStopLocation = useTrackingStore((s) => s.originStopLocation);
+  const { currentLocation, isTrackingActive, setTrackingActive, tripPhase, originStopLocation } = useTrackingStore();
 
   const [regionDelta, setRegionDelta] = useState(PASTO_COORDINATES.defaultDelta.latitudeDelta);
 
@@ -77,10 +75,13 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     }
   }, [tripPhase, originStopLocation]);
 
+  const safeStops = Array.isArray(stops) ? stops : [];
+  const safeRouteCoords = Array.isArray(routeCoordinates) ? routeCoordinates : [];
+
   // Memoización y Clustering de paraderos para 60 FPS
   const renderedStopMarkers = useMemo(() => {
-    if (!stops || stops.length === 0) return null;
-    return clusterBusStops(stops, regionDelta).map((item) => item.isCluster ? (
+    if (safeStops.length === 0) return null;
+    return clusterBusStops(safeStops, regionDelta).map((item) => item.isCluster ? (
       <ClusterMarker
         key={`cluster-${item.id}`} coordinate={item.location} count={item.count}
         onPress={() => activeMapRef.current?.animateToRegion({
@@ -91,7 +92,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     ) : (
       <StopMarker key={item.stop.id} stop={item.stop} onPress={() => onStopPress?.(item.stop)} />
     ));
-  }, [stops, regionDelta, onStopPress]);
+  }, [safeStops, regionDelta, onStopPress]);
 
   if (Platform.OS === 'web' || !NativeMapView) {
     const pastoUrl = 'https://www.openstreetmap.org/export/embed.html?bbox=-77.315%2C1.185%2C-77.245%2C1.245&layer=mapnik';
@@ -130,8 +131,8 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         onTouchStart={() => isTrackingActive && setTrackingActive(false)}
         onRegionChangeComplete={(r: any) => setRegionDelta(r.latitudeDelta)}
       >
-        {routeCoordinates && routeCoordinates.length > 0 && NativePolyline && (
-          <NativePolyline coordinates={routeCoordinates} strokeColor={routeColor} strokeWidth={5} lineCap="round" lineJoin="round" simplify={true} />
+        {safeRouteCoords.length > 0 && NativePolyline && (
+          <NativePolyline coordinates={safeRouteCoords} strokeColor={routeColor} strokeWidth={5} lineCap="round" lineJoin="round" simplify={true} />
         )}
         {renderedStopMarkers}
         {children}

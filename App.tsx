@@ -45,7 +45,8 @@ export default function App() {
   const proximityRadiusMeters = useSettingsStore((s) => s.proximityRadiusMeters);
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || '');
-  useBusSimulator(selectedRoute, routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates);
+  const activeRouteCoords = Array.isArray(routeCoordinates) ? routeCoordinates : [];
+  useBusSimulator(selectedRoute, activeRouteCoords.length > 0 ? activeRouteCoords : selectedRoute?.coordinates);
   useProximityAlert({ routeId: selectedRoute?.id, targetLocation: selectedRoute?.stops?.[0]?.location, thresholdMeters: proximityRadiusMeters });
   useIncidentReports(selectedRoute?.id);
 
@@ -89,13 +90,14 @@ export default function App() {
       ) : (
         <>
           <MapContainer
-            routeCoordinates={routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates}
+            isDark={isDark}
+            routeCoordinates={activeRouteCoords.length > 0 ? activeRouteCoords : selectedRoute?.coordinates}
             routeColor={selectedRoute?.color} stops={selectedRoute?.stops}
             onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}
           >
             <WalkingPolyline />
             {selectedRoute && (
-              <RoutePolyline route={selectedRoute} coordinates={routeCoordinates.length > 0 ? routeCoordinates : undefined} />
+              <RoutePolyline route={selectedRoute} coordinates={activeRouteCoords.length > 0 ? activeRouteCoords : undefined} />
             )}
             {currentBusList.map((bus) => (
               <LiveBusMarker key={bus.busId} bus={bus} onPress={() => {
