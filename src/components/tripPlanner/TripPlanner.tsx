@@ -15,7 +15,7 @@ const CHIPS = ['Torobajo', 'Hospital Departamental', 'Catambuco', 'Terminal'];
 const OUT_OF_AREA_MSG = 'Parece que estás fuera de San Juan de Pasto. Por favor, ingresa un punto de origen manualmente';
 
 export const TripPlanner: React.FC<Props> = ({ onClose }) => {
-  const currentLocation = useTrackingStore((s) => s.currentLocation);
+  const { currentLocation, setTripPhase, setOriginStopLocation, setWalkingPolyline } = useTrackingStore();
   const selectRoute = useRoutesStore((s) => s.selectRoute);
   const setScreenMode = useUiStore((s) => s.setScreenMode);
 
@@ -27,43 +27,28 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
   const [selectedRec, setSelectedRec] = useState<RouteRecommendation | null>(null);
 
   const handleUseGps = () => {
-    if (!currentLocation) {
-      setOriginText('Plaza de Nariño');
-      setCoverageWarning(null);
-      return;
+    if (!currentLocation) { setOriginText('Plaza de Nariño'); setCoverageWarning(null); return; }
+    if (checkCoverageArea(currentLocation).isOutOfArea) {
+      setCoverageWarning(OUT_OF_AREA_MSG); setOriginText(''); setRecommendations(null); return;
     }
-    const coverage = checkCoverageArea(currentLocation);
-    if (coverage.isOutOfArea) {
-      setCoverageWarning(OUT_OF_AREA_MSG);
-      setOriginText('');
-      setRecommendations(null);
-      return;
-    }
-    setCoverageWarning(null);
-    setOriginText('Mi Ubicación GPS');
+    setCoverageWarning(null); setOriginText('Mi Ubicación GPS');
   };
 
   const handleSearch = async () => {
     if (!destText.trim()) return;
-    setIsLoading(true);
-    setRecommendations(null);
+    setIsLoading(true); setRecommendations(null);
 
     const origCoord = originText === 'Mi Ubicación GPS' && currentLocation
       ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
       : resolvePastoLocation(originText);
 
     if (!origCoord || checkCoverageArea(origCoord).isOutOfArea) {
-      setCoverageWarning(OUT_OF_AREA_MSG);
-      setIsLoading(false);
-      return;
+      setCoverageWarning(OUT_OF_AREA_MSG); setIsLoading(false); return;
     }
-
     setCoverageWarning(null);
     const destCoord = resolvePastoLocation(destText);
     if (!destCoord || checkCoverageArea(destCoord).isOutOfArea) {
-      setCoverageWarning(OUT_OF_AREA_MSG);
-      setIsLoading(false);
-      return;
+      setCoverageWarning(OUT_OF_AREA_MSG); setIsLoading(false); return;
     }
     const results = await findBestRoutes({ origin: origCoord, destination: destCoord, radiusMeters: 1200 });
     setRecommendations(results);
@@ -72,6 +57,12 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
 
   const handleConfirmRoute = (rec: RouteRecommendation) => {
     selectRoute(rec.routeId);
+    setTripPhase('WALKING_TO_STOP');
+    if (rec.originStop) {
+      setOriginStopLocation({ ...rec.originStop.location, name: rec.originStop.name, id: rec.originStop.id });
+      const userPos = currentLocation ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude } : { latitude: 1.2136, longitude: -77.2811 };
+      setWalkingPolyline([userPos, rec.originStop.location]);
+    }
     setSelectedRec(null);
     if (onClose) onClose();
     setScreenMode('ROUTE_DETAILS');

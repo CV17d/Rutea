@@ -47,6 +47,8 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   const currentLocation = useTrackingStore((s) => s.currentLocation);
   const isTrackingActive = useTrackingStore((s) => s.isTrackingActive);
   const setTrackingActive = useTrackingStore((s) => s.setTrackingActive);
+  const tripPhase = useTrackingStore((s) => s.tripPhase);
+  const originStopLocation = useTrackingStore((s) => s.originStopLocation);
 
   const [regionDelta, setRegionDelta] = useState(PASTO_COORDINATES.defaultDelta.latitudeDelta);
 
@@ -61,6 +63,17 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     }
   }, [currentLocation, isTrackingActive]);
 
+  // Navegación Peatonal y Enfoque en Paradero
+  useEffect(() => {
+    if (!originStopLocation || !activeMapRef.current) return;
+    const center = { latitude: originStopLocation.latitude, longitude: originStopLocation.longitude };
+    if (tripPhase === 'WALKING_TO_STOP') {
+      activeMapRef.current.animateCamera?.({ center, zoom: 17 }, { duration: 800 });
+    } else if (tripPhase === 'WAITING_FOR_BUS') {
+      activeMapRef.current.animateCamera?.({ center, zoom: 15 }, { duration: 800 });
+    }
+  }, [tripPhase, originStopLocation]);
+
   // Memoización y Clustering de paraderos para 60 FPS
   const renderedStopMarkers = useMemo(() => {
     if (!stops || stops.length === 0) return null;
@@ -68,15 +81,11 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       if (item.isCluster) {
         return (
           <ClusterMarker
-            key={`cluster-${item.id}`}
-            coordinate={item.location}
-            count={item.count}
+            key={`cluster-${item.id}`} coordinate={item.location} count={item.count}
             onPress={() => {
               activeMapRef.current?.animateToRegion({
-                latitude: item.location.latitude,
-                longitude: item.location.longitude,
-                latitudeDelta: Math.max(0.005, regionDelta / 2),
-                longitudeDelta: Math.max(0.005, regionDelta / 2),
+                latitude: item.location.latitude, longitude: item.location.longitude,
+                latitudeDelta: Math.max(0.005, regionDelta / 2), longitudeDelta: Math.max(0.005, regionDelta / 2),
               }, 300);
             }}
           />
@@ -112,20 +121,13 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: isDark ? '#070b13' : '#f8fafc' }]}>
       <NativeMapView
-        ref={activeMapRef}
-        style={StyleSheet.absoluteFill}
-        provider={PROVIDER_DEFAULT}
+        ref={activeMapRef} style={StyleSheet.absoluteFill} provider={PROVIDER_DEFAULT}
         initialRegion={{
-          latitude: PASTO_COORDINATES.center.latitude,
-          longitude: PASTO_COORDINATES.center.longitude,
-          latitudeDelta: PASTO_COORDINATES.defaultDelta.latitudeDelta,
-          longitudeDelta: PASTO_COORDINATES.defaultDelta.longitudeDelta,
+          latitude: PASTO_COORDINATES.center.latitude, longitude: PASTO_COORDINATES.center.longitude,
+          latitudeDelta: PASTO_COORDINATES.defaultDelta.latitudeDelta, longitudeDelta: PASTO_COORDINATES.defaultDelta.longitudeDelta,
         }}
-        showsUserLocation
-        showsMyLocationButton={false}
-        showsCompass={false}
-        onPress={onPressMap}
-        onPanDrag={() => setTrackingActive(false)}
+        showsUserLocation showsMyLocationButton={false} showsCompass={false}
+        onPress={onPressMap} onPanDrag={() => setTrackingActive(false)}
         onTouchStart={() => isTrackingActive && setTrackingActive(false)}
         onRegionChangeComplete={(r: any) => setRegionDelta(r.latitudeDelta)}
       >

@@ -2,6 +2,15 @@ import { create } from 'zustand';
 import { ProjectedBusLocation } from '../types/telemetry.types';
 import { CommunityReport } from '../types/user.types';
 
+export type TripPhase = 'WALKING_TO_STOP' | 'WAITING_FOR_BUS' | 'ON_BUS' | null;
+
+export interface OriginStopLocation {
+  latitude: number;
+  longitude: number;
+  name?: string;
+  id?: string;
+}
+
 export interface CurrentUserLocation {
   latitude: number;
   longitude: number;
@@ -19,9 +28,17 @@ interface TrackingState {
   isTrackingActive: boolean;
   totalPoints: number;
   currentRank: string;
+  tripPhase: TripPhase;
+  originStopLocation: OriginStopLocation | null;
+  walkingPolyline: Array<{ latitude: number; longitude: number }>;
+  arrivalMessage: string | null;
   setGamification: (points: number, rank: string) => void;
   setCurrentLocation: (loc: CurrentUserLocation | null) => void;
   setTrackingActive: (active: boolean) => void;
+  setTripPhase: (phase: TripPhase) => void;
+  setOriginStopLocation: (loc: OriginStopLocation | null) => void;
+  setWalkingPolyline: (poly: Array<{ latitude: number; longitude: number }>) => void;
+  setArrivalMessage: (msg: string | null) => void;
   updateBusLocation: (bus: ProjectedBusLocation) => void;
   removeBus: (busId: string) => void;
   addReport: (report: CommunityReport) => void;
@@ -59,9 +76,17 @@ export const useTrackingStore = create<TrackingState>((set, get) => ({
   isTrackingActive: false,
   totalPoints: 85,
   currentRank: 'Vigía del Galeras',
+  tripPhase: null,
+  originStopLocation: null,
+  walkingPolyline: [],
+  arrivalMessage: null,
   setGamification: (points, rank) => set({ totalPoints: points, currentRank: rank }),
   setCurrentLocation: (loc) => set({ currentLocation: loc }),
   setTrackingActive: (active) => set({ isTrackingActive: active }),
+  setTripPhase: (phase) => set({ tripPhase: phase }),
+  setOriginStopLocation: (loc) => set({ originStopLocation: loc }),
+  setWalkingPolyline: (poly) => set({ walkingPolyline: poly }),
+  setArrivalMessage: (msg) => set({ arrivalMessage: msg }),
   addReport: (report) => set((s) => ({ reports: [report, ...s.reports] })),
 
   updateBusLocation: (bus) => {
