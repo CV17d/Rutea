@@ -117,3 +117,35 @@ test('Navegación e Integración: BottomNavBar abre SettingsModal y App.tsx lo m
   assert.ok(navLines <= 150, `BottomNavBar.tsx tiene ${navLines} líneas, debe ser <= 150`);
   assert.ok(appLines <= 200, `App.tsx tiene ${appLines} líneas, debe ser <= 200`);
 });
+
+// 5. Motor de Temas Reactivo: useAppTheme, conmutación Claro/Oscuro/Sistema y estilos de Mapa
+test('Motor de Temas Reactivo: Conmutación Claro/Oscuro y sincronización con Sistema', () => {
+  const themeHookPath = path.resolve(__dirname, '../src/hooks/useAppTheme.ts');
+  const darkMapPath = path.resolve(__dirname, '../src/constants/darkMapStyle.ts');
+  const mapPath = path.resolve(__dirname, '../src/components/map/MapContainer/MapContainer.tsx');
+  const appPath = path.resolve(__dirname, '../App.tsx');
+
+  assert.ok(fs.existsSync(themeHookPath), 'useAppTheme.ts debe existir');
+  assert.ok(fs.existsSync(darkMapPath), 'darkMapStyle.ts debe existir');
+  assert.ok(fs.existsSync(mapPath), 'MapContainer.tsx debe existir');
+
+  const themeHookContent = fs.readFileSync(themeHookPath, 'utf8');
+  assert.ok(themeHookContent.includes('useColorScheme'), 'useAppTheme debe consultar el esquema del sistema (useColorScheme)');
+  assert.ok(themeHookContent.includes("themeSetting === 'dark'"), 'Debe detectar selección explícita oscura');
+  assert.ok(themeHookContent.includes("themeSetting === 'system'"), 'Debe respetar el sistema cuando se selecciona sistema');
+
+  const mapContent = fs.readFileSync(mapPath, 'utf8');
+  assert.ok(mapContent.includes('useAppTheme'), 'MapContainer debe suscribirse al tema reactivo con useAppTheme');
+  assert.ok(mapContent.includes('DARK_MAP_STYLE'), 'MapContainer debe usar DARK_MAP_STYLE en modo oscuro');
+  assert.ok(mapContent.includes('customMapStyle'), 'MapContainer debe configurar customMapStyle para Google Maps');
+
+  const appContent = fs.readFileSync(appPath, 'utf8');
+  assert.ok(appContent.includes('useAppTheme'), 'App.tsx debe usar useAppTheme para alternar el fondo y la barra de estado');
+  assert.ok(appContent.includes('isDark'), 'App.tsx debe conmutar el fondo según isDark');
+
+  // Comprobar límite de líneas
+  const hookLines = themeHookContent.split('\n').length;
+  const mapLines = mapContent.split('\n').length;
+  assert.ok(hookLines <= 150, `useAppTheme.ts tiene ${hookLines} líneas, debe ser <= 150`);
+  assert.ok(mapLines <= 150, `MapContainer.tsx tiene ${mapLines} líneas, debe ser <= 150`);
+});

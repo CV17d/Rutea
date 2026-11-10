@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useUiStore } from '../../../store/useUiStore';
 import { useTranslation } from '../../../i18n/useTranslation';
+import { useAppTheme } from '../../../hooks/useAppTheme';
 import { styles } from './RouteHeaderToggle.styles';
 
 interface RouteHeaderToggleProps {
@@ -16,6 +17,7 @@ export const RouteHeaderToggle: React.FC<RouteHeaderToggleProps> = ({
 }) => {
   const setScreenMode = useUiStore((s) => s.setScreenMode);
   const { t } = useTranslation();
+  const { isDark } = useAppTheme();
   const [activeTab, setActiveTab] = useState<'search' | 'live'>('search');
 
   const handleBack = () => {
@@ -35,16 +37,16 @@ export const RouteHeaderToggle: React.FC<RouteHeaderToggleProps> = ({
     <View style={styles.container}>
       <View style={styles.topRow}>
         <TouchableOpacity
-          style={styles.backButton}
+          style={[styles.backButton, isDark && { backgroundColor: 'rgba(30, 41, 59, 0.90)', borderColor: '#334155', borderWidth: 1 }]}
           onPress={handleBack}
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="arrow-left" size={20} color="#94a3b8" />
+          <MaterialCommunityIcons name="arrow-left" size={20} color={isDark ? '#cbd5e1' : '#94a3b8'} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('common.appTitle', 'Rutas Pasto')}</Text>
+        <Text style={[styles.headerTitle, isDark && { color: '#ffffff' }]}>{t('common.appTitle', 'Rutas Pasto')}</Text>
       </View>
 
-      <View style={styles.toggleContainer}>
+      <View style={[styles.toggleContainer, isDark && { backgroundColor: 'rgba(15, 23, 42, 0.85)', borderColor: '#334155' }]}>
         <TouchableOpacity
           style={[styles.toggleButton, activeTab === 'search' && styles.toggleButtonActive]}
           onPress={() => handleSelectTab('search')}

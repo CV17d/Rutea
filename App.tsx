@@ -24,6 +24,7 @@ import { useRoutesStore } from './src/store/useRoutesStore';
 import { useTrackingStore } from './src/store/useTrackingStore';
 import { useUiStore } from './src/store/useUiStore';
 import { useSettingsStore } from './src/store/useSettingsStore';
+import { useAppTheme } from './src/hooks/useAppTheme';
 import { useSocketRoutes } from './src/hooks/useSocketRoutes';
 import { useLocationTracking } from './src/hooks/useLocationTracking';
 import { useRouteQuery } from './src/hooks/useRouteQuery';
@@ -35,6 +36,7 @@ import { useStopArrivalDetection } from './src/hooks/useStopArrivalDetection';
 
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { isDark } = useAppTheme();
   useOfflineSync();
   useSocketRoutes();
   useLocationTracking();
@@ -73,8 +75,8 @@ export default function App() {
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
-    <View style={[styles.container, { backgroundColor: screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
-      <StatusBar style={screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
+    <View style={[styles.container, { backgroundColor: isDark || screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
+      <StatusBar style={isDark || screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
       <InAppNotification />
       {arrivalMessage && (
         <View style={styles.arrivalToast}>

@@ -3,6 +3,7 @@ import { View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useUiStore } from '../../../store/useUiStore';
 import { useTranslation } from '../../../i18n/useTranslation';
+import { useAppTheme } from '../../../hooks/useAppTheme';
 import { bottomNavBarStyles as styles } from './BottomNavBar.styles';
 
 export const BottomNavBar: React.FC = () => {
@@ -14,9 +15,11 @@ export const BottomNavBar: React.FC = () => {
     openSettingsModal,
   } = useUiStore();
   const { t } = useTranslation();
+  const { isDark } = useAppTheme();
+  const inactiveColor = isDark ? '#94a3b8' : '#64748b';
 
   return (
-    <View style={styles.dock}>
+    <View style={[styles.dock, isDark && { backgroundColor: 'rgba(15, 23, 42, 0.94)', borderColor: '#334155' }]}>
       {/* 1. Inicio */}
       <TouchableOpacity
         onPress={() => setScreenMode('HOME')}
@@ -28,7 +31,7 @@ export const BottomNavBar: React.FC = () => {
         <MaterialCommunityIcons
           name={screenMode === 'HOME' ? 'home' : 'home-outline'}
           size={24}
-          color={screenMode === 'HOME' ? '#10b981' : '#64748b'}
+          color={screenMode === 'HOME' ? '#10b981' : inactiveColor}
         />
       </TouchableOpacity>
 
@@ -43,7 +46,7 @@ export const BottomNavBar: React.FC = () => {
         <MaterialCommunityIcons
           name="bus"
           size={24}
-          color={screenMode === 'ROUTE_DETAILS' ? '#10b981' : '#64748b'}
+          color={screenMode === 'ROUTE_DETAILS' ? '#10b981' : inactiveColor}
         />
       </TouchableOpacity>
 
@@ -58,7 +61,7 @@ export const BottomNavBar: React.FC = () => {
         <MaterialCommunityIcons
           name="clipboard-alert-outline"
           size={24}
-          color="#64748b"
+          color={inactiveColor}
         />
       </TouchableOpacity>
 
@@ -73,7 +76,7 @@ export const BottomNavBar: React.FC = () => {
         <MaterialCommunityIcons
           name="account-outline"
           size={24}
-          color="#64748b"
+          color={inactiveColor}
         />
       </TouchableOpacity>
 
@@ -88,7 +91,7 @@ export const BottomNavBar: React.FC = () => {
         <MaterialCommunityIcons
           name="cog-outline"
           size={24}
-          color="#64748b"
+          color={inactiveColor}
         />
       </TouchableOpacity>
     </View>

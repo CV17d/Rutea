@@ -5,6 +5,7 @@ import { useTrackingStore } from '../../store/useTrackingStore';
 import { useRoutesStore } from '../../store/useRoutesStore';
 import { useUiStore } from '../../store/useUiStore';
 import { useTranslation } from '../../i18n/useTranslation';
+import { useAppTheme } from '../../hooks/useAppTheme';
 import { findBestRoutes, resolvePastoLocation, checkCoverageArea } from '../../services/tripRecommendation.service';
 import { RouteRecommendation } from '../../types/trip.types';
 import { RouteRecommendationCard } from './RouteRecommendationCard';
@@ -20,6 +21,7 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
   const selectRoute = useRoutesStore((s) => s.selectRoute);
   const setScreenMode = useUiStore((s) => s.setScreenMode);
   const { t } = useTranslation();
+  const { isDark } = useAppTheme();
 
   const [originText, setOriginText] = useState('Mi Ubicación');
   const [destText, setDestText] = useState('');
@@ -72,10 +74,10 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
 
   return (
     <View style={styles.modalOverlay}>
-      <View style={styles.modalContent}>
+      <View style={[styles.modalContent, isDark && { backgroundColor: '#0f172a', borderColor: '#334155' }]}>
         <View style={styles.dragHandle} />
         <View style={styles.headerRow}>
-          <Text style={styles.titleText}>{t('search.planTrip', 'Planificador de Viaje')}</Text>
+          <Text style={[styles.titleText, isDark && { color: '#ffffff' }]}>{t('search.planTrip', 'Planificador de Viaje')}</Text>
           {onClose && (
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
               <MaterialCommunityIcons name="close" size={18} color="#64748b" />
@@ -83,10 +85,10 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
           )}
         </View>
 
-        <View style={styles.inputWrap}>
+        <View style={[styles.inputWrap, isDark && { backgroundColor: '#1e293b', borderColor: '#334155' }]}>
           <View style={styles.inputRow}>
             <MaterialCommunityIcons name="circle-slice-8" size={16} color="#10b981" />
-            <TextInput style={styles.textInput} value={originText} onChangeText={(t) => { setOriginText(t); setCoverageWarning(null); }} placeholder={t('search.startPoint', 'Punto de partida')} placeholderTextColor="#94a3b8" />
+            <TextInput style={[styles.textInput, isDark && { color: '#ffffff' }]} value={originText} onChangeText={(t) => { setOriginText(t); setCoverageWarning(null); }} placeholder={t('search.startPoint', 'Punto de partida')} placeholderTextColor="#94a3b8" />
             <TouchableOpacity onPress={handleUseGps} style={styles.gpsBtn}>
               <MaterialCommunityIcons name="crosshairs-gps" size={13} color="#0284c7" />
               <Text style={styles.gpsBtnText}>GPS</Text>
@@ -95,7 +97,7 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
           <View style={styles.divider} />
           <View style={styles.inputRow}>
             <MaterialCommunityIcons name="map-marker" size={18} color="#ef4444" />
-            <TextInput style={styles.textInput} value={destText} onChangeText={setDestText} placeholder={t('search.whereTo', '¿A dónde vas?')} placeholderTextColor="#94a3b8" />
+            <TextInput style={[styles.textInput, isDark && { color: '#ffffff' }]} value={destText} onChangeText={setDestText} placeholder={t('search.whereTo', '¿A dónde vas?')} placeholderTextColor="#94a3b8" />
           </View>
         </View>
 

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useTranslation } from '../../../i18n/useTranslation';
+import { useAppTheme } from '../../../hooks/useAppTheme';
 import { styles } from './StopTimeline.styles';
 
 export interface TimelineStop {
@@ -23,6 +24,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
 }) => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { t } = useTranslation();
+  const { isDark } = useAppTheme();
 
   // Si no hay ruta seleccionada ni paradas provistas, no renderizar paradas fantasma
   if (!selectedRoute && (!stops || stops.length === 0)) {
@@ -43,7 +45,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
   }
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, isDark && { backgroundColor: 'rgba(30, 41, 59, 0.94)', borderColor: '#334155' }]}>
       <ScrollView
         style={[styles.stopsContainer, { maxHeight: 220 }]}
         showsVerticalScrollIndicator={false}
@@ -58,7 +60,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
               style={[styles.stopRow, !isLast && { marginBottom: 18 }]}
             >
               <View style={styles.indicatorCol}>
-                {!isLast && <View style={styles.trackLine} />}
+                {!isLast && <View style={[styles.trackLine, isDark && { backgroundColor: '#334155' }]} />}
                 {stop.variant === 'pink' ? (
                   <View style={[styles.iconCircle, styles.iconPink]}>
                     <MaterialCommunityIcons name="bus" size={14} color="#ec4899" />
@@ -68,14 +70,14 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
                     <View style={styles.greenDot} />
                   </View>
                 ) : (
-                  <View style={[styles.iconCircle, styles.iconGray]}>
+                  <View style={[styles.iconCircle, styles.iconGray, isDark && { backgroundColor: '#1e293b' }]}>
                     <MaterialCommunityIcons name="bus" size={14} color="#64748b" />
                   </View>
                 )}
               </View>
 
               <View style={styles.stopInfoCol}>
-                <Text style={styles.stopName} numberOfLines={1}>
+                <Text style={[styles.stopName, isDark && { color: '#ffffff' }]} numberOfLines={1}>
                   {stop.name}
                 </Text>
                 <View style={styles.stopSubtitleRow}>
@@ -93,7 +95,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
       </ScrollView>
 
       <TouchableOpacity
-        style={styles.detailsButton}
+        style={[styles.detailsButton, isDark && { backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1 }]}
         onPress={onPressDetails}
         activeOpacity={0.8}
       >

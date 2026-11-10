@@ -1,8 +1,10 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { View, StyleSheet, Platform, TouchableWithoutFeedback } from 'react-native';
 import { PASTO_COORDINATES } from '../../../constants/pastoCoordinates';
+import { DARK_MAP_STYLE } from '../../../constants/darkMapStyle';
 import { useUiStore } from '../../../store/useUiStore';
 import { useTrackingStore } from '../../../store/useTrackingStore';
+import { useAppTheme } from '../../../hooks/useAppTheme';
 import { LatLng, BusStop } from '../../../types/route.types';
 import { CenterLocationButton } from '../CenterLocationButton';
 import { StopMarker } from '../StopMarker';
@@ -42,7 +44,8 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 }) => {
   const internalMapRef = useRef<any>(null);
   const activeMapRef = externalMapRef || internalMapRef;
-  const isDark = useUiStore((s) => s.screenMode) === 'ON_BOARD';
+  const { isDark: isThemeDark } = useAppTheme();
+  const isDark = isThemeDark || useUiStore((s) => s.screenMode) === 'ON_BOARD';
 
   const currentLocation = useTrackingStore((s) => s.currentLocation);
   const isTrackingActive = useTrackingStore((s) => s.isTrackingActive);
@@ -77,22 +80,17 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   // Memoización y Clustering de paraderos para 60 FPS
   const renderedStopMarkers = useMemo(() => {
     if (!stops || stops.length === 0) return null;
-    return clusterBusStops(stops, regionDelta).map((item) => {
-      if (item.isCluster) {
-        return (
-          <ClusterMarker
-            key={`cluster-${item.id}`} coordinate={item.location} count={item.count}
-            onPress={() => {
-              activeMapRef.current?.animateToRegion({
-                latitude: item.location.latitude, longitude: item.location.longitude,
-                latitudeDelta: Math.max(0.005, regionDelta / 2), longitudeDelta: Math.max(0.005, regionDelta / 2),
-              }, 300);
-            }}
-          />
-        );
-      }
-      return <StopMarker key={item.stop.id} stop={item.stop} onPress={() => onStopPress?.(item.stop)} />;
-    });
+    return clusterBusStops(stops, regionDelta).map((item) => item.isCluster ? (
+      <ClusterMarker
+        key={`cluster-${item.id}`} coordinate={item.location} count={item.count}
+        onPress={() => activeMapRef.current?.animateToRegion({
+          latitude: item.location.latitude, longitude: item.location.longitude,
+          latitudeDelta: Math.max(0.005, regionDelta / 2), longitudeDelta: Math.max(0.005, regionDelta / 2),
+        }, 300)}
+      />
+    ) : (
+      <StopMarker key={item.stop.id} stop={item.stop} onPress={() => onStopPress?.(item.stop)} />
+    ));
   }, [stops, regionDelta, onStopPress]);
 
   if (Platform.OS === 'web' || !NativeMapView) {
@@ -122,6 +120,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     <View style={[styles.container, { backgroundColor: isDark ? '#070b13' : '#f8fafc' }]}>
       <NativeMapView
         ref={activeMapRef} style={StyleSheet.absoluteFill} provider={PROVIDER_DEFAULT}
+        customMapStyle={isDark ? DARK_MAP_STYLE : []}
         initialRegion={{
           latitude: PASTO_COORDINATES.center.latitude, longitude: PASTO_COORDINATES.center.longitude,
           latitudeDelta: PASTO_COORDINATES.defaultDelta.latitudeDelta, longitudeDelta: PASTO_COORDINATES.defaultDelta.longitudeDelta,
