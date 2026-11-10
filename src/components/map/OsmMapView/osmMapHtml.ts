@@ -10,6 +10,7 @@ export function buildOsmMapHtml(isDark: boolean): string {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css" />
 <style>
   html, body, #map { margin: 0; padding: 0; width: 100%; height: 100%; background: ${bg}; overflow: hidden; }
+  .rutea-dark .leaflet-tile-pane { filter: invert(92%) hue-rotate(190deg) brightness(86%) contrast(92%); }
   .rutea-cluster {
     width: 28px; height: 28px; border-radius: 14px; background: #10b981; color: #fff;
     font: 800 12px/28px system-ui, sans-serif; text-align: center; border: 2px solid #fff;

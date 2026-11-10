@@ -9,21 +9,22 @@ export const OSM_MAP_SCRIPT = `
   var post = function(obj) {
     try { window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify(obj)); } catch (e) {}
   };
-  function setTiles(isDark) {
+  function applyTheme(isDark) {
     if (!map || currentDark === isDark) return;
     currentDark = isDark;
     document.body.style.background = isDark ? '#070b13' : '#f8fafc';
-    if (tileLayer) map.removeLayer(tileLayer);
-    var url = isDark
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    var el = document.getElementById('map');
+    if (el) el.classList.toggle('rutea-dark', isDark);
+  }
+  function mountTiles() {
+    var url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
     var fbUsed = false;
-    tileLayer = L.tileLayer(url, { subdomains: 'abcd', maxZoom: 19 });
+    tileLayer = L.tileLayer(url, { maxZoom: 19, maxNativeZoom: 18 });
     tileLayer.on('tileerror', function() {
       if (fbUsed || !map) return;
       fbUsed = true;
       map.removeLayer(tileLayer);
-      tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+      tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 18 }).addTo(map);
     });
     tileLayer.addTo(map);
   }
@@ -31,7 +32,8 @@ export const OSM_MAP_SCRIPT = `
     if (typeof L === 'undefined') { setTimeout(initMap, 250); return; }
     map = L.map('map', { zoomControl: false, attributionControl: false }).setView([1.2136, -77.2811], 14);
     overlayGroup = L.layerGroup().addTo(map);
-    setTiles(false);
+    mountTiles();
+    applyTheme(false);
     map.on('dragstart', function() { post({ type: 'panDrag' }); });
     map.on('click', function() { post({ type: 'mapPress' }); });
     map.on('moveend', function() {
@@ -47,7 +49,7 @@ export const OSM_MAP_SCRIPT = `
   window.__ruteaUpdate = function(s) {
     lastState = s;
     if (!map || !overlayGroup) return;
-    setTiles(!!s.isDark);
+    applyTheme(!!s.isDark);
     overlayGroup.clearLayers();
     if (s.routeCoords && s.routeCoords.length > 1) {
       L.polyline(s.routeCoords, { color: s.routeColor || '#3b82f6', weight: 5, opacity: 0.92, lineCap: 'round', lineJoin: 'round' }).addTo(overlayGroup);

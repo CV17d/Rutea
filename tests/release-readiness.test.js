@@ -81,7 +81,7 @@ test('APK Crash Fix - OsmMapView & ErrorBoundary: Mapa OSM/CartoDB sin Google AP
 
   assert.ok(mapContainer.includes('HAS_GOOGLE_MAPS_KEY'), 'MapContainer debe verificar clave antes de montar Google MapView');
   assert.ok(mapContainer.includes('<OsmMapView'), 'MapContainer debe renderizar OsmMapView sin Google Maps Key');
-  assert.ok(osmScript.includes('cartocdn.com') && osmScript.includes('openstreetmap.org'), 'Debe usar CartoDB/OSM gratuitos');
+  assert.ok(osmScript.includes('arcgisonline.com') && !osmScript.includes('cartocdn.com'), 'Debe usar Esri ArcGIS tiles gratuitos sin API key ni CARTO watermark');
   assert.ok(osmScript.includes('__ruteaCamera') && osmScript.includes('__ruteaUpdate'), 'Debe soportar cámara y actualizaciones reactivas');
   assert.ok(appSrc.includes('<ErrorBoundary>'), 'App.tsx debe envolver la vista principal con ErrorBoundary');
 
