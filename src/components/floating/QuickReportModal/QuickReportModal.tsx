@@ -1,34 +1,48 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { IncidentCategory } from '../../../types/user.types';
 import { useUiStore } from '../../../store/useUiStore';
 import { useUserSessionStore } from '../../../store/useUserSessionStore';
 import { useTrackingStore } from '../../../store/useTrackingStore';
+import { useAuthStore } from '../../../store/useAuthStore';
 import { socketClient } from '../../../services/socket.client';
+import { checkReportCooldown, recordReportCooldown, awardReportPoints } from '../../../services/report.service';
 import { quickReportModalStyles as styles } from './QuickReportModal.styles';
 
 export interface ReportOption {
   key: IncidentCategory;
   label: string;
-  icon: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
   sub: string;
 }
 
 export const REPORT_OPTIONS: ReportOption[] = [
-  { key: 'BUS_FULL', label: 'Bus Lleno', icon: '🚌', sub: 'Sin cupo disponible' },
-  { key: 'TRAFFIC_JAM', label: 'Trancón', icon: '🚗', sub: 'Congestión vehicular lenta' },
-  { key: 'ROAD_BLOCK', label: 'Vía Cerrada', icon: '🚧', sub: 'Obras o paso bloqueado' },
+  { key: 'BUS_FULL', label: 'Bus Lleno', icon: 'account-group', sub: 'Sin cupo disponible' },
+  { key: 'TRAFFIC_JAM', label: 'Trancón', icon: 'car-brake-alert', sub: 'Congestión vehicular lenta' },
+  { key: 'ROAD_BLOCK', label: 'Vía Cerrada', icon: 'alert-octagon', sub: 'Obras o paso bloqueado' },
 ];
 
 export const QuickReportModal: React.FC = () => {
   const { isReportModalOpen, closeReportModal } = useUiStore();
-  const { profile, addPoints } = useUserSessionStore();
-  const { currentLocation, addReport, totalPoints, setGamification, currentRank } = useTrackingStore();
+  const { profile } = useUserSessionStore();
+  const { currentLocation, addReport } = useTrackingStore();
+  const { isAuthenticated, isGuest } = useAuthStore();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleSelectReport = (option: ReportOption) => {
-    addPoints(15);
-    setGamification(totalPoints + 15, currentRank);
+    const cooldown = checkReportCooldown(option.key);
+    if (!cooldown.canReport) {
+      setToastMessage(`Debes esperar ${Math.ceil(cooldown.remainingSeconds / 60)} min para reportar nuevamente`);
+      setTimeout(() => setToastMessage(null), 2000);
+      return;
+    }
+    recordReportCooldown(option.key);
+
+    const isUserGuest = isGuest || !isAuthenticated;
+    if (!isUserGuest) {
+      awardReportPoints(15);
+    }
 
     const lat = currentLocation?.latitude || 1.2145;
     const lng = currentLocation?.longitude || -77.2783;
@@ -49,21 +63,21 @@ export const QuickReportModal: React.FC = () => {
     });
 
     socketClient.emit('report:create', {
-      userId: profile.id,
-      routeId,
-      reportType: option.key,
-      title: `${option.label} en vía`,
-      description: option.sub,
-      reporterAlias: profile.alias,
-      latitude: lat,
-      longitude: lng,
+      userId: profile.id, routeId, reportType: option.key,
+      title: `${option.label} en vía`, description: option.sub,
+      reporterAlias: profile.alias, latitude: lat, longitude: lng,
     });
 
-    setToastMessage(`🎉 ¡+15 Puntos por tu reporte de ${option.label}!`);
+    if (isUserGuest) {
+      setToastMessage('Reporte enviado. Inicia sesión para ganar puntos por tu colaboración');
+    } else {
+      setToastMessage(`¡+15 Puntos por tu reporte de ${option.label}!`);
+    }
+
     setTimeout(() => {
       setToastMessage(null);
       closeReportModal();
-    }, 1200);
+    }, 1500);
   };
 
   const handleClose = () => {
@@ -78,7 +92,7 @@ export const QuickReportModal: React.FC = () => {
           <View style={styles.header}>
             <Text style={styles.title}>Reportar rápido</Text>
             <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
-              <Text style={styles.closeText}>✕</Text>
+              <MaterialCommunityIcons name="close" size={18} color="#94a3b8" />
             </TouchableOpacity>
           </View>
           <Text style={styles.subtitle}>Toca para alertar a la comunidad de Pasto</Text>
@@ -92,11 +106,11 @@ export const QuickReportModal: React.FC = () => {
                 style={styles.darkHorizontalPill}
               >
                 <View style={styles.pillIconWrap}>
-                  <Text style={styles.pillIconText}>{opt.icon}</Text>
+                  <MaterialCommunityIcons name={opt.icon} size={20} color="#38bdf8" />
                 </View>
                 <Text style={styles.pillLabelText}>{opt.label}</Text>
                 <View style={styles.rewardTag}>
-                  <Text style={styles.rewardTagText}>+15 PTS</Text>
+                  <Text style={styles.rewardTagText}>{(!isAuthenticated || isGuest) ? 'INVITADO' : '+15 PTS'}</Text>
                 </View>
               </TouchableOpacity>
             ))}

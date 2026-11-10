@@ -132,7 +132,7 @@ export const RouteDetailCard: React.FC = () => {
           </TouchableOpacity>
 
           <GlassButton
-            label="⚡ Estoy a bordo de esta ruta"
+            label="Estoy a bordo de esta ruta"
             variant="primary"
             onPress={handleStartBoarding}
             style={styles.boardBtn}

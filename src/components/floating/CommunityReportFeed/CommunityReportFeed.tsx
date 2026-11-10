@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from '../../ui/GlassCard';
 import { ProceduralAvatar } from '../../avatar/ProceduralAvatar';
 import { CommunityReport } from '../../../types/user.types';
@@ -67,9 +68,10 @@ export const CommunityReportFeed: React.FC<CommunityReportFeedProps> = ({
               )}
               <TouchableOpacity
                 onPress={() => onUpvote && onUpvote(report.id)}
-                style={styles.upvoteBtn}
+                style={[styles.upvoteBtn, { flexDirection: 'row', alignItems: 'center' }]}
               >
-                <Text style={styles.upvoteText}>👍 {report.upvotes}</Text>
+                <MaterialCommunityIcons name="thumb-up" size={13} color="#10b981" style={{ marginRight: 4 }} />
+                <Text style={styles.upvoteText}>{report.upvotes}</Text>
               </TouchableOpacity>
             </View>
           </GlassCard>

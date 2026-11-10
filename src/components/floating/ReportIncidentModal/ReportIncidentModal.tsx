@@ -17,10 +17,10 @@ export interface IncidentOption {
 }
 
 export const INCIDENT_OPTIONS: IncidentOption[] = [
-  { type: 'FULL_BUS', label: 'Bus Lleno', sub: 'Sin cupo disponible', icon: 'bus-alert', color: '#f59e0b' },
-  { type: 'TRAFFIC', label: 'Tráfico Pesado', sub: 'Congestión vehicular', icon: 'car-multiple', color: '#ef4444' },
+  { type: 'FULL_BUS', label: 'Bus Lleno', sub: 'Sin cupo disponible', icon: 'account-group', color: '#f59e0b' },
+  { type: 'TRAFFIC', label: 'Tráfico Pesado', sub: 'Congestión vehicular', icon: 'car-brake-alert', color: '#ef4444' },
   { type: 'DETOUR', label: 'Desvío', sub: 'Cambio de recorrido', icon: 'routes', color: '#8b5cf6' },
-  { type: 'ACCIDENT', label: 'Accidente', sub: 'Paso restringido', icon: 'car-emergency', color: '#dc2626' },
+  { type: 'ACCIDENT', label: 'Accidente', sub: 'Paso restringido', icon: 'alert-octagon', color: '#dc2626' },
 ];
 
 export const ReportIncidentModal: React.FC = () => {
@@ -48,7 +48,9 @@ export const ReportIncidentModal: React.FC = () => {
     });
 
     setIsSubmitting(false);
-    if (isGuest || res?.isGuest) {
+    if (res?.error === 'COOLDOWN_ACTIVE') {
+      setToastMessage(res.message);
+    } else if (isGuest || res?.isGuest) {
       setToastMessage('Reporte enviado. Inicia sesión para ganar puntos por tu colaboración');
     } else {
       setToastMessage(`¡+10 Puntos por tu reporte de ${option.label}!`);

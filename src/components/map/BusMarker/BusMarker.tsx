@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ProjectedBusLocation } from '../../../types/telemetry.types';
 
 let NativeMarker: any = null;
@@ -31,7 +32,7 @@ export const BusMarker: React.FC<BusMarkerProps> = ({ bus, onPress }) => {
           isGhost && styles.ghostCircle,
         ]}
       >
-        <Text style={styles.busIcon}>{isGhost ? '👻' : '🚍'}</Text>
+        <MaterialCommunityIcons name={isGhost ? 'bus-clock' : 'bus'} size={18} color="#ffffff" />
       </View>
       <View style={[styles.badge, isLive ? styles.liveBadge : styles.ghostBadge]}>
         <Text style={styles.badgeText}>

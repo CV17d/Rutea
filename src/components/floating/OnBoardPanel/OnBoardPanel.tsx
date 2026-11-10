@@ -51,7 +51,7 @@ export const OnBoardPanel: React.FC = () => {
 
         <View style={styles.buttonRow}>
           <GlassButton
-            label="⚠️ Reportar Novedad"
+            label="Reportar Novedad"
             variant="glass"
             onPress={openReportModal}
             style={styles.actionBtn}
