@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { styles } from './LoginScreen.styles';
 
 export const LoginScreen: React.FC = () => {
@@ -9,6 +10,7 @@ export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const { t } = useTranslation();
 
   const { loginWithEmail, registerWithEmail, loginAsGuest, isLoading, error, clearError } = useAuthStore();
 
@@ -32,8 +34,8 @@ export const LoginScreen: React.FC = () => {
         <View style={styles.logoBadge}>
           <MaterialCommunityIcons name="bus" size={32} color="#ffffff" />
         </View>
-        <Text style={styles.title}>Rutea Pasto</Text>
-        <Text style={styles.subtitle}>Transporte Urbano Inteligente • SETPasto</Text>
+        <Text style={styles.title}>{t('common.appTitle', 'Rutea Pasto')}</Text>
+        <Text style={styles.subtitle}>{t('auth.subtitle', 'Transporte Urbano Inteligente • SETPasto')}</Text>
       </View>
 
       <View style={styles.card}>
@@ -43,14 +45,14 @@ export const LoginScreen: React.FC = () => {
             onPress={() => handleToggleMode(false)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.tabText, !isRegister && styles.tabTextActive]}>Iniciar Sesión</Text>
+            <Text style={[styles.tabText, !isRegister && styles.tabTextActive]}>{t('auth.signIn', 'Iniciar Sesión')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tabBtn, isRegister && styles.tabBtnActive]}
             onPress={() => handleToggleMode(true)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.tabText, isRegister && styles.tabTextActive]}>Registrarse</Text>
+            <Text style={[styles.tabText, isRegister && styles.tabTextActive]}>{t('auth.register', 'Registrarse')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -59,7 +61,7 @@ export const LoginScreen: React.FC = () => {
             <MaterialCommunityIcons name="account-outline" size={20} color="#94a3b8" />
             <TextInput
               style={styles.input}
-              placeholder="Nombre o Alias (ej. CuyVeloz)"
+              placeholder={t('auth.namePlaceholder', 'Nombre o Alias (ej. CuyVeloz)')}
               placeholderTextColor="#64748b"
               value={name}
               onChangeText={setName}
@@ -71,7 +73,7 @@ export const LoginScreen: React.FC = () => {
           <MaterialCommunityIcons name="email-outline" size={20} color="#94a3b8" />
           <TextInput
             style={styles.input}
-            placeholder="Correo electrónico"
+            placeholder={t('auth.email', 'Correo electrónico')}
             placeholderTextColor="#64748b"
             keyboardType="email-address"
             autoCapitalize="none"
@@ -84,7 +86,7 @@ export const LoginScreen: React.FC = () => {
           <MaterialCommunityIcons name="lock-outline" size={20} color="#94a3b8" />
           <TextInput
             style={styles.input}
-            placeholder="Contraseña"
+            placeholder={t('auth.password', 'Contraseña')}
             placeholderTextColor="#64748b"
             secureTextEntry
             value={password}
@@ -109,7 +111,7 @@ export const LoginScreen: React.FC = () => {
             <ActivityIndicator color="#ffffff" size="small" />
           ) : (
             <Text style={styles.primaryBtnText}>
-              {isRegister ? 'Crear Cuenta' : 'Iniciar Sesión'}
+              {isRegister ? t('auth.createAccount', 'Crear Cuenta') : t('auth.signIn', 'Iniciar Sesión')}
             </Text>
           )}
         </TouchableOpacity>
@@ -127,7 +129,7 @@ export const LoginScreen: React.FC = () => {
           activeOpacity={0.8}
         >
           <MaterialCommunityIcons name="incognito" size={20} color="#cbd5e1" />
-          <Text style={styles.guestBtnText}>Continuar como invitado</Text>
+          <Text style={styles.guestBtnText}>{t('auth.guestContinue', 'Continuar como invitado')}</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { styles } from './StopTimeline.styles';
 
 export interface TimelineStop {
@@ -21,6 +22,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
   onPressDetails,
 }) => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
+  const { t } = useTranslation();
 
   // Si no hay ruta seleccionada ni paradas provistas, no renderizar paradas fantasma
   if (!selectedRoute && (!stops || stops.length === 0)) {
@@ -77,7 +79,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
                   {stop.name}
                 </Text>
                 <View style={styles.stopSubtitleRow}>
-                  <Text style={styles.stopSubtitle}>Paradero SETP</Text>
+                  <Text style={styles.stopSubtitle}>{t('routeDetail.setpStop', 'Paradero SETP')}</Text>
                 </View>
               </View>
 
@@ -95,7 +97,7 @@ export const StopTimeline: React.FC<StopTimelineProps> = ({
         onPress={onPressDetails}
         activeOpacity={0.8}
       >
-        <Text style={styles.detailsButtonText}>Ver detalles</Text>
+        <Text style={styles.detailsButtonText}>{t('routeDetail.viewDetails', 'Ver detalles')}</Text>
       </TouchableOpacity>
     </View>
   );

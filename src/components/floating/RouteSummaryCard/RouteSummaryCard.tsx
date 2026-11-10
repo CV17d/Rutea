@@ -3,12 +3,14 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useUiStore } from '../../../store/useUiStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { LiveArrivalBadge } from '../../ui/LiveArrivalBadge';
 import { routeSummaryCardStyles as styles } from './RouteSummaryCard.styles';
 
 export const RouteSummaryCard: React.FC = () => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const setScreenMode = useUiStore((s) => s.setScreenMode);
+  const { t } = useTranslation();
   const [isFavorite, setIsFavorite] = useState(false);
 
   // Si no hay ruta seleccionada, no renderizar tarjeta fantasma
@@ -49,14 +51,14 @@ export const RouteSummaryCard: React.FC = () => {
       <View style={styles.statsRow}>
         <View style={styles.statCol}>
           <Text style={styles.statValue}>78 Visitas</Text>
-          <Text style={styles.statSubtext}>aproximadas</Text>
+          <Text style={styles.statSubtext}>{t('routeDetail.estimated', 'aproximadas')}</Text>
         </View>
 
         <View style={[styles.statCol, { alignItems: 'flex-start', paddingLeft: 20 }]}>
           <Text style={styles.statValue}>3 Pasajeros</Text>
           <View style={styles.liveIndicatorRow}>
             <View style={styles.pulseGreenDot} />
-            <Text style={styles.liveText}>en vivo</Text>
+            <Text style={styles.liveText}>{t('routeDetail.live', 'en vivo')}</Text>
           </View>
         </View>
       </View>

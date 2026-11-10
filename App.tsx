@@ -18,10 +18,12 @@ import { UserProfileCard } from './src/components/profile/UserProfileCard';
 import { TripPlanner } from './src/components/tripPlanner';
 import { LoginScreen } from './src/components/auth/LoginScreen';
 import { InAppNotification } from './src/components/ui/InAppNotification';
+import { SettingsModal } from './src/components/settings/SettingsModal';
 import { useAuthStore } from './src/store/useAuthStore';
 import { useRoutesStore } from './src/store/useRoutesStore';
 import { useTrackingStore } from './src/store/useTrackingStore';
 import { useUiStore } from './src/store/useUiStore';
+import { useSettingsStore } from './src/store/useSettingsStore';
 import { useSocketRoutes } from './src/hooks/useSocketRoutes';
 import { useLocationTracking } from './src/hooks/useLocationTracking';
 import { useRouteQuery } from './src/hooks/useRouteQuery';
@@ -38,10 +40,11 @@ export default function App() {
   useLocationTracking();
   useStopArrivalDetection();
 
+  const proximityRadiusMeters = useSettingsStore((s) => s.proximityRadiusMeters);
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || '');
   useBusSimulator(selectedRoute, routeCoordinates.length > 0 ? routeCoordinates : selectedRoute?.coordinates);
-  useProximityAlert({ routeId: selectedRoute?.id, targetLocation: selectedRoute?.stops?.[0]?.location, thresholdMeters: 400 });
+  useProximityAlert({ routeId: selectedRoute?.id, targetLocation: selectedRoute?.stops?.[0]?.location, thresholdMeters: proximityRadiusMeters });
   useIncidentReports(selectedRoute?.id);
 
   const { activeBuses, selectedBusId, setSelectedBusId, reports, arrivalMessage, setArrivalMessage } = useTrackingStore();
@@ -131,6 +134,7 @@ export default function App() {
       )}
 
       <ReportIncidentModal />
+      <SettingsModal />
       {isProfileModalOpen && <UserProfileCard onClose={closeProfileModal} />}
       {isTripPlannerOpen && <TripPlanner onClose={closeTripPlanner} />}
     </View>

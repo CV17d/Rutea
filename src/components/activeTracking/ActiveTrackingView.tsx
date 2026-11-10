@@ -7,6 +7,7 @@ import { useUserSessionStore } from '../../store/useUserSessionStore';
 import { useTrackingStore } from '../../store/useTrackingStore';
 import { useRoutesStore } from '../../store/useRoutesStore';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useTranslation } from '../../i18n/useTranslation';
 import { useLocationTracking } from '../../hooks/useLocationTracking';
 import { socketClient } from '../../services/socket.client';
 import { checkReportCooldown, recordReportCooldown, awardReportPoints } from '../../services/report.service';
@@ -19,6 +20,7 @@ export const ActiveTrackingView: React.FC = () => {
   const { isAuthenticated, isGuest } = useAuthStore();
   const { stopTracking } = useLocationTracking();
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
+  const { t } = useTranslation();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const activeCode = selectedRoute?.code || (profile.activeRouteId ? profile.activeRouteId.replace('route-', '').toUpperCase() : 'SETP');
@@ -64,26 +66,26 @@ export const ActiveTrackingView: React.FC = () => {
         <TouchableOpacity style={styles.backButton} onPress={handleStopRide} activeOpacity={0.7}>
           <MaterialCommunityIcons name="arrow-left" size={20} color="#94a3b8" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Rutas Pasto</Text>
+        <Text style={styles.headerTitle}>{t('common.appTitle', 'Rutas Pasto')}</Text>
       </View>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8 }}>
         <MaterialCommunityIcons name="bus" size={22} color="#38bdf8" style={{ marginRight: 6 }} />
-        <Text style={styles.routeTitle}>¡Vas en la Ruta {activeCode}!</Text>
+        <Text style={styles.routeTitle}>{t('onBoard.youAreOnRoute', '¡Vas en la Ruta')} {activeCode}!</Text>
       </View>
 
       <TouchableOpacity style={styles.neonPillButton} activeOpacity={0.85}>
-        <Text style={styles.neonPillMainText}>Rastreo Activo</Text>
-        <Text style={styles.neonPillSubText}>(Modo Bolsillo)</Text>
+        <Text style={styles.neonPillMainText}>{t('onBoard.activeTracking', 'Rastreo Activo')}</Text>
+        <Text style={styles.neonPillSubText}>{t('onBoard.pocketMode', '(Modo Bolsillo)')}</Text>
       </TouchableOpacity>
 
       <View style={styles.statsCard}>
-        <View style={styles.statCol}><Text style={styles.statLabel}>Aportes hoy:</Text><Text style={styles.statValue}>{profile.points || 85} PTS</Text></View>
+        <View style={styles.statCol}><Text style={styles.statLabel}>{t('onBoard.todayContribs', 'Aportes hoy:')}</Text><Text style={styles.statValue}>{profile.points || 85} PTS</Text></View>
         <View style={styles.statsDivider} />
-        <View style={styles.statCol}><Text style={styles.statLabel}>Puntos ganados:</Text><Text style={styles.statValue}>3</Text></View>
+        <View style={styles.statCol}><Text style={styles.statLabel}>{t('onBoard.ptsEarned', 'Puntos ganados:')}</Text><Text style={styles.statValue}>3</Text></View>
       </View>
 
-      <Text style={styles.sectionTitle}>Reportes en vivo</Text>
+      <Text style={styles.sectionTitle}>{t('onBoard.liveReports', 'Reportes en vivo')}</Text>
       <View style={styles.reportsFeedContainer}>
         <View style={styles.speechBubbleSimple}>
           <Text style={styles.bubbleText}>El tráfico en la 17 está pesado</Text>
@@ -95,22 +97,22 @@ export const ActiveTrackingView: React.FC = () => {
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Reportar rápido</Text>
+      <Text style={styles.sectionTitle}>{t('onBoard.quickReport', 'Reportar rápido')}</Text>
       {toastMessage && <View style={styles.toastContainer}><Text style={styles.toastText}>{toastMessage}</Text></View>}
 
       <View style={styles.quickReportRow}>
         <TouchableOpacity style={styles.quickPillButton} onPress={() => handleQuickReport('BUS_FULL', 'Bus Lleno')} activeOpacity={0.8}>
           <View style={styles.quickPillIconCircle}><MaterialCommunityIcons name="account-group" size={18} color="#f59e0b" /></View>
-          <Text style={styles.quickPillLabel}>Bus Lleno</Text>
+          <Text style={styles.quickPillLabel}>{t('incidents.busFull', 'Bus Lleno')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.quickPillButton} onPress={() => handleQuickReport('TRAFFIC_JAM', 'Trancón')} activeOpacity={0.8}>
           <View style={styles.quickPillIconCircle}><MaterialCommunityIcons name="car-brake-alert" size={18} color="#ef4444" /></View>
-          <Text style={styles.quickPillLabel}>Trancón</Text>
+          <Text style={styles.quickPillLabel}>{t('incidents.trafficJam', 'Trancón')}</Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.exitTextBtn} onPress={handleStopRide}>
-        <Text style={styles.exitText}>Bajar del bus y finalizar viaje</Text>
+        <Text style={styles.exitText}>{t('onBoard.getOffBus', 'Bajar del bus y finalizar viaje')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useRoutesStore } from '../../../store/useRoutesStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { styles } from './RouteHeroCard.styles';
 
 interface RouteHeroCardProps {
@@ -15,6 +16,7 @@ export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
   points = 50,
 }) => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
+  const { t } = useTranslation();
 
   // Si no hay ruta seleccionada ni código provisto, no renderizar
   if (!selectedRoute && !routeCode) {
@@ -30,7 +32,7 @@ export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
           <Text style={styles.etaNumber}>{etaMinutes}</Text>
           <Text style={styles.etaUnit}>Min</Text>
         </View>
-        <Text style={styles.etaLabel}>Espera aproximada</Text>
+        <Text style={styles.etaLabel}>{t('routeDetail.estimated', 'Espera aproximada')}</Text>
       </View>
 
       <View style={styles.divider} />
@@ -38,7 +40,7 @@ export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
       <View style={styles.rightCol}>
         <Text style={styles.routeTitle}>{displayCode}</Text>
         <View style={styles.pointsRow}>
-          <Text style={styles.pointsLabel}>Puntos </Text>
+          <Text style={styles.pointsLabel}>{t('profile.points', 'Puntos')} </Text>
           <Text style={styles.pointsBadge}>+{points}</Text>
         </View>
         <Text style={styles.collabSubtext}>sistema colaborativo</Text>

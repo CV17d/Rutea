@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RouteRecommendation } from '../../types/trip.types';
 import { STANDARD_ROUTES_PART2 } from '../../constants/routes/standardRoutes2';
+import { useTranslation } from '../../i18n/useTranslation';
 import { LiveArrivalBadge } from '../ui/LiveArrivalBadge';
 import { styles } from './RouteRecommendationCard.styles';
 
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSelect }) => {
+  const { t } = useTranslation();
   const {
     routeId,
     routeCode,
@@ -78,7 +80,7 @@ export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSel
       </View>
 
       <View style={styles.footerRow}>
-        <Text style={styles.selectBtnText}>Ver en mapa</Text>
+        <Text style={styles.selectBtnText}>{t('search.viewRouteOnMap', 'Ver en mapa')}</Text>
         <MaterialCommunityIcons name="arrow-right" size={14} color="#0284c7" />
       </View>
     </TouchableOpacity>

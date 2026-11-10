@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RouteRecommendation } from '../../types/trip.types';
 import { STANDARD_ROUTES_PART2 } from '../../constants/routes/standardRoutes2';
 import { useUiStore } from '../../store/useUiStore';
+import { useTranslation } from '../../i18n/useTranslation';
 import { TripTimeline } from './TripTimeline';
 import { styles } from './TripDetailsModal.styles';
 
@@ -21,6 +22,7 @@ export const TripDetailsModal: React.FC<TripDetailsModalProps> = ({
   onSelectRoute,
 }) => {
   const openReportModal = useUiStore((s) => s.openReportModal);
+  const { t } = useTranslation();
 
   if (!visible || !recommendation) return null;
 
@@ -62,7 +64,7 @@ export const TripDetailsModal: React.FC<TripDetailsModalProps> = ({
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons name="alert-circle-outline" size={16} color="#d97706" />
-            <Text style={styles.reportBtnText}>Reportar Novedad</Text>
+            <Text style={styles.reportBtnText}>{t('incidents.reportTitle', 'Reportar Novedad')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -70,7 +72,7 @@ export const TripDetailsModal: React.FC<TripDetailsModalProps> = ({
             onPress={() => onSelectRoute(recommendation)}
             activeOpacity={0.85}
           >
-            <Text style={styles.startTripText}>Ver Ruta en el Mapa</Text>
+            <Text style={styles.startTripText}>{t('search.viewRouteOnMap', 'Ver Ruta en el Mapa')}</Text>
             <MaterialCommunityIcons name="arrow-right" size={16} color="#ffffff" style={{ marginLeft: 4 }} />
           </TouchableOpacity>
         </View>

@@ -5,6 +5,7 @@ import { GlassCard } from '../../ui/GlassCard';
 import { GlassBadge } from '../../ui/GlassBadge';
 import { ProceduralAvatar } from '../../avatar/ProceduralAvatar';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import {
   calculateRank,
   calculateProgress,
@@ -26,6 +27,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
   const points = useAuthStore((s) => s.points);
   const authUser = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const { t } = useTranslation();
 
   const displayName = authUser?.displayName || 'Pasajero Pastuso';
   const avatarSeed = authUser?.avatarSeed || 'user-seed';
@@ -64,7 +66,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
 
         <View style={styles.pointsBox}>
           <Text style={styles.pointsNumber}>{points}</Text>
-          <Text style={styles.pointsLabel}>PTS acumulados</Text>
+          <Text style={styles.pointsLabel}>{t('profile.points', 'PTS acumulados')}</Text>
           <View style={{ marginLeft: 'auto' }}>
             <GlassBadge type="POINTS" label="EN VIVO" />
           </View>
@@ -85,7 +87,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
         <View style={styles.leaderboardSection}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             <MaterialCommunityIcons name="trophy-outline" size={15} color="#eab308" />
-            <Text style={styles.leaderboardTitle}>TOP PASAJEROS PASTO</Text>
+            <Text style={styles.leaderboardTitle}>{t('profile.ranking', 'TOP PASAJEROS PASTO')}</Text>
           </View>
           {leaderboard.map((item) => (
             <View
@@ -115,7 +117,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
           onPress={handleLogout}
           activeOpacity={0.7}
         >
-          <Text style={{ color: '#ef4444', fontSize: 13, fontWeight: '700' }}>Cerrar Sesión</Text>
+          <Text style={{ color: '#ef4444', fontSize: 13, fontWeight: '700' }}>{t('profile.logout', 'Cerrar Sesión')}</Text>
         </TouchableOpacity>
       </GlassCard>
     </View>

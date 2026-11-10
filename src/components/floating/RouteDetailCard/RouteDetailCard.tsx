@@ -7,6 +7,7 @@ import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useUserSessionStore } from '../../../store/useUserSessionStore';
 import { useUiStore } from '../../../store/useUiStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { useLocationTracking } from '../../../hooks/useLocationTracking';
 import { formatEtaMinutes } from '../../../utils/time.utils';
 import { calculateDistanceMeters } from '../../../utils/geo.utils';
@@ -19,12 +20,11 @@ export const RouteDetailCard: React.FC = () => {
   const startBroadcasting = useUserSessionStore((s) => s.startBroadcasting);
   const { screenMode, setScreenMode } = useUiStore();
   const { startTracking } = useLocationTracking();
+  const { t } = useTranslation();
 
-  const userPoint = useMemo(() => {
-    return currentLocation
-      ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
-      : { latitude: 1.2136, longitude: -77.2811 }; // Plaza de Nariño
-  }, [currentLocation]);
+  const userPoint = useMemo(() => currentLocation
+    ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
+    : { latitude: 1.2136, longitude: -77.2811 }, [currentLocation]);
 
   const nearestData = useMemo(() => {
     if (!selectedRoute || !selectedRoute.stops.length) return null;
@@ -92,7 +92,7 @@ export const RouteDetailCard: React.FC = () => {
               </Text>
             </View>
             <Text style={styles.nextStopLabel}>
-              Paradero más cercano: {nearestData.nearestStop.name} ({nearestData.stopDistanceMeters}m)
+              {t('routeDetail.nearestStop', 'Paradero más cercano')}: {nearestData.nearestStop.name} ({nearestData.stopDistanceMeters}m)
             </Text>
           </View>
 
@@ -102,14 +102,14 @@ export const RouteDetailCard: React.FC = () => {
             </Text>
             <GlassBadge
               type={nearestData.isLive ? 'LIVE' : 'GHOST'}
-              label={nearestData.isLive ? 'EN VIVO' : 'ESTIMADO'}
+              label={nearestData.isLive ? t('routeDetail.live', 'EN VIVO') : t('routeDetail.estimated', 'ESTIMADO')}
             />
           </View>
         </View>
 
         {isRouteDetailMode && (
           <View style={styles.stopsSection}>
-            <Text style={styles.stopsHeader}>PARADEROS Y TIEMPOS DE ESPERA</Text>
+            <Text style={styles.stopsHeader}>{t('routeDetail.stopsAndWaitTimes', 'PARADEROS Y TIEMPOS DE ESPERA')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.stopsScroll}>
               {selectedRoute.stops.map((stop) => (
                 <View key={stop.id} style={styles.stopChip}>
@@ -127,12 +127,12 @@ export const RouteDetailCard: React.FC = () => {
             onPress={() => setScreenMode(isRouteDetailMode ? 'HOME' : 'ROUTE_DETAILS')}
           >
             <Text style={styles.expandToggleText}>
-              {isRouteDetailMode ? '▼ Menos detalles' : '▲ Ver paraderos'}
+              {isRouteDetailMode ? t('routeDetail.lessDetails', '▼ Menos detalles') : t('routeDetail.moreDetails', '▲ Ver paraderos')}
             </Text>
           </TouchableOpacity>
 
           <GlassButton
-            label="Estoy a bordo de esta ruta"
+            label={t('routeDetail.onBoardBtn', 'Estoy a bordo de esta ruta')}
             variant="primary"
             onPress={handleStartBoarding}
             style={styles.boardBtn}

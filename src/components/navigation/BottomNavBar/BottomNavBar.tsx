@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useUiStore } from '../../../store/useUiStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { bottomNavBarStyles as styles } from './BottomNavBar.styles';
 
 export const BottomNavBar: React.FC = () => {
@@ -10,7 +11,9 @@ export const BottomNavBar: React.FC = () => {
     setScreenMode,
     openReportModal,
     openProfileModal,
+    openSettingsModal,
   } = useUiStore();
+  const { t } = useTranslation();
 
   return (
     <View style={styles.dock}>
@@ -20,7 +23,7 @@ export const BottomNavBar: React.FC = () => {
         style={[styles.navItem, screenMode === 'HOME' && styles.navItemActive]}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel="Inicio"
+        accessibilityLabel={t('nav.home', 'Inicio')}
       >
         <MaterialCommunityIcons
           name={screenMode === 'HOME' ? 'home' : 'home-outline'}
@@ -35,7 +38,7 @@ export const BottomNavBar: React.FC = () => {
         style={[styles.navItem, screenMode === 'ROUTE_DETAILS' && styles.navItemActive]}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel="Rutas"
+        accessibilityLabel={t('nav.routes', 'Rutas')}
       >
         <MaterialCommunityIcons
           name="bus"
@@ -65,10 +68,25 @@ export const BottomNavBar: React.FC = () => {
         style={styles.navItem}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel="Perfil de usuario"
+        accessibilityLabel={t('nav.profile', 'Perfil de usuario')}
       >
         <MaterialCommunityIcons
           name="account-outline"
+          size={24}
+          color="#64748b"
+        />
+      </TouchableOpacity>
+
+      {/* 5. Configuraciones */}
+      <TouchableOpacity
+        onPress={openSettingsModal}
+        style={styles.navItem}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={t('nav.settings', 'Configuración')}
+      >
+        <MaterialCommunityIcons
+          name="cog-outline"
           size={24}
           color="#64748b"
         />

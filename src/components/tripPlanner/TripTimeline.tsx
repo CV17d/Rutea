@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RouteRecommendation } from '../../types/trip.types';
 import { STANDARD_ROUTES_PART2 } from '../../constants/routes/standardRoutes2';
 import { MOCK_PASTO_ROUTES } from '../../constants/mockRoutes';
+import { useTranslation } from '../../i18n/useTranslation';
 import { LiveArrivalBadge } from '../ui/LiveArrivalBadge';
 import { styles } from './TripTimeline.styles';
 
@@ -13,6 +14,7 @@ export interface TripTimelineProps {
 
 export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) => {
   const [isStopsExpanded, setIsStopsExpanded] = useState(false);
+  const { t } = useTranslation();
 
   const {
     routeId,
@@ -115,7 +117,7 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
         </View>
         <View style={styles.contentCol}>
           <Text style={styles.stepHeader}>Bájate en {destStop.name}</Text>
-          <Text style={styles.stepSubtext}>Llegada a tu destino final</Text>
+          <Text style={styles.stepSubtext}>{t('alerts.arrivedAtStop', 'Llegada a tu destino final')}</Text>
         </View>
       </View>
     </View>

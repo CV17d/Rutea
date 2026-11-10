@@ -1,0 +1,137 @@
+export interface TranslationSchema {
+  common: {
+    appTitle: string;
+    loading: string;
+    save: string;
+    close: string;
+    cancel: string;
+    confirm: string;
+    error: string;
+    success: string;
+  };
+  nav: {
+    home: string;
+    routes: string;
+    reports: string;
+    profile: string;
+    settings: string;
+  };
+  search: {
+    placeholder: string;
+    whereTo: string;
+    startPoint: string;
+    myLocationGps: string;
+    plazaNarino: string;
+    findDirectRoutes: string;
+    searching: string;
+    suggestedRoutes: string;
+    noDirectRoutes: string;
+    noDirectRoutesDesc: string;
+    outOfArea: string;
+    viewRouteOnMap: string;
+    planTrip: string;
+  };
+  routeDetail: {
+    nearestStop: string;
+    stopsAndWaitTimes: string;
+    moreDetails: string;
+    lessDetails: string;
+    onBoardBtn: string;
+    live: string;
+    estimated: string;
+    stopsCount: string;
+    setpStop: string;
+    viewDetails: string;
+  };
+  onBoard: {
+    activeTracking: string;
+    pocketMode: string;
+    broadcasting: string;
+    ptsGain: string;
+    totalDistance: string;
+    timeOnBoard: string;
+    reportIncident: string;
+    getOffBus: string;
+    exitBus: string;
+    youAreOnRoute: string;
+    liveReports: string;
+    quickReport: string;
+    todayContribs: string;
+    ptsEarned: string;
+  };
+  incidents: {
+    reportTitle: string;
+    quickReportTitle: string;
+    subtitle: string;
+    quickSubtitle: string;
+    busFull: string;
+    busFullSub: string;
+    traffic: string;
+    trafficSub: string;
+    trafficJam: string;
+    trafficJamSub: string;
+    roadBlock: string;
+    roadBlockSub: string;
+    detour: string;
+    detourSub: string;
+    accident: string;
+    accidentSub: string;
+    guestTag: string;
+    ptsTag: string;
+    guestAlert: string;
+    successReward: string;
+    cooldownWait: string;
+  };
+  alerts: {
+    prepare: string;
+    busArriving: string;
+    arrivedAtStop: string;
+    walkingToStop: string;
+    waitingForBus: string;
+    pointsAdded: string;
+  };
+  profile: {
+    title: string;
+    alias: string;
+    level: string;
+    points: string;
+    ranking: string;
+    leaderboard: string;
+    guestUser: string;
+    loginToSave: string;
+    logout: string;
+  };
+  auth: {
+    signIn: string;
+    register: string;
+    email: string;
+    password: string;
+    namePlaceholder: string;
+    createAccount: string;
+    guestContinue: string;
+    subtitle: string;
+  };
+  settings: {
+    title: string;
+    subtitle: string;
+    themeSection: string;
+    themeLight: string;
+    themeDark: string;
+    themeSystem: string;
+    languageSection: string;
+    langEs: string;
+    langEn: string;
+    alertsSection: string;
+    haptics: string;
+    hapticsSub: string;
+    proximityRadius: string;
+    storageSection: string;
+    clearCache: string;
+    clearCacheSuccess: string;
+    offlineRoutes: string;
+    infoSection: string;
+    version: string;
+    setpInfo: string;
+    statusConnected: string;
+  };
+}

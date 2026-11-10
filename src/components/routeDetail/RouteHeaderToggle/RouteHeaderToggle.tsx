@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useUiStore } from '../../../store/useUiStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { styles } from './RouteHeaderToggle.styles';
 
 interface RouteHeaderToggleProps {
@@ -13,6 +15,7 @@ export const RouteHeaderToggle: React.FC<RouteHeaderToggleProps> = ({
   onTabChange,
 }) => {
   const setScreenMode = useUiStore((s) => s.setScreenMode);
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'search' | 'live'>('search');
 
   const handleBack = () => {
@@ -36,9 +39,9 @@ export const RouteHeaderToggle: React.FC<RouteHeaderToggleProps> = ({
           onPress={handleBack}
           activeOpacity={0.7}
         >
-          <Text style={styles.backArrowText}>←</Text>
+          <MaterialCommunityIcons name="arrow-left" size={20} color="#94a3b8" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Rutas Pasto</Text>
+        <Text style={styles.headerTitle}>{t('common.appTitle', 'Rutas Pasto')}</Text>
       </View>
 
       <View style={styles.toggleContainer}>
@@ -48,7 +51,7 @@ export const RouteHeaderToggle: React.FC<RouteHeaderToggleProps> = ({
           activeOpacity={0.8}
         >
           <Text style={[styles.toggleText, activeTab === 'search' && styles.toggleTextActive]}>
-            Buscar
+            {t('nav.routes', 'Buscar')}
           </Text>
         </TouchableOpacity>
 
@@ -58,7 +61,7 @@ export const RouteHeaderToggle: React.FC<RouteHeaderToggleProps> = ({
           activeOpacity={0.8}
         >
           <Text style={[styles.toggleText, activeTab === 'live' && styles.toggleTextActive]}>
-            En vivo
+            {t('routeDetail.live', 'En vivo')}
           </Text>
         </TouchableOpacity>
       </View>

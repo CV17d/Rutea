@@ -5,6 +5,7 @@ import { useUiStore } from '../../../store/useUiStore';
 import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useRoutesStore } from '../../../store/useRoutesStore';
+import { useTranslation } from '../../../i18n/useTranslation';
 import { reportService, IncidentType } from '../../../services/report.service';
 import { styles } from './ReportIncidentModal.styles';
 
@@ -29,6 +30,7 @@ export const ReportIncidentModal: React.FC = () => {
   const authUser = useAuthStore((s) => s.user);
   const isGuest = useAuthStore((s) => s.isGuest);
   const selectedRouteId = useRoutesStore((s) => s.selectedRouteId);
+  const { t } = useTranslation();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -51,9 +53,9 @@ export const ReportIncidentModal: React.FC = () => {
     if (res?.error === 'COOLDOWN_ACTIVE') {
       setToastMessage(res.message);
     } else if (isGuest || res?.isGuest) {
-      setToastMessage('Reporte enviado. Inicia sesión para ganar puntos por tu colaboración');
+      setToastMessage(t('incidents.guestAlert', 'Reporte enviado. Inicia sesión para ganar puntos por tu colaboración'));
     } else {
-      setToastMessage(`¡+10 Puntos por tu reporte de ${option.label}!`);
+      setToastMessage(t('incidents.successReward', `¡+10 Puntos por tu reporte de ${option.label}!`));
     }
 
     setTimeout(() => {
@@ -73,12 +75,12 @@ export const ReportIncidentModal: React.FC = () => {
         <View style={styles.modalCard}>
           <View style={styles.dragHandle} />
           <View style={styles.header}>
-            <Text style={styles.title}>Reportar Novedad</Text>
+            <Text style={styles.title}>{t('incidents.reportTitle', 'Reportar Novedad')}</Text>
             <TouchableOpacity onPress={handleClose} style={styles.closeBtn} activeOpacity={0.7}>
               <MaterialCommunityIcons name="close" size={18} color="#94a3b8" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.subtitle}>Alerta en tiempo real a la comunidad de pasajeros</Text>
+          <Text style={styles.subtitle}>{t('incidents.subtitle', 'Alerta en tiempo real a la comunidad de pasajeros')}</Text>
 
           <View style={styles.optionsGrid}>
             {INCIDENT_OPTIONS.map((opt) => (
@@ -90,7 +92,7 @@ export const ReportIncidentModal: React.FC = () => {
                 style={styles.optionCard}
               >
                 <View style={styles.rewardTag}>
-                  <Text style={styles.rewardText}>{isGuest ? 'INVITADO' : '+10 PTS'}</Text>
+                  <Text style={styles.rewardText}>{isGuest ? t('incidents.guestTag', 'INVITADO') : t('incidents.ptsTag', '+10 PTS')}</Text>
                 </View>
                 <View style={[styles.iconBadge, { backgroundColor: `${opt.color}20` }]}>
                   <MaterialCommunityIcons name={opt.icon} size={22} color={opt.color} />
