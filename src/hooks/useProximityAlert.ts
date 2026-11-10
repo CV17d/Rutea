@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { LatLng } from '../types/route.types';
 import { ProjectedBusLocation } from '../types/telemetry.types';
@@ -7,6 +7,7 @@ import { useTrackingStore } from '../store/useTrackingStore';
 import { useRoutesStore } from '../store/useRoutesStore';
 import { findClosestApproachingBus } from '../services/etaCalculator.service';
 import { notificationService } from '../services/notification.service';
+import { Toast } from '../store/useNotificationStore';
 
 export interface ProximityAlertOptions {
   targetLocation?: LatLng | null;
@@ -76,10 +77,15 @@ export function useProximityAlert({
         const alertMessage = '¡Prepárate! Tu bus está a punto de llegar';
         const notificationBody = `¡Prepárate! La ruta ${routeCode} está llegando a tu parada`;
 
+        // Notificación In-App visual temática (Toast)
+        Toast.show({
+          type: 'success',
+          text1: '¡Prepárate!',
+          text2: `Tu bus ${routeCode} está llegando a tu parada`,
+        });
+
         if (Platform.OS === 'web') {
           console.log(`[Geofence Proximity Alert] ${notificationBody} (${dist}m)`);
-        } else {
-          Alert.alert('¡Prepárate!', alertMessage, [{ text: 'Entendido' }]);
         }
 
         // Disparo de notificación local nativa con Expo Notifications
@@ -108,7 +114,11 @@ export function useProximityAlert({
         alertedBusIdsRef.current.delete(arrival.bus.busId);
       }
     }
-  }, [busList, targetLocation, routeId, thresholdMeters, onAlert, routes]);
+  }, [busList, targetLocation, routeId, thresholdMeters, routes, onAlert]);
 
-  return { isWithinProximity, distanceMeters, approachingBus };
+  return {
+    isWithinProximity,
+    distanceMeters,
+    approachingBus,
+  };
 }

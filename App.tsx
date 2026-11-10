@@ -17,6 +17,7 @@ import { AvatarCard } from './src/components/avatar/AvatarCard';
 import { UserProfileCard } from './src/components/profile/UserProfileCard';
 import { TripPlanner } from './src/components/tripPlanner';
 import { LoginScreen } from './src/components/auth/LoginScreen';
+import { InAppNotification } from './src/components/ui/InAppNotification';
 import { useAuthStore } from './src/store/useAuthStore';
 import { useRoutesStore } from './src/store/useRoutesStore';
 import { useTrackingStore } from './src/store/useTrackingStore';
@@ -71,6 +72,7 @@ export default function App() {
   return (
     <View style={[styles.container, { backgroundColor: screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
       <StatusBar style={screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
+      <InAppNotification />
       {arrivalMessage && (
         <View style={styles.arrivalToast}>
           <MaterialCommunityIcons name="check-circle" size={18} color="#10b981" />

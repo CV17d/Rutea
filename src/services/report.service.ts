@@ -2,6 +2,7 @@ import { Alert } from 'react-native';
 import { supabase } from './supabase.client';
 import { useTrackingStore } from '../store/useTrackingStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { Toast } from '../store/useNotificationStore';
 import { CommunityReport, IncidentCategory } from '../types/user.types';
 
 export type IncidentType = 'FULL_BUS' | 'TRAFFIC' | 'ACCIDENT' | 'DETOUR';
@@ -66,6 +67,7 @@ export const reportService = {
     const cooldown = checkReportCooldown(payload.type);
     if (!cooldown.canReport) {
       const waitMsg = `Debes esperar ${Math.ceil(cooldown.remainingSeconds / 60)} min para enviar otro reporte de este tipo`;
+      Toast.show({ type: 'warning', text1: 'Reporte reciente', text2: waitMsg });
       Alert.alert('Reporte reciente', waitMsg);
       return { data: null, error: 'COOLDOWN_ACTIVE', isGuest, message: waitMsg };
     }
@@ -84,6 +86,7 @@ export const reportService = {
       useTrackingStore.getState().addReport(incidentToCommunityReport(created));
 
       if (isGuest) {
+        Toast.show({ type: 'info', text1: 'Reporte enviado', text2: GUEST_MSG });
         Alert.alert('Reporte enviado', GUEST_MSG);
         return { data: created, error: error?.message || null, isGuest: true, message: GUEST_MSG };
       }
@@ -94,17 +97,20 @@ export const reportService = {
       useAuthStore.getState().addPoints(10);
       const tracking = useTrackingStore.getState();
       tracking.setGamification(tracking.totalPoints + 10, tracking.currentRank);
+      Toast.show({ type: 'success', text1: 'Puntos sumados', text2: SUCCESS_MSG });
       return { data: created, error: null, isGuest: false, message: SUCCESS_MSG };
     } catch {
       const fallback: IncidentReport = { id: `inc-${Date.now()}`, ...record };
       useTrackingStore.getState().addReport(incidentToCommunityReport(fallback));
       if (isGuest) {
+        Toast.show({ type: 'info', text1: 'Reporte enviado', text2: GUEST_MSG });
         Alert.alert('Reporte enviado', GUEST_MSG);
         return { data: fallback, error: null, isGuest: true, message: GUEST_MSG };
       }
       useAuthStore.getState().addPoints(10);
       const tracking = useTrackingStore.getState();
       tracking.setGamification(tracking.totalPoints + 10, tracking.currentRank);
+      Toast.show({ type: 'success', text1: 'Puntos sumados', text2: SUCCESS_MSG });
       return { data: fallback, error: null, isGuest: false, message: SUCCESS_MSG };
     }
   },
