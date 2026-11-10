@@ -7,22 +7,24 @@ import { useUiStore } from '../../store/useUiStore';
 import { useTranslation } from '../../i18n/useTranslation';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset';
+import { useGpsOrigin } from '../../hooks/useGpsOrigin';
 import { findBestRoutes, resolvePastoLocation, checkCoverageArea } from '../../services/tripRecommendation.service';
 import { RouteRecommendation } from '../../types/trip.types';
 import { RouteRecommendationCard } from './RouteRecommendationCard';
 import { TripDetailsModal } from './TripDetailsModal';
+import { DestinationChips } from './DestinationChips';
+import { PlaceSuggestions } from './PlaceSuggestions';
 import { styles } from './TripPlanner.styles';
 
 interface Props { onClose?: () => void; }
-const CHIPS = ['Torobajo', 'Hospital Departamental', 'Catambuco', 'Terminal'];
-const OUT_OF_AREA_MSG = 'Parece que estás fuera de San Juan de Pasto. Por favor, ingresa un punto de origen manualmente';
+const CHIPS = ['Torobajo', 'Hospital Departamental', 'Catambuco', 'Terminal']; const OUT_OF_AREA_MSG = 'Parece que estás fuera de San Juan de Pasto. Por favor, ingresa un punto de origen manualmente';
 
 export const TripPlanner: React.FC<Props> = ({ onClose }) => {
   const { currentLocation, setTripPhase, setOriginStopLocation, setWalkingPolyline } = useTrackingStore();
   const selectRoute = useRoutesStore((s) => s.selectRoute);
   const setScreenMode = useUiStore((s) => s.setScreenMode);
   const { t } = useTranslation();
-  const { isDark } = useAppTheme();
+  const { palette } = useAppTheme();
   const { offsetAnim, isKeyboardVisible, maxContentHeight, onContainerLayout } = useKeyboardOffset();
   const destInputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
 
@@ -32,12 +34,17 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
   const [coverageWarning, setCoverageWarning] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<RouteRecommendation[] | null>(null);
   const [selectedRec, setSelectedRec] = useState<RouteRecommendation | null>(null);
+  const [focused, setFocused] = useState<'origin' | 'dest' | null>(null); // campo con sugerencias abiertas
 
   const handleClose = () => { Keyboard.dismiss(); onClose?.(); };
+  const isGpsOrigin = (txt: string) => txt.trim().toLowerCase().startsWith('mi ubicación');
+  const getGpsLocation = useGpsOrigin();
+  const GPS_FAIL_MSG = 'No pudimos obtener tu ubicación GPS. Activa la ubicación o escribe tu punto de partida.';
 
-  const handleUseGps = () => {
-    if (!currentLocation) { setOriginText('Plaza de Nariño'); setCoverageWarning(null); return; }
-    if (checkCoverageArea(currentLocation).isOutOfArea) {
+  const handleUseGps = async () => {
+    const gps = await getGpsLocation();
+    if (!gps) { setCoverageWarning(GPS_FAIL_MSG); return; }
+    if (checkCoverageArea(gps).isOutOfArea) {
       setCoverageWarning(OUT_OF_AREA_MSG); setOriginText(''); setRecommendations(null); return;
     }
     setCoverageWarning(null); setOriginText('Mi Ubicación GPS');
@@ -45,21 +52,18 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
 
   const handleSearch = async () => {
     if (!destText.trim()) return;
-    Keyboard.dismiss();
-    setIsLoading(true); setRecommendations(null);
+    Keyboard.dismiss(); setFocused(null); setIsLoading(true); setRecommendations(null);
 
-    const origCoord = originText === 'Mi Ubicación GPS' && currentLocation
-      ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude }
-      : resolvePastoLocation(originText);
-
-    if (!origCoord || checkCoverageArea(origCoord).isOutOfArea) {
+    const origCoord = isGpsOrigin(originText) ? await getGpsLocation() : resolvePastoLocation(originText);
+    const destCoord = resolvePastoLocation(destText);
+    if (!origCoord || !destCoord) {
+      const missing = !origCoord ? originText : destText;
+      setCoverageWarning(!origCoord && isGpsOrigin(originText) ? GPS_FAIL_MSG : `No encontramos “${missing.trim()}” en Pasto. Elige una de las sugerencias al escribir.`); setIsLoading(false); return;
+    }
+    if (checkCoverageArea(origCoord).isOutOfArea || checkCoverageArea(destCoord).isOutOfArea) {
       setCoverageWarning(OUT_OF_AREA_MSG); setIsLoading(false); return;
     }
     setCoverageWarning(null);
-    const destCoord = resolvePastoLocation(destText);
-    if (!destCoord || checkCoverageArea(destCoord).isOutOfArea) {
-      setCoverageWarning(OUT_OF_AREA_MSG); setIsLoading(false); return;
-    }
     const results = await findBestRoutes({ origin: origCoord, destination: destCoord, radiusMeters: 1200 });
     setRecommendations(results);
     setIsLoading(false);
@@ -71,67 +75,70 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
     setTripPhase('WALKING_TO_STOP');
     if (rec.originStop) {
       setOriginStopLocation({ ...rec.originStop.location, name: rec.originStop.name, id: rec.originStop.id });
-      const userPos = currentLocation ? { latitude: currentLocation.latitude, longitude: currentLocation.longitude } : { latitude: 1.2136, longitude: -77.2811 };
-      setWalkingPolyline([userPos, rec.originStop.location]);
+      if (currentLocation) setWalkingPolyline([{ latitude: currentLocation.latitude, longitude: currentLocation.longitude }, rec.originStop.location]);
     }
     setSelectedRec(null);
     onClose?.();
     setScreenMode('ROUTE_DETAILS');
   };
 
+  const P = palette;
+  const canSearch = !!destText.trim() && !isLoading;
+
   return (
-    <Animated.View onLayout={onContainerLayout} style={[styles.modalOverlay, { paddingBottom: offsetAnim }]}>
+    <Animated.View onLayout={onContainerLayout} style={[styles.modalOverlay, { paddingBottom: offsetAnim, backgroundColor: P.scrim }]}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}><View style={{ flex: 1, width: '100%' }} /></TouchableWithoutFeedback>
-      <View style={[styles.modalContent, isDark && { backgroundColor: '#0f172a', borderColor: '#334155' }, maxContentHeight ? { maxHeight: maxContentHeight } : null, isKeyboardVisible && { paddingBottom: 14 }]}>
-        <View style={styles.dragHandle} />
+      <View style={[styles.modalContent, { backgroundColor: P.bg, shadowColor: P.shadow }, maxContentHeight ? { maxHeight: maxContentHeight } : null, isKeyboardVisible && { paddingBottom: 14 }]}>
+        <View style={[styles.dragHandle, { backgroundColor: P.line }]} />
         <View style={styles.headerRow}>
-          <Text style={[styles.titleText, isDark && { color: '#ffffff' }]}>{t('search.planTrip', 'Planificador de Viaje')}</Text>
+          <Text style={[styles.titleText, { color: P.text }]}>{t('search.planTrip', 'Planea tu viaje')}</Text>
           {onClose && (
-            <TouchableOpacity onPress={handleClose} style={[styles.closeBtn, isDark && { backgroundColor: '#1e293b' }]}>
-              <MaterialCommunityIcons name="close" size={18} color="#64748b" />
+            <TouchableOpacity onPress={handleClose} style={[styles.closeBtn, { backgroundColor: P.raised }]} accessibilityLabel="Cerrar">
+              <MaterialCommunityIcons name="close" size={18} color={P.text2} />
             </TouchableOpacity>
           )}
         </View>
 
         <ScrollView style={{ flexGrow: 0 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} bounces={false}>
-          <View style={[styles.inputWrap, isDark && { backgroundColor: '#1e293b', borderColor: '#334155' }]}>
+          <View style={[styles.inputWrap, { backgroundColor: P.surface, borderColor: P.line }]}>
             <View style={styles.inputRow}>
-              <MaterialCommunityIcons name="circle-slice-8" size={16} color="#10b981" />
-              <TextInput style={[styles.textInput, isDark && { color: '#ffffff' }]} value={originText} onChangeText={(txt) => { setOriginText(txt); setCoverageWarning(null); }} placeholder={t('search.startPoint', 'Punto de partida')} placeholderTextColor="#94a3b8" returnKeyType="next" onSubmitEditing={() => destInputRef.current?.focus()} />
-              <TouchableOpacity onPress={handleUseGps} style={styles.gpsBtn}>
-                <MaterialCommunityIcons name="crosshairs-gps" size={13} color="#0284c7" />
-                <Text style={styles.gpsBtnText}>GPS</Text>
+              <View style={[styles.originDot, { borderColor: P.brand }]} />
+              <TextInput style={[styles.textInput, { color: P.text }]} value={originText} onChangeText={(txt) => { setOriginText(txt); setCoverageWarning(null); }} onFocus={() => setFocused('origin')} placeholder={t('search.startPoint', 'Punto de partida')} placeholderTextColor={P.muted} returnKeyType="next" onSubmitEditing={() => destInputRef.current?.focus()} />
+              <TouchableOpacity onPress={handleUseGps} style={[styles.gpsBtn, { backgroundColor: P.brandSoft }]} accessibilityLabel="Usar mi ubicación GPS">
+                <MaterialCommunityIcons name="crosshairs-gps" size={14} color={P.brand} />
+                <Text style={[styles.gpsBtnText, { color: P.brand }]}>GPS</Text>
               </TouchableOpacity>
             </View>
-            <View style={[styles.divider, isDark && { backgroundColor: '#334155' }]} />
+            <View style={styles.connectorRow}>
+              <View style={[styles.connector, { borderColor: P.muted }]} />
+              <View style={[styles.divider, { backgroundColor: P.line }]} />
+            </View>
             <View style={styles.inputRow}>
-              <MaterialCommunityIcons name="map-marker" size={18} color="#ef4444" />
-              <TextInput ref={destInputRef} style={[styles.textInput, isDark && { color: '#ffffff' }]} value={destText} onChangeText={setDestText} placeholder={t('search.whereTo', '¿A dónde vas?')} placeholderTextColor="#94a3b8" returnKeyType="search" onSubmitEditing={handleSearch} />
+              <MaterialCommunityIcons name="map-marker" size={18} color={P.danger} />
+              <TextInput ref={destInputRef} style={[styles.textInput, styles.destInput, { color: P.text }]} value={destText} onChangeText={setDestText} onFocus={() => setFocused('dest')} placeholder={t('search.whereTo', '¿A dónde vas?')} placeholderTextColor={P.muted} returnKeyType="search" onSubmitEditing={handleSearch} />
             </View>
           </View>
+
+          {focused && <PlaceSuggestions query={focused === 'origin' ? (isGpsOrigin(originText) ? '' : originText) : destText} palette={P} onPick={(pl) => {
+            if (focused === 'origin') { setOriginText(pl.name); destInputRef.current?.focus(); } else { setDestText(pl.name); setFocused(null); Keyboard.dismiss(); }
+          }} />}
 
           {coverageWarning && (
-            <View style={styles.warningBox}><MaterialCommunityIcons name="alert-circle-outline" size={16} color="#b45309" /><Text style={styles.warningText}>{coverageWarning}</Text></View>
+            <View style={[styles.warningBox, { backgroundColor: P.liveSoft, borderColor: 'transparent' }]}><MaterialCommunityIcons name="alert-circle-outline" size={16} color={P.live} /><Text style={[styles.warningText, { color: P.text }]}>{coverageWarning}</Text></View>
           )}
 
-          <View style={styles.chipsRow}>
-            {CHIPS.map((chip) => (
-              <TouchableOpacity key={chip} style={[styles.chip, isDark && { backgroundColor: '#1e293b' }]} onPress={() => { setDestText(chip); Keyboard.dismiss(); }}>
-                <Text style={[styles.chipText, isDark && { color: '#cbd5e1' }]}>{chip}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <DestinationChips chips={CHIPS} value={destText} palette={P} onPick={(chip) => { setDestText(chip); setFocused(null); Keyboard.dismiss(); }} />
 
-          <TouchableOpacity style={[styles.searchBtn, (!destText.trim() || isLoading) && styles.searchBtnDisabled]} onPress={handleSearch} disabled={!destText.trim() || isLoading}>
-            {isLoading ? <ActivityIndicator color="#ffffff" size="small" /> : <Text style={styles.searchBtnText}>{t('search.findDirectRoutes', 'Buscar Rutas Directas')}</Text>}
+          <TouchableOpacity style={[styles.searchBtn, { backgroundColor: canSearch ? P.brand : P.raised }]} onPress={handleSearch} disabled={!canSearch}>
+            {isLoading ? <ActivityIndicator color={P.onBrand} size="small" /> : <Text style={[styles.searchBtnText, { color: canSearch ? P.onBrand : P.muted }]}>{t('search.findDirectRoutes', 'Buscar rutas')}</Text>}
           </TouchableOpacity>
 
           {recommendations !== null && (
             <>
-              <Text style={styles.resultsHeader}>{recommendations.length > 0 ? `${t('search.suggestedRoutes', 'Rutas sugeridas')} (${recommendations.length})` : t('search.noDirectRoutes', 'Sin rutas directas')}</Text>
+              <Text style={[styles.resultsHeader, { color: P.text }]}>{recommendations.length > 0 ? `${recommendations.length} ${recommendations.length === 1 ? 'ruta' : 'rutas'} para tu viaje` : t('search.noDirectRoutes', 'Sin rutas directas')}</Text>
               {recommendations.length === 0 ? (
-                <View style={styles.emptyBox}><Text style={styles.emptyText}>{t('search.noDirectRoutesDesc', 'No encontramos rutas directas para este trayecto.')}</Text></View>
-              ) : recommendations.map((rec, i) => <RouteRecommendationCard key={`${rec.routeId}-${i}`} recommendation={rec} onSelect={setSelectedRec} />)}
+                <View style={[styles.emptyBox, { backgroundColor: P.surface }]}><Text style={[styles.emptyText, { color: P.text2 }]}>{t('search.noDirectRoutesDesc', 'Ninguna ruta pasa cerca de tu origen y tu destino. Prueba con otro punto de partida.')}</Text></View>
+              ) : recommendations.map((rec, i) => <RouteRecommendationCard key={`${rec.routeId}-${i}`} recommendation={rec} onSelect={setSelectedRec} isBest={i === 0} />)}
             </>
           )}
         </ScrollView>

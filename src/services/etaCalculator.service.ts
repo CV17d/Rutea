@@ -1,6 +1,8 @@
 import { LatLng } from '../types/route.types';
 import { ProjectedBusLocation } from '../types/telemetry.types';
 import { calculateDistanceMeters } from '../utils/geo.utils';
+import { RoutePath } from '../utils/routePath.utils';
+import { BUS_AVG_SPEED_KMH, forwardDistance, projectOnPath } from './routeBoarding.service';
 
 export interface ApproachingBusEta {
   bus: ProjectedBusLocation;
@@ -75,4 +77,47 @@ export function findClosestApproachingBus(
     etaMinutes: eta,
     displayText,
   };
+}
+
+export interface AlongRouteEta extends ApproachingBusEta {
+  /** Metros que el bus aún debe recorrer por la ruta hasta el punto de abordaje. */
+  routeDistanceMeters: number;
+}
+
+const STALE_BUS_MS = 2 * 60 * 1000;
+
+/**
+ * ETA real: distancia por la ruta (en el sentido en que circula el bus) desde cada bus
+ * hasta el punto de abordaje. Ignora buses que ya pasaron, que van en sentido contrario
+ * o cuya señal está desactualizada.
+ */
+export function findNextBusAlongRoute(
+  buses: ProjectedBusLocation[],
+  routeId: string,
+  path: RoutePath,
+  boardAlongMeters: number
+): AlongRouteEta | null {
+  let best: AlongRouteEta | null = null;
+  const now = Date.now();
+  for (const bus of buses) {
+    if (bus.routeId !== routeId) continue;
+    if (bus.lastUpdated && now - bus.lastUpdated > STALE_BUS_MS) continue;
+    const pos = bus.snappedPosition || bus.position;
+    if (!pos) continue;
+    const proj = projectOnPath(path, pos, { heading: bus.heading }) || projectOnPath(path, pos);
+    if (!proj || proj.distanceMeters > 150) continue;
+    const routeDistanceMeters = Math.round(forwardDistance(path, proj.alongMeters, boardAlongMeters));
+    const speed = bus.speedKmh && bus.speedKmh >= 8 ? Math.min(bus.speedKmh, 40) : BUS_AVG_SPEED_KMH;
+    const eta = calculateEtaMinutes(routeDistanceMeters, speed);
+    if (best && routeDistanceMeters >= best.routeDistanceMeters) continue;
+    const alias = bus.broadcasterAlias || `Bus ${bus.routeCode}`;
+    best = {
+      bus,
+      distanceMeters: routeDistanceMeters,
+      routeDistanceMeters,
+      etaMinutes: eta,
+      displayText: eta <= 1 ? `${alias} llegando ahora (< 1 min)` : `${alias} llegando en ~${eta} min`,
+    };
+  }
+  return best;
 }

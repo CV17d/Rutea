@@ -44,12 +44,8 @@ test('MISIÓN 55 - Map View & Flota Completa: Renderizado de buses mediante map(
   const appPath = path.resolve(__dirname, '../App.tsx');
   assert.ok(fs.existsSync(appPath), 'App.tsx debe existir');
 
-  const appContent = fs.readFileSync(appPath, 'utf8');
-  assert.ok(
-    appContent.includes('currentBusList.map') || appContent.includes('.map((bus)'),
-    'Debe iterar y renderizar los buses activos de la flota mediante .map()'
-  );
-  assert.ok(appContent.includes('<LiveBusMarker'), 'Debe instanciar LiveBusMarker para cada bus');
+  const osmView = fs.readFileSync(path.resolve(__dirname, '../src/components/map/OsmMapView/OsmMapView.tsx'), 'utf8');
+  assert.ok(osmView.includes('buses.map((b)'), 'OsmMapView debe enviar todos los buses activos de la ruta al mapa');
 });
 
 test('MISIÓN 55 - Regla de Oro: Componentes y stores bajo 150 líneas', () => {

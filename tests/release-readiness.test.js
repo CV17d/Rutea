@@ -79,9 +79,10 @@ test('APK Crash Fix - OsmMapView & ErrorBoundary: Mapa OSM/CartoDB sin Google AP
   const errorBoundary = fs.readFileSync(path.join(ROOT, 'src/components/ui/ErrorBoundary/ErrorBoundary.tsx'), 'utf8');
   const appSrc = fs.readFileSync(path.join(ROOT, 'App.tsx'), 'utf8');
 
-  assert.ok(mapContainer.includes('HAS_GOOGLE_MAPS_KEY'), 'MapContainer debe verificar clave antes de montar Google MapView');
+  assert.ok(!mapContainer.includes('react-native-maps') && !mapContainer.includes('GOOGLE_MAPS'), 'MapContainer no debe depender de Google Maps ni de API keys');
   assert.ok(mapContainer.includes('<OsmMapView'), 'MapContainer debe renderizar OsmMapView sin Google Maps Key');
-  assert.ok(osmScript.includes('arcgisonline.com') && !osmScript.includes('cartocdn.com'), 'Debe usar Esri ArcGIS tiles gratuitos sin API key ni CARTO watermark');
+  assert.ok(osmScript.includes('tile.openstreetmap.org') && !osmScript.includes('cartocdn.com'), 'Debe usar teselas OpenStreetMap sin API key');
+  assert.ok(!/api[_-]?key|access_token/i.test(osmScript), 'Las teselas no deben requerir API key');
   assert.ok(osmScript.includes('__ruteaCamera') && osmScript.includes('__ruteaUpdate'), 'Debe soportar cámara y actualizaciones reactivas');
   assert.ok(appSrc.includes('<ErrorBoundary>'), 'App.tsx debe envolver la vista principal con ErrorBoundary');
 

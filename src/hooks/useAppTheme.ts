@@ -1,5 +1,6 @@
 import { useColorScheme } from 'react-native';
 import { useSettingsStore, AppTheme } from '../store/useSettingsStore';
+import { getPalette, Palette } from '../constants/palette';
 
 export interface AppThemeColors {
   isDark: boolean;
@@ -12,6 +13,7 @@ export interface AppThemeColors {
   textSecondary: string;
   textMuted: string;
   inputBg: string;
+  palette: Palette;
 }
 
 export function useAppTheme(): AppThemeColors {
@@ -22,16 +24,18 @@ export function useAppTheme(): AppThemeColors {
     themeSetting === 'dark' || (themeSetting === 'system' && systemScheme === 'dark');
   const effectiveTheme: 'light' | 'dark' = isDark ? 'dark' : 'light';
 
+  const palette = getPalette(isDark);
   return {
     isDark,
+    palette,
     themeSetting,
     effectiveTheme,
-    bgRoot: isDark ? '#070b13' : '#f8fafc',
-    cardBg: isDark ? 'rgba(30, 41, 59, 0.94)' : 'rgba(255, 255, 255, 0.94)',
-    cardBorder: isDark ? '#334155' : 'rgba(255, 255, 255, 0.98)',
-    textPrimary: isDark ? '#f8fafc' : '#0f172a',
-    textSecondary: isDark ? '#cbd5e1' : '#475569',
-    textMuted: isDark ? '#94a3b8' : '#64748b',
-    inputBg: isDark ? '#1e293b' : '#f1f5f9',
+    bgRoot: palette.bg,
+    cardBg: palette.surface,
+    cardBorder: palette.line,
+    textPrimary: palette.text,
+    textSecondary: palette.text2,
+    textMuted: palette.muted,
+    inputBg: palette.raised,
   };
 }

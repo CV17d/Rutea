@@ -14,14 +14,14 @@ test('TripTimeline Component: Contiene 3 fases/nodos visuales (caminata, bus y l
 
   // Nodo 1: Caminata inicial
   assert.ok(content.includes('Camina'), 'Debe incluir instrucción de caminata');
-  assert.ok(content.includes('metros hasta el paradero'), 'Debe indicar distancia en metros a pie');
+  assert.ok(content.includes('metros hasta la ruta'), 'Debe indicar distancia en metros a pie hasta la ruta (sin paraderos)');
   assert.ok(content.includes('walkCircle'), 'Debe tener círculo con ícono de peatón');
 
   // Nodo 2: Trayecto en Bus
   assert.ok(content.includes('busCircle'), 'Debe tener círculo con ícono de bus');
   assert.ok(content.includes('LiveArrivalBadge'), 'Debe incluir el badge de ETA en vivo');
-  assert.ok(content.includes('Viaja durante'), 'Debe indicar conteo de paradas intermedias');
-  assert.ok(content.includes('isStopsExpanded'), 'Debe soportar lista colapsable/expandible');
+  assert.ok(content.includes('km en bus'), 'Debe indicar la distancia real del trayecto en bus');
+  assert.ok(content.includes('boardAlongMeters'), 'El ETA debe calcularse hasta el punto de abordaje sobre la ruta');
 
   // Nodo 3: Llegada a destino
   assert.ok(content.includes('destCircle'), 'Debe tener círculo de llegada');

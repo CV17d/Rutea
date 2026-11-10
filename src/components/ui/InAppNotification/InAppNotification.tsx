@@ -2,9 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNotificationStore } from '../../../store/useNotificationStore';
+import { Palette } from '../../../constants/palette';
+import { useThemedStyles } from '../../../hooks/useThemedStyles';
+import { useAppTheme } from '../../../hooks/useAppTheme';
 
 export const InAppNotification: React.FC = () => {
   const currentToast = useNotificationStore((s) => s.currentToast);
+  const styles = useThemedStyles(makeStyles);
+  const { palette: P } = useAppTheme();
   const hideToast = useNotificationStore((s) => s.hideToast);
 
   const translateY = useRef(new Animated.Value(-60)).current;
@@ -42,7 +47,7 @@ export const InAppNotification: React.FC = () => {
       <Animated.View style={[styles.card, { transform: [{ translateY }], opacity }]}>
         <TouchableOpacity activeOpacity={0.9} onPress={handleDismiss} style={styles.contentRow}>
           <View style={styles.iconCircle}>
-            <MaterialCommunityIcons name="bell-ring" size={20} color="#10b981" />
+            <MaterialCommunityIcons name="bell-ring" size={20} color={P.live} />
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.titleText}>{currentToast.text1}</Text>
@@ -53,7 +58,7 @@ export const InAppNotification: React.FC = () => {
             )}
           </View>
           <TouchableOpacity onPress={handleDismiss} style={styles.closeBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <MaterialCommunityIcons name="close" size={16} color="#94a3b8" />
+            <MaterialCommunityIcons name="close" size={18} color={P.muted} />
           </TouchableOpacity>
         </TouchableOpacity>
       </Animated.View>
@@ -61,7 +66,7 @@ export const InAppNotification: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (P: Palette) => StyleSheet.create({
   overlay: {
     position: 'absolute',
     top: Platform.OS === 'ios' ? 48 : 38,
@@ -73,47 +78,30 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: '#1e293b',
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: '#10b981',
+    backgroundColor: P.surface,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: P.line,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    elevation: 10,
+    shadowColor: P.shadow,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.28,
+    shadowRadius: 24,
   },
-  contentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  contentRow: { flexDirection: 'row', alignItems: 'center' },
   iconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    backgroundColor: P.liveSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
-  textContainer: {
-    flex: 1,
-  },
-  titleText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  subText: {
-    color: '#94a3b8',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  closeBtn: {
-    padding: 4,
-    marginLeft: 8,
-  },
+  textContainer: { flex: 1 },
+  titleText: { color: P.text, fontSize: 15, fontWeight: '800', letterSpacing: -0.2 },
+  subText: { color: P.text2, fontSize: 13, fontWeight: '500', marginTop: 2, lineHeight: 18 },
+  closeBtn: { padding: 4, marginLeft: 8 },
 });

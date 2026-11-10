@@ -3,9 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image } fro
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useTranslation } from '../../../i18n/useTranslation';
-import { styles } from './LoginScreen.styles';
+import { makeStyles } from './LoginScreen.styles';
+import { useThemedStyles } from '../../../hooks/useThemedStyles';
+import { useAppTheme } from '../../../hooks/useAppTheme';
 
 export const LoginScreen: React.FC = () => {
+  const styles = useThemedStyles(makeStyles);
+  const { palette: P } = useAppTheme();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,11 +62,11 @@ export const LoginScreen: React.FC = () => {
 
         {isRegister && (
           <View style={styles.inputWrap}>
-            <MaterialCommunityIcons name="account-outline" size={20} color="#94a3b8" />
+            <MaterialCommunityIcons name="account-outline" size={20} color={P.muted} />
             <TextInput
               style={styles.input}
               placeholder={t('auth.namePlaceholder', 'Nombre o Alias (ej. CuyVeloz)')}
-              placeholderTextColor="#64748b"
+              placeholderTextColor={P.muted}
               value={name}
               onChangeText={setName}
             />
@@ -70,11 +74,11 @@ export const LoginScreen: React.FC = () => {
         )}
 
         <View style={styles.inputWrap}>
-          <MaterialCommunityIcons name="email-outline" size={20} color="#94a3b8" />
+          <MaterialCommunityIcons name="email-outline" size={20} color={P.muted} />
           <TextInput
             style={styles.input}
             placeholder={t('auth.email', 'Correo electrónico')}
-            placeholderTextColor="#64748b"
+            placeholderTextColor={P.muted}
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -83,11 +87,11 @@ export const LoginScreen: React.FC = () => {
         </View>
 
         <View style={styles.inputWrap}>
-          <MaterialCommunityIcons name="lock-outline" size={20} color="#94a3b8" />
+          <MaterialCommunityIcons name="lock-outline" size={20} color={P.muted} />
           <TextInput
             style={styles.input}
             placeholder={t('auth.password', 'Contraseña')}
-            placeholderTextColor="#64748b"
+            placeholderTextColor={P.muted}
             secureTextEntry
             value={password}
             onChangeText={(t) => { setPassword(t); if (error) clearError(); }}
@@ -96,7 +100,7 @@ export const LoginScreen: React.FC = () => {
 
         {error && (
           <View style={styles.errorBanner}>
-            <MaterialCommunityIcons name="alert-circle-outline" size={16} color="#ef4444" />
+            <MaterialCommunityIcons name="alert-circle-outline" size={16} color={P.danger} />
             <Text style={styles.errorText}>{error}</Text>
           </View>
         )}
@@ -108,7 +112,7 @@ export const LoginScreen: React.FC = () => {
           activeOpacity={0.8}
         >
           {isLoading ? (
-            <ActivityIndicator color="#ffffff" size="small" />
+            <ActivityIndicator color={P.onBrand} size="small" />
           ) : (
             <Text style={styles.primaryBtnText}>
               {isRegister ? t('auth.createAccount', 'Crear Cuenta') : t('auth.signIn', 'Iniciar Sesión')}
@@ -128,7 +132,7 @@ export const LoginScreen: React.FC = () => {
           disabled={isLoading}
           activeOpacity={0.8}
         >
-          <MaterialCommunityIcons name="incognito" size={20} color="#cbd5e1" />
+          <MaterialCommunityIcons name="incognito" size={20} color={P.text} />
           <Text style={styles.guestBtnText}>{t('auth.guestContinue', 'Continuar como invitado')}</Text>
         </TouchableOpacity>
       </View>

@@ -11,9 +11,11 @@ import { useTranslation } from '../../i18n/useTranslation';
 import { useLocationTracking } from '../../hooks/useLocationTracking';
 import { socketClient } from '../../services/socket.client';
 import { checkReportCooldown, recordReportCooldown, awardReportPoints } from '../../services/report.service';
-import { styles } from './ActiveTrackingView.styles';
+import { makeStyles } from './ActiveTrackingView.styles';
+import { useThemedStyles } from '../../hooks/useThemedStyles';
 
 export const ActiveTrackingView: React.FC = () => {
+  const styles = useThemedStyles(makeStyles);
   const { setScreenMode } = useUiStore();
   const { profile, stopBroadcasting } = useUserSessionStore();
   const { currentLocation, addReport } = useTrackingStore();

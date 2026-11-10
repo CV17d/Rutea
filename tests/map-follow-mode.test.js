@@ -28,8 +28,8 @@ test('MISIÓN 58 - CenterLocationButton: Follow Mode activo, hápticos y color d
   assert.ok(content.includes('setTrackingActive(true)'), 'onPress debe activar Follow Mode con setTrackingActive(true)');
   assert.ok(content.includes('Haptics.impactAsync'), 'Debe disparar feedback háptico');
   assert.ok(content.includes('animateCamera') || content.includes('animateToRegion'), 'Debe centrar la cámara');
-  assert.ok(content.includes('#10b981'), 'Debe usar color verde/acento para estado activo');
-  assert.ok(content.includes('#64748b'), 'Debe usar color gris/slate para estado inactivo');
+  assert.ok(content.includes('palette.brand'), 'Debe usar color verde/acento para estado activo');
+  assert.ok(content.includes('palette.text'), 'Debe usar color gris/slate para estado inactivo');
 
   const lines = content.split('\n').length;
   assert.ok(lines <= 150, `CenterLocationButton.tsx tiene ${lines} líneas, debe ser <= 150`);

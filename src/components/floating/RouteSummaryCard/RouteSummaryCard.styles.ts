@@ -1,14 +1,15 @@
+import { Palette } from '../../../constants/palette';
 import { StyleSheet } from 'react-native';
 
-export const routeSummaryCardStyles = StyleSheet.create({
+export const makeRouteSummaryCardStyles = (P: Palette) => StyleSheet.create({
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.88)',
+    backgroundColor: P.surface,
     borderRadius: 24,
     paddingVertical: 18,
     paddingHorizontal: 20,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.95)',
-    shadowColor: '#0f172a',
+    borderColor: P.line,
+    shadowColor: P.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 18,
@@ -22,7 +23,7 @@ export const routeSummaryCardStyles = StyleSheet.create({
     marginBottom: 14,
   },
   titleText: {
-    color: '#0f172a',
+    color: P.text,
     fontSize: 15,
     fontWeight: '800',
     flex: 1,
@@ -33,7 +34,7 @@ export const routeSummaryCardStyles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(244, 63, 94, 0.12)',
+    backgroundColor: P.raised,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -49,13 +50,13 @@ export const routeSummaryCardStyles = StyleSheet.create({
     flex: 1,
   },
   statValue: {
-    color: '#0f172a',
+    color: P.text,
     fontSize: 14,
     fontWeight: '800',
     marginBottom: 2,
   },
   statSubtext: {
-    color: '#64748b',
+    color: P.muted,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -68,14 +69,14 @@ export const routeSummaryCardStyles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: '#10b981',
-    shadowColor: '#10b981',
+    backgroundColor: P.brand,
+    shadowColor: P.shadow,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 4,
   },
   liveText: {
-    color: '#10b981',
+    color: P.brand,
     fontSize: 12,
     fontWeight: '700',
   },

@@ -3,7 +3,7 @@ const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
 
-test('MISIÓN 53 - MapContainer: useMemo para marcadores y simplify en Polyline', () => {
+test('MISIÓN 53 - MapContainer: useMemo y clustering de paraderos', () => {
   const mapContainerPath = path.resolve(
     __dirname,
     '../src/components/map/MapContainer/MapContainer.tsx'
@@ -14,12 +14,8 @@ test('MISIÓN 53 - MapContainer: useMemo para marcadores y simplify en Polyline'
 
   // useMemo para los marcadores de paraderos
   assert.ok(content.includes('useMemo'), 'Debe utilizar useMemo para evitar re-renders');
-  assert.ok(content.includes('renderedStopMarkers'), 'Debe memoizar renderedStopMarkers');
   assert.ok(content.includes('clusterBusStops'), 'Debe integrar clustering de paraderos');
-  assert.ok(content.includes('ClusterMarker'), 'Debe renderizar marcadores agrupados ClusterMarker');
-
-  // simplify={true} en Polyline
-  assert.ok(content.includes('simplify={true}'), 'Debe aplicar simplify={true} en NativePolyline de MapContainer');
+  assert.ok(content.includes('clusteredStops={clusteredStops}'), 'Debe pasar los paraderos agrupados al mapa OSM');
 
   const lines = content.split('\n').length;
   assert.ok(lines <= 150, `MapContainer.tsx tiene ${lines} líneas, debe ser <= 150`);

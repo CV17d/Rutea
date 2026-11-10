@@ -4,7 +4,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LatLng } from '../../../types/route.types';
 import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useTranslation } from '../../../i18n/useTranslation';
-import { findClosestApproachingBus } from '../../../services/etaCalculator.service';
+import { useAppTheme } from '../../../hooks/useAppTheme';
+import { findNextBusAlongRoute } from '../../../services/etaCalculator.service';
+import { getRoutePath, projectOnPath } from '../../../services/routeBoarding.service';
 import { styles } from './LiveArrivalBadge.styles';
 
 export interface LiveArrivalBadgeProps {
@@ -12,6 +14,8 @@ export interface LiveArrivalBadgeProps {
   targetLocation?: LatLng;
   style?: StyleProp<ViewStyle>;
   customLabel?: string;
+  /** Posición exacta del punto de abordaje sobre el recorrido (si se conoce). */
+  boardAlongMeters?: number;
 }
 
 export const LiveArrivalBadge: React.FC<LiveArrivalBadgeProps> = ({
@@ -19,31 +23,35 @@ export const LiveArrivalBadge: React.FC<LiveArrivalBadgeProps> = ({
   targetLocation,
   style,
   customLabel,
+  boardAlongMeters,
 }) => {
   const activeBuses = useTrackingStore((s) => s.activeBuses);
   const { language } = useTranslation();
+  const { palette: P } = useAppTheme();
   const isEn = language === 'en';
   const busList = Object.values(activeBuses);
 
   if (!targetLocation) {
     return (
-      <View style={[styles.fallbackContainer, style]}>
-        <MaterialCommunityIcons name="bus" size={13} color="#64748b" />
-        <Text style={styles.fallbackText}>
+      <View style={[styles.fallbackContainer, { backgroundColor: P.raised }, style]}>
+        <MaterialCommunityIcons name="bus-clock" size={14} color={P.muted} />
+        <Text style={[styles.fallbackText, { color: P.text2 }]}>
           {isEn ? 'Est. frequency: ~10 min' : 'Frecuencia estimada: ~10 min'}
         </Text>
       </View>
     );
   }
 
-  const arrivalInfo = findClosestApproachingBus(busList, targetLocation, routeId);
+  const path = routeId ? getRoutePath(routeId) : null;
+  const boardAlong = boardAlongMeters ?? (path ? projectOnPath(path, targetLocation)?.alongMeters : undefined);
+  const arrivalInfo = routeId && path && boardAlong != null ? findNextBusAlongRoute(busList, routeId, path, boardAlong) : null;
 
   if (!arrivalInfo) {
     return (
-      <View style={[styles.fallbackContainer, style]}>
-        <MaterialCommunityIcons name="bus" size={13} color="#64748b" />
-        <Text style={styles.fallbackText}>
-          {customLabel || (isEn ? 'Next bus on the way (~8-12 min)' : 'Próximo bus en camino (~8-12 min)')}
+      <View style={[styles.fallbackContainer, { backgroundColor: P.raised }, style]}>
+        <MaterialCommunityIcons name="bus-clock" size={14} color={P.muted} />
+        <Text style={[styles.fallbackText, { color: P.text2 }]}>
+          {customLabel || (isEn ? 'No live buses on this route right now' : 'Sin buses en vivo de esta ruta ahora')}
         </Text>
       </View>
     );
@@ -57,13 +65,13 @@ export const LiveArrivalBadge: React.FC<LiveArrivalBadgeProps> = ({
     : displayText;
 
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.pulseDot} />
-      <MaterialCommunityIcons name="bus" size={13} color="#15803d" />
-      <Text style={styles.text} numberOfLines={1}>
+    <View style={[styles.container, { backgroundColor: P.liveSoft }, style]}>
+      <View style={[styles.pulseDot, { backgroundColor: P.live }]} />
+      <MaterialCommunityIcons name="bus" size={14} color={P.live} />
+      <Text style={[styles.text, { color: P.text }]} numberOfLines={1}>
         {localizedLabel}
       </Text>
-      <Text style={styles.distText}>({distLabel})</Text>
+      <Text style={[styles.distText, { color: P.live }]}>({distLabel})</Text>
     </View>
   );
 };

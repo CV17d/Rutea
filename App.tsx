@@ -4,10 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import * as NativeSplash from 'expo-splash-screen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MapContainer } from './src/components/map/MapContainer';
-import { RoutePolyline } from './src/components/map/RoutePolyline';
-import { WalkingPolyline } from './src/components/map/WalkingPolyline';
-import { LiveBusMarker } from './src/components/map/LiveBusMarker';
-import { ReportMarker } from './src/components/map/ReportMarker';
 import { FloatingSearchBar } from './src/components/floating/FloatingSearchBar';
 import { RouteSummaryCard } from './src/components/floating/RouteSummaryCard';
 import { RouteHeaderToggle, RouteHeroCard, StopTimeline } from './src/components/routeDetail';
@@ -51,17 +47,19 @@ export default function App() {
   useStopArrivalDetection();
 
   const proximityRadiusMeters = useSettingsStore((s) => s.proximityRadiusMeters);
+  // Alerta sólo cuando el usuario planeó un viaje: el bus se acerca a SU punto de abordaje.
+  const boardPoint = useTrackingStore((s) => s.originStopLocation);
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const { coordinates: routeCoordinates } = useRouteQuery(selectedRoute?.id || '');
   const activeRouteCoords = Array.isArray(routeCoordinates) ? routeCoordinates : [];
   useBusSimulator(selectedRoute, activeRouteCoords.length > 0 ? activeRouteCoords : selectedRoute?.coordinates);
-  useProximityAlert({ routeId: selectedRoute?.id, targetLocation: selectedRoute?.stops?.[0]?.location, thresholdMeters: proximityRadiusMeters });
+  useProximityAlert({ routeId: selectedRoute?.id, targetLocation: boardPoint, thresholdMeters: proximityRadiusMeters });
   useIncidentReports(selectedRoute?.id);
 
-  const { activeBuses, selectedBusId, setSelectedBusId, reports, arrivalMessage, setArrivalMessage } = useTrackingStore();
+  const { activeBuses, selectedBusId, setSelectedBusId, arrivalMessage, setArrivalMessage } = useTrackingStore();
   const {
     screenMode, setScreenMode, isAvatarModalOpen, closeAvatarModal,
-    openAvatarModal, isProfileModalOpen, closeProfileModal, isTripPlannerOpen, closeTripPlanner,
+    isProfileModalOpen, closeProfileModal, isTripPlannerOpen, closeTripPlanner,
   } = useUiStore();
 
   useEffect(() => {
@@ -81,7 +79,6 @@ export default function App() {
     );
   }
 
-  const currentBusList = selectedRoute ? Object.values(activeBuses).filter((b) => b.routeId === selectedRoute.id) : [];
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
@@ -104,19 +101,7 @@ export default function App() {
             routeCoordinates={activeRouteCoords.length > 0 ? activeRouteCoords : selectedRoute?.coordinates}
             routeColor={selectedRoute?.color} stops={selectedRoute?.stops}
             onPressMap={() => { setSelectedBusId(null); closeAvatarModal(); }}
-          >
-            <WalkingPolyline />
-            {selectedRoute && (
-              <RoutePolyline route={selectedRoute} coordinates={activeRouteCoords.length > 0 ? activeRouteCoords : undefined} />
-            )}
-            {currentBusList.map((bus) => (
-              <LiveBusMarker key={bus.busId} bus={bus} onPress={() => {
-                setSelectedBusId(bus.busId);
-                if (bus.broadcasterAlias) openAvatarModal(bus.busId);
-              }} />
-            ))}
-            {reports.map((report) => <ReportMarker key={report.id} report={report} />)}
-          </MapContainer>
+          />
 
           {screenMode === 'ROUTE_DETAILS' ? (
             <RouteHeaderToggle onBack={() => setScreenMode('HOME')} />

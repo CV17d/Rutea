@@ -14,7 +14,8 @@ import {
   PASTUSO_LEADERBOARD,
   UserProgressResult,
 } from './userProfile.utils';
-import { userProfileCardStyles as styles } from './UserProfileCard.styles';
+import { makeUserProfileCardStyles } from './UserProfileCard.styles';
+import { useThemedStyles } from '../../../hooks/useThemedStyles';
 
 // Rangos oficiales: Pasajero Novato (<100 pt), Guía Local (>500 pt), Cuy Leyenda (>1000 pt)
 export { calculateRank, calculateProgress, calculateUserPosition, calculateLeaderboard, PASTUSO_LEADERBOARD, UserProgressResult };
@@ -24,6 +25,7 @@ export interface UserProfileCardProps {
 }
 
 export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => {
+  const styles = useThemedStyles(makeUserProfileCardStyles);
   const points = useAuthStore((s) => s.points);
   const authUser = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -114,7 +116,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
                 </Text>
               </View>
               <Text style={[styles.leaderPoints, item.isUser && { color: '#10b981', fontWeight: '800' }]}>
-                {item.pts} PTS
+                {item.pts} pts
               </Text>
             </View>
           ))}

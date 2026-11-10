@@ -123,7 +123,7 @@ test('MISIÓN 63 - App.tsx: Integración global y regla de oro (< 200 líneas)',
 
   const content = fs.readFileSync(appPath, 'utf8');
   assert.ok(content.includes('useStopArrivalDetection'), 'App.tsx debe ejecutar useStopArrivalDetection');
-  assert.ok(content.includes('<WalkingPolyline'), 'App.tsx debe renderizar WalkingPolyline en MapContainer');
+  assert.ok(content.includes('<MapContainer'), 'App.tsx debe renderizar MapContainer (la ruta peatonal se dibuja en OsmMapView)');
   assert.ok(content.includes('arrivalMessage'), 'App.tsx debe reflejar arrivalMessage');
 
   const lines = content.split('\n').length;

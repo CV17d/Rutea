@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { BusStop, LatLng } from '../../../types/route.types';
 import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useRoutesStore } from '../../../store/useRoutesStore';
@@ -9,7 +9,9 @@ import { getTranslatedReporterAlias, getTranslatedReportTitle } from '../../../u
 import { buildOsmMapHtml } from './osmMapHtml';
 
 let NativeWebView: any = null;
-try { NativeWebView = require('react-native-webview').WebView; } catch { NativeWebView = null; }
+if (Platform.OS !== 'web') {
+  try { NativeWebView = require('react-native-webview').WebView; } catch { NativeWebView = null; }
+}
 
 const CAT_COLORS: Record<string, string> = {
   TRAFFIC_JAM: '#ef4444', TRAFFIC: '#ef4444', ROAD_BLOCK: '#f59e0b',
@@ -34,15 +36,24 @@ export const OsmMapView: React.FC<OsmMapViewProps> = ({
   onStopPress, onPressMap, onPanDrag, onRegionDeltaChange,
 }) => {
   const webRef = useRef<any>(null);
+  const iframeRef = useRef<any>(null);
   const { activeBuses, walkingPolyline, reports, currentLocation, setSelectedBusId } = useTrackingStore();
   const selectedRouteId = useRoutesStore((s) => s.selectedRouteId);
   const openAvatarModal = useUiStore((s) => s.openAvatarModal);
   const { t } = useTranslation();
 
-  const htmlSource = useMemo(() => ({ html: buildOsmMapHtml(isDark) }), []);
+  const htmlSource = useMemo(() => ({ html: buildOsmMapHtml(isDark), baseUrl: 'https://rutea.app/' }), []); // baseUrl: Referer válido para OSM
+
+  const sendToMap = (msg: Record<string, unknown>, js: string) => {
+    if (Platform.OS === 'web') {
+      try { iframeRef.current?.contentWindow?.postMessage(msg, '*'); } catch { /* noop */ }
+    } else {
+      webRef.current?.injectJavaScript(`${js};true;`);
+    }
+  };
 
   const flyTo = (lat: number, lng: number, zoom: number) => {
-    webRef.current?.injectJavaScript(`window.__ruteaCamera&&window.__ruteaCamera(${lat},${lng},${zoom});true;`);
+    sendToMap({ __ruteaCamera: [lat, lng, zoom] }, `window.__ruteaCamera&&window.__ruteaCamera(${lat},${lng},${zoom})`);
   };
 
   useImperativeHandle(mapRef, () => ({
@@ -67,7 +78,7 @@ export const OsmMapView: React.FC<OsmMapViewProps> = ({
         : { isCluster: false, id: it.stop.id, lat: it.stop.location.latitude, lng: it.stop.location.longitude }),
       buses: buses.map((b) => ({
         id: b.busId, lat: (b.snappedPosition || b.position).latitude, lng: (b.snappedPosition || b.position).longitude,
-        heading: b.heading || 0, color: b.routeColor || routeColor || '#10b981', status: b.status,
+        heading: b.heading || 0, code: b.routeCode, color: b.routeColor || routeColor || '#10b981', status: b.status,
       })),
       reports: reports.map((r) => ({
         id: r.id, lat: r.latitude || 1.2145, lng: r.longitude || -77.2783,
@@ -79,14 +90,14 @@ export const OsmMapView: React.FC<OsmMapViewProps> = ({
   }, [isDark, routeCoordinates, routeColor, walkingPolyline, clusteredStops, activeBuses, selectedRouteId, reports, currentLocation, t]);
 
   const pushState = () => {
-    webRef.current?.injectJavaScript(`window.__ruteaUpdate&&window.__ruteaUpdate(${JSON.stringify(payload)});true;`);
+    sendToMap({ __ruteaUpdate: payload }, `window.__ruteaUpdate&&window.__ruteaUpdate(${JSON.stringify(payload)})`);
   };
 
   useEffect(() => { pushState(); }, [payload]);
 
-  const handleMessage = (ev: any) => {
+  const handleRawMessage = (raw: string) => {
     try {
-      const msg = JSON.parse(ev.nativeEvent.data);
+      const msg = JSON.parse(raw);
       if (msg.type === 'panDrag') onPanDrag?.();
       else if (msg.type === 'mapPress') onPressMap?.();
       else if (msg.type === 'regionChange' && msg.latitudeDelta) onRegionDeltaChange?.(msg.latitudeDelta);
@@ -101,8 +112,32 @@ export const OsmMapView: React.FC<OsmMapViewProps> = ({
       }
     } catch { /* noop */ }
   };
+  const handleMessage = (ev: any) => handleRawMessage(ev?.nativeEvent?.data);
 
-  if (!NativeWebView) return <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? '#070b13' : '#f8fafc' }]} />;
+  const handlerRef = useRef(handleRawMessage);
+  handlerRef.current = handleRawMessage;
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+    const onMsg = (e: MessageEvent) => {
+      if (e.source !== iframeRef.current?.contentWindow) return;
+      if (e.data && e.data.__rutea && typeof e.data.data === 'string') handlerRef.current(e.data.data);
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? '#0D1A20' : '#f8fafc' }]}>
+        {React.createElement('iframe', {
+          ref: iframeRef, srcDoc: htmlSource.html, title: 'Mapa de Pasto', onLoad: pushState,
+          style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' },
+        })}
+      </View>
+    );
+  }
+
+  if (!NativeWebView) return <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? '#0D1A20' : '#f8fafc' }]} />;
 
   return (
     <NativeWebView

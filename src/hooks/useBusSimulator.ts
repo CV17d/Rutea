@@ -38,7 +38,7 @@ export function useBusSimulator(route?: TransitRoute, coordinates?: LatLng[]) {
       routeColor: route.color,
       coordinates: activeCoords,
       busCount: 3,
-      intervalMs: 1500,
+      intervalMs: 1000,
       onUpdate: (buses) => {
         buses.forEach((b) => updateBusLocation(b));
       },

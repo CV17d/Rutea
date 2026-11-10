@@ -5,6 +5,7 @@ import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { useTrackingStore, CurrentUserLocation } from '../../../store/useTrackingStore';
 import { PASTO_COORDINATES } from '../../../constants/pastoCoordinates';
+import { useAppTheme } from '../../../hooks/useAppTheme';
 import { styles } from './CenterLocationButton.styles';
 
 export interface CenterLocationButtonProps {
@@ -18,6 +19,7 @@ export const CenterLocationButton: React.FC<CenterLocationButtonProps> = ({
   onRecenter,
   style,
 }) => {
+  const { palette } = useAppTheme();
   const [isLocating, setIsLocating] = useState(false);
   const isTrackingActive = useTrackingStore((s) => s.isTrackingActive);
   const setTrackingActive = useTrackingStore((s) => s.setTrackingActive);
@@ -94,13 +96,13 @@ export const CenterLocationButton: React.FC<CenterLocationButtonProps> = ({
     }
   };
 
-  const iconColor = isTrackingActive ? '#10b981' : '#64748b';
+  const iconColor = isTrackingActive ? palette.brand : palette.text;
 
   return (
     <TouchableOpacity
       style={[
         styles.fab,
-        isTrackingActive && { borderColor: '#10b981', shadowColor: '#10b981', shadowOpacity: 0.25 },
+        { backgroundColor: palette.surface, borderColor: isTrackingActive ? palette.brand : palette.line, shadowColor: palette.shadow },
         style,
       ]}
       onPress={handleCenter}
@@ -109,7 +111,7 @@ export const CenterLocationButton: React.FC<CenterLocationButtonProps> = ({
       accessibilityLabel={isTrackingActive ? 'Rastreo GPS Activo' : 'Centrar ubicación GPS'}
     >
       {isLocating ? (
-        <ActivityIndicator size="small" color="#10b981" />
+        <ActivityIndicator size="small" color={palette.brand} />
       ) : (
         <MaterialCommunityIcons name="crosshairs-gps" size={22} color={iconColor} />
       )}

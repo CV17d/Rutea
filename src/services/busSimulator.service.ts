@@ -1,13 +1,22 @@
 import { LatLng } from '../types/route.types';
 import { ProjectedBusLocation } from '../types/telemetry.types';
-import { calculateBearingDegrees, calculateDistanceMeters } from '../utils/geo.utils';
+import { buildRoutePath, headingAtDistance, pointAtDistance, RoutePath, wrapDistance } from '../utils/routePath.utils';
+
+export { buildRoutePath, headingAtDistance, pointAtDistance };
+export type { RoutePath };
+
+const ALIASES = ['CuyConductor', 'GalerasExpress', 'ChasquiPasto'];
+const AVATARS = ['cuy-sombrero', 'cuy-galeras', 'cuy-chullo'];
 
 export interface SimulatedBusState {
   busId: string;
   routeId: string;
   routeCode: string;
   routeColor: string;
+  /** Índice del segmento actual dentro del recorrido en bucle. */
   currentIndex: number;
+  /** Metros recorridos desde el inicio del recorrido en bucle. */
+  distanceAlong: number;
   speedKmh: number;
   broadcasterAlias: string;
   broadcasterAvatarSeed: string;
@@ -24,18 +33,15 @@ export interface SimulationOptions {
   onUpdate: (buses: ProjectedBusLocation[]) => void;
 }
 
-const ALIASES = ['CuyConductor', 'GalerasExpress', 'ChasquiPasto'];
-const AVATARS = ['cuy-sombrero', 'cuy-galeras', 'cuy-chullo'];
-
 export function createInitialSimulatedBuses(
   routeId: string,
   routeCode: string,
   routeColor: string,
-  totalCoords: number,
+  totalMeters: number,
   count: number = 3
 ): SimulatedBusState[] {
   const buses: SimulatedBusState[] = [];
-  const step = Math.floor(totalCoords / Math.max(count, 1));
+  const spacing = totalMeters / Math.max(count, 1);
 
   for (let i = 0; i < count; i++) {
     buses.push({
@@ -43,22 +49,23 @@ export function createInitialSimulatedBuses(
       routeId,
       routeCode,
       routeColor,
-      currentIndex: (i * step) % Math.max(totalCoords, 1),
-      speedKmh: 28 + (i % 3) * 2, // ~30 km/h
+      currentIndex: 0,
+      distanceAlong: i * spacing,
+      speedKmh: 28 + (i % 3) * 2,
       broadcasterAlias: `${ALIASES[i % ALIASES.length]} #${i + 1}`,
       broadcasterAvatarSeed: AVATARS[i % AVATARS.length],
       broadcasterPoints: 150 + i * 75,
     });
   }
-
   return buses;
 }
 
 export function advanceSimulationStep(
   buses: SimulatedBusState[],
-  coordinates: LatLng[]
+  path: RoutePath,
+  elapsedMs: number
 ): { updatedBuses: SimulatedBusState[]; projected: ProjectedBusLocation[] } {
-  if (!coordinates || coordinates.length === 0) {
+  if (!path || path.points.length < 2 || path.totalMeters <= 0) {
     return { updatedBuses: buses, projected: [] };
   }
 
@@ -66,18 +73,14 @@ export function advanceSimulationStep(
   const projected: ProjectedBusLocation[] = [];
 
   for (const bus of buses) {
-    const nextIdx = (bus.currentIndex + 1) % coordinates.length;
-    const currentPos = coordinates[bus.currentIndex];
-    const nextPos = coordinates[nextIdx];
+    // Variación suave de velocidad (26-34 km/h), sin saltos bruscos.
+    const speedKmh = Math.max(26, Math.min(34, bus.speedKmh + (Math.random() - 0.5) * 1.5));
+    const distanceAlong = wrapDistance(path, bus.distanceAlong + (speedKmh / 3.6) * (elapsedMs / 1000));
+    const { point, segmentIndex } = pointAtDistance(path, distanceAlong);
+    const heading = headingAtDistance(path, distanceAlong);
+    const remainingInSegment = Math.max(0, path.cumulative[segmentIndex + 1] - distanceAlong);
 
-    const heading = calculateBearingDegrees(currentPos, nextPos);
-    const speedVariation = 29 + Math.round(Math.random() * 3); // 29-32 km/h (~30 km/h)
-
-    updatedBuses.push({
-      ...bus,
-      currentIndex: nextIdx,
-      speedKmh: speedVariation,
-    });
+    updatedBuses.push({ ...bus, distanceAlong, currentIndex: segmentIndex, speedKmh });
 
     projected.push({
       busId: bus.busId,
@@ -85,13 +88,13 @@ export function advanceSimulationStep(
       routeCode: bus.routeCode,
       routeColor: bus.routeColor,
       status: 'LIVE',
-      position: currentPos,
-      snappedPosition: currentPos,
+      position: point,
+      snappedPosition: point,
       heading: Math.round(heading),
-      speedKmh: speedVariation,
-      distanceToNextStopMeters: Math.round(calculateDistanceMeters(currentPos, nextPos)),
+      speedKmh: Math.round(speedKmh),
+      distanceToNextStopMeters: Math.round(remainingInSegment),
       estimatedArrivalMinutes: 2,
-      nextStopName: `Paso ${nextIdx + 1}/${coordinates.length}`,
+      nextStopName: `Paso ${segmentIndex + 1}/${path.points.length - 1}`,
       broadcasterAlias: bus.broadcasterAlias,
       broadcasterAvatarSeed: bus.broadcasterAvatarSeed,
       broadcasterPoints: bus.broadcasterPoints,
@@ -108,20 +111,24 @@ class BusSimulatorService {
 
   start(options: SimulationOptions): void {
     this.stop();
-    const { routeId, routeCode, routeColor, coordinates, busCount = 3, intervalMs = 1500, onUpdate } = options;
+    const { routeId, routeCode, routeColor, coordinates, busCount = 3, intervalMs = 1000, onUpdate } = options;
 
-    if (!coordinates || coordinates.length < 2) return;
+    const path = buildRoutePath(coordinates);
+    if (path.points.length < 2 || path.totalMeters <= 0) return;
 
-    this.currentBuses = createInitialSimulatedBuses(routeId, routeCode, routeColor, coordinates.length, busCount);
+    this.currentBuses = createInitialSimulatedBuses(routeId, routeCode, routeColor, path.totalMeters, busCount);
 
-    // Emisión inmediata inicial
-    const initial = advanceSimulationStep(this.currentBuses, coordinates);
+    const initial = advanceSimulationStep(this.currentBuses, path, 0);
     this.currentBuses = initial.updatedBuses;
     onUpdate(initial.projected);
 
-    // Ciclo continuo de tránsito en tiempo real
+    let last = Date.now();
     this.timer = setInterval(() => {
-      const step = advanceSimulationStep(this.currentBuses, coordinates);
+      const now = Date.now();
+      // Limita el delta si la app estuvo en segundo plano, para no "saltar" la ruta.
+      const elapsed = Math.min(now - last, intervalMs * 3);
+      last = now;
+      const step = advanceSimulationStep(this.currentBuses, path, elapsed);
       this.currentBuses = step.updatedBuses;
       onUpdate(step.projected);
     }, intervalMs);

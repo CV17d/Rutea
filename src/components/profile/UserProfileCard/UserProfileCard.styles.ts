@@ -1,9 +1,10 @@
+import { Palette } from '../../../constants/palette';
 import { StyleSheet } from 'react-native';
 
-export const userProfileCardStyles = StyleSheet.create({
+export const makeUserProfileCardStyles = (P: Palette) => StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    backgroundColor: P.scrim,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
@@ -29,12 +30,12 @@ export const userProfileCardStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   alias: {
-    color: '#ffffff',
+    color: P.text,
     fontSize: 18,
     fontWeight: '800',
   },
   rankText: {
-    color: '#38bdf8',
+    color: P.brand,
     fontSize: 13,
     fontWeight: '700',
     marginTop: 2,
@@ -43,12 +44,12 @@ export const userProfileCardStyles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: P.raised,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeText: {
-    color: '#cbd5e1',
+    color: P.text2,
     fontSize: 13,
     fontWeight: 'bold',
   },
@@ -59,12 +60,12 @@ export const userProfileCardStyles = StyleSheet.create({
     marginBottom: 12,
   },
   pointsNumber: {
-    color: '#10b981',
+    color: P.brand,
     fontSize: 28,
     fontWeight: '900',
   },
   pointsLabel: {
-    color: '#94a3b8',
+    color: P.muted,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -77,24 +78,24 @@ export const userProfileCardStyles = StyleSheet.create({
     marginBottom: 6,
   },
   progressNextRank: {
-    color: '#cbd5e1',
+    color: P.text2,
     fontSize: 11,
     fontWeight: '700',
   },
   progressPctText: {
-    color: '#10b981',
+    color: P.brand,
     fontSize: 11,
     fontWeight: '800',
   },
   progressTrack: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    backgroundColor: P.raised,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#10b981',
+    backgroundColor: P.brand,
     borderRadius: 4,
   },
   leaderboardSection: {
@@ -104,7 +105,7 @@ export const userProfileCardStyles = StyleSheet.create({
     marginBottom: 14,
   },
   leaderboardTitle: {
-    color: '#94a3b8',
+    color: P.muted,
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.8,
@@ -127,12 +128,12 @@ export const userProfileCardStyles = StyleSheet.create({
     textAlign: 'center',
   },
   leaderName: {
-    color: '#ffffff',
+    color: P.text,
     fontSize: 12,
     fontWeight: '700',
   },
   leaderPoints: {
-    color: '#fbbf24',
+    color: P.live,
     fontSize: 12,
     fontWeight: '800',
   },

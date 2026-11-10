@@ -1,51 +1,70 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useRoutesStore } from '../../../store/useRoutesStore';
-import { useTranslation } from '../../../i18n/useTranslation';
+import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useAppTheme } from '../../../hooks/useAppTheme';
+import { findNextBusAlongRoute } from '../../../services/etaCalculator.service';
+import { getRoutePath, projectOnPath } from '../../../services/routeBoarding.service';
 import { styles } from './RouteHeroCard.styles';
 
 interface RouteHeroCardProps {
-  etaMinutes?: number;
   routeCode?: string;
-  points?: number;
 }
 
-export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
-  etaMinutes = 12,
-  routeCode,
-  points = 50,
-}) => {
+/**
+ * Cabecera de la ruta seleccionada: placa de la ruta y el ETA real del próximo bus
+ * hasta el punto de abordaje del usuario (o su ubicación actual).
+ */
+export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({ routeCode }) => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
-  const { t } = useTranslation();
-  const { isDark } = useAppTheme();
+  const activeBuses = useTrackingStore((s) => s.activeBuses);
+  const boardPoint = useTrackingStore((s) => s.originStopLocation);
+  const currentLocation = useTrackingStore((s) => s.currentLocation);
+  const { palette: P } = useAppTheme();
 
   // Si no hay ruta seleccionada ni código provisto, no renderizar
   if (!selectedRoute && !routeCode) {
     return null;
   }
 
-  const displayCode = routeCode || (selectedRoute ? `${t('nav.routes', 'Ruta')} ${selectedRoute.code}` : '');
+  const routeBuses = selectedRoute ? Object.values(activeBuses).filter((b) => b.routeId === selectedRoute.id) : [];
+  const target = boardPoint || currentLocation;
+  const path = selectedRoute ? getRoutePath(selectedRoute.id) : null;
+  const along = path && target ? projectOnPath(path, target)?.alongMeters : undefined;
+  const next = selectedRoute && path && along != null ? findNextBusAlongRoute(routeBuses, selectedRoute.id, path, along) : null;
+  const code = selectedRoute?.code || routeCode || '';
 
   return (
-    <View style={[styles.container, isDark && { backgroundColor: 'rgba(30, 41, 59, 0.94)', borderColor: '#334155' }]}>
-      <View style={styles.leftCol}>
-        <View style={styles.etaRow}>
-          <Text style={[styles.etaNumber, isDark && { color: '#ffffff' }]}>{etaMinutes}</Text>
-          <Text style={[styles.etaUnit, isDark && { color: '#ffffff' }]}>Min</Text>
-        </View>
-        <Text style={[styles.etaLabel, isDark && { color: '#94a3b8' }]}>{t('routeDetail.estimated', 'Espera aproximada')}</Text>
+    <View style={[styles.container, { backgroundColor: P.surface, borderColor: P.line, shadowColor: P.shadow }]}>
+      <View style={[styles.codeTile, { backgroundColor: selectedRoute?.color || P.brand }]}>
+        <Text style={styles.codeText}>{code}</Text>
       </View>
 
-      <View style={styles.divider} />
-
-      <View style={styles.rightCol}>
-        <Text style={[styles.routeTitle, isDark && { color: '#ffffff' }]}>{displayCode}</Text>
-        <View style={styles.pointsRow}>
-          <Text style={[styles.pointsLabel, isDark && { color: '#cbd5e1' }]}>{t('profile.points', 'Puntos')} </Text>
-          <Text style={styles.pointsBadge}>+{points}</Text>
+      <View style={styles.infoCol}>
+        <Text style={[styles.routeTitle, { color: P.text }]} numberOfLines={1}>{selectedRoute?.name || code}</Text>
+        {!!selectedRoute?.description && (
+          <Text style={[styles.routeDesc, { color: P.muted }]} numberOfLines={1}>{selectedRoute.description}</Text>
+        )}
+        <View style={styles.liveRow}>
+          <View style={[styles.liveDot, { backgroundColor: routeBuses.length > 0 ? P.live : P.muted }]} />
+          <Text style={[styles.liveText, { color: P.text2 }]}>
+            {routeBuses.length === 1 ? '1 bus en vivo' : `${routeBuses.length} buses en vivo`}
+          </Text>
         </View>
-        <Text style={[styles.collabSubtext, isDark && { color: '#94a3b8' }]}>{t('routeDetail.collabSystem', 'sistema colaborativo')}</Text>
+      </View>
+
+      <View style={styles.etaCol}>
+        {next ? (
+          <>
+            <Text style={[styles.etaNumber, { color: P.live }]}>{next.etaMinutes}</Text>
+            <Text style={[styles.etaLabel, { color: P.muted }]}>min · próximo</Text>
+          </>
+        ) : (
+          <>
+            <Text style={[styles.etaNumber, { color: P.muted }]}>–</Text>
+            <Text style={[styles.etaLabel, { color: P.muted }]}>sin datos</Text>
+          </>
+        )}
       </View>
     </View>
   );

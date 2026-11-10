@@ -1,106 +1,66 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
-import { useTranslation } from '../../../i18n/useTranslation';
+import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useAppTheme } from '../../../hooks/useAppTheme';
+import { calculateDistanceMeters } from '../../../utils/geo.utils';
 import { styles } from './StopTimeline.styles';
 
-export interface TimelineStop {
-  id: string;
-  name: string;
-  eta: string;
-  variant: 'pink' | 'green' | 'gray';
-}
-
 interface StopTimelineProps {
-  stops?: TimelineStop[];
   onPressDetails?: () => void;
 }
 
-export const StopTimeline: React.FC<StopTimelineProps> = ({
-  stops,
-  onPressDetails,
-}) => {
+/**
+ * Tarjeta de acción de la ruta. Sin paraderos: los buses paran donde el usuario
+ * les haga la parada, así que mostramos cuánto falta para llegar a la ruta y
+ * el botón para empezar a compartir el viaje a bordo.
+ */
+export const StopTimeline: React.FC<StopTimelineProps> = ({ onPressDetails }) => {
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
-  const { t } = useTranslation();
-  const { isDark } = useAppTheme();
+  const boardPoint = useTrackingStore((s) => s.originStopLocation);
+  const currentLocation = useTrackingStore((s) => s.currentLocation);
+  const { palette: P } = useAppTheme();
 
-  // Si no hay ruta seleccionada ni paradas provistas, no renderizar paradas fantasma
-  if (!selectedRoute && (!stops || stops.length === 0)) {
+  // Si no hay ruta seleccionada, no renderizar
+  if (!selectedRoute) {
     return null;
   }
 
-  const activeStops: TimelineStop[] = stops || (selectedRoute?.stops && selectedRoute.stops.length > 0
-    ? selectedRoute.stops.map((s, idx) => ({
-        id: s.id,
-        name: s.name,
-        eta: `${s.estimatedWaitMinutes} min`,
-        variant: idx === 0 ? 'pink' : idx === selectedRoute.stops.length - 1 ? 'gray' : 'green',
-      }))
-    : []);
-
-  if (activeStops.length === 0) {
-    return null;
-  }
+  const walkMeters = boardPoint && currentLocation
+    ? Math.round(calculateDistanceMeters(currentLocation, boardPoint) * 1.3)
+    : null;
 
   return (
-    <View style={[styles.card, isDark && { backgroundColor: 'rgba(30, 41, 59, 0.94)', borderColor: '#334155' }]}>
-      <ScrollView
-        style={[styles.stopsContainer, { maxHeight: 220 }]}
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled={true}
-      >
-        {activeStops.map((stop, index) => {
-          const isLast = index === activeStops.length - 1;
-
-          return (
-            <View
-              key={stop.id}
-              style={[styles.stopRow, !isLast && { marginBottom: 18 }]}
-            >
-              <View style={styles.indicatorCol}>
-                {!isLast && <View style={[styles.trackLine, isDark && { backgroundColor: '#334155' }]} />}
-                {stop.variant === 'pink' ? (
-                  <View style={[styles.iconCircle, styles.iconPink]}>
-                    <MaterialCommunityIcons name="bus" size={14} color="#ec4899" />
-                  </View>
-                ) : stop.variant === 'green' ? (
-                  <View style={[styles.iconCircle, styles.iconGreen]}>
-                    <View style={styles.greenDot} />
-                  </View>
-                ) : (
-                  <View style={[styles.iconCircle, styles.iconGray, isDark && { backgroundColor: '#1e293b' }]}>
-                    <MaterialCommunityIcons name="bus" size={14} color="#64748b" />
-                  </View>
-                )}
-              </View>
-
-              <View style={styles.stopInfoCol}>
-                <Text style={[styles.stopName, isDark && { color: '#ffffff' }]} numberOfLines={1}>
-                  {stop.name}
-                </Text>
-                <View style={styles.stopSubtitleRow}>
-                  <Text style={styles.stopSubtitle}>{t('routeDetail.setpStop', 'Paradero SETP')}</Text>
-                </View>
-              </View>
-
-              <View style={styles.etaCol}>
-                <MaterialCommunityIcons name="clock-outline" size={13} color="#94a3b8" />
-                <Text style={styles.etaText}>{stop.eta}</Text>
-              </View>
-            </View>
-          );
-        })}
-      </ScrollView>
+    <View style={[styles.card, { backgroundColor: P.surface, borderColor: P.line, shadowColor: P.shadow }]}>
+      {boardPoint && (
+        <View style={styles.stepRow}>
+          <View style={[styles.stepIcon, { backgroundColor: P.raised }]}>
+            <MaterialCommunityIcons name="walk" size={20} color={P.text} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.stepTitle, { color: P.text }]}>
+              {walkMeters != null ? `Camina ${walkMeters} m hasta la ruta` : 'Camina hasta la ruta'}
+            </Text>
+            <Text style={[styles.stepSub, { color: P.muted }]} numberOfLines={1}>
+              {boardPoint.name || 'Punto de la ruta más cercano'} · hazle la parada al bus
+            </Text>
+          </View>
+        </View>
+      )}
 
       <TouchableOpacity
-        style={[styles.detailsButton, isDark && { backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1 }]}
+        style={[styles.detailsButton, { backgroundColor: P.brand }]}
         onPress={onPressDetails}
-        activeOpacity={0.8}
+        activeOpacity={0.85}
+        accessibilityRole="button"
       >
-        <Text style={styles.detailsButtonText}>{t('routeDetail.viewDetails', 'Ver detalles')}</Text>
+        <MaterialCommunityIcons name="bus-marker" size={20} color={P.onBrand} />
+        <Text style={[styles.detailsButtonText, { color: P.onBrand }]}>Ya voy en el bus</Text>
       </TouchableOpacity>
+      <Text style={[styles.helper, { color: P.muted }]}>
+        Compartirás tu ubicación para que otros vean este bus en vivo.
+      </Text>
     </View>
   );
 };

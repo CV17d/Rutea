@@ -3,17 +3,22 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useUiStore } from '../../../store/useUiStore';
+import { useTrackingStore } from '../../../store/useTrackingStore';
 import { useTranslation } from '../../../i18n/useTranslation';
 import { useAppTheme } from '../../../hooks/useAppTheme';
 import { LiveArrivalBadge } from '../../ui/LiveArrivalBadge';
-import { routeSummaryCardStyles as styles } from './RouteSummaryCard.styles';
+import { makeRouteSummaryCardStyles } from './RouteSummaryCard.styles';
+import { useThemedStyles } from '../../../hooks/useThemedStyles';
 
 export const RouteSummaryCard: React.FC = () => {
+  const styles = useThemedStyles(makeRouteSummaryCardStyles);
   const selectedRoute = useRoutesStore((s) => s.getSelectedRoute());
   const setScreenMode = useUiStore((s) => s.setScreenMode);
   const { t } = useTranslation();
-  const { isDark } = useAppTheme();
+  const { palette } = useAppTheme();
   const [isFavorite, setIsFavorite] = useState(false);
+  const boardPoint = useTrackingStore((st) => st.originStopLocation);
+  const activeBuses = useTrackingStore((st) => st.activeBuses);
 
   // Si no hay ruta seleccionada, no renderizar tarjeta fantasma
   if (!selectedRoute) {
@@ -21,16 +26,18 @@ export const RouteSummaryCard: React.FC = () => {
   }
 
   const displayTitle = `${t('nav.routes', 'Ruta')} ${selectedRoute.code} • ${selectedRoute.name}`;
-  const firstStopLoc = selectedRoute.stops?.[0]?.location;
+  const liveBusCount = Object.values(activeBuses).filter((b) => b.routeId === selectedRoute.id).length;
+  // Si el usuario planeó un viaje, el ETA se calcula hasta su punto de abordaje.
+  const firstStopLoc = boardPoint ? { latitude: boardPoint.latitude, longitude: boardPoint.longitude } : selectedRoute.stops?.[0]?.location;
 
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => setScreenMode('ROUTE_DETAILS')}
-      style={[styles.card, isDark && { backgroundColor: 'rgba(30, 41, 59, 0.94)', borderColor: '#334155' }]}
+      style={[styles.card]}
     >
       <View style={styles.headerRow}>
-        <Text style={[styles.titleText, isDark && { color: '#ffffff' }]} numberOfLines={1}>
+        <Text style={[styles.titleText]} numberOfLines={1}>
           {displayTitle}
         </Text>
         <TouchableOpacity
@@ -41,7 +48,7 @@ export const RouteSummaryCard: React.FC = () => {
           <MaterialCommunityIcons
             name={isFavorite ? 'heart' : 'heart-outline'}
             size={18}
-            color={isFavorite ? '#ef4444' : isDark ? '#94a3b8' : '#64748b'}
+            color={isFavorite ? palette.danger : palette.muted}
           />
         </TouchableOpacity>
       </View>
@@ -50,19 +57,11 @@ export const RouteSummaryCard: React.FC = () => {
         <LiveArrivalBadge routeId={selectedRoute.id} targetLocation={firstStopLoc} />
       </View>
 
-      <View style={styles.statsRow}>
-        <View style={styles.statCol}>
-          <Text style={[styles.statValue, isDark && { color: '#ffffff' }]}>78 {t('routeDetail.visits', 'Visitas')}</Text>
-          <Text style={[styles.statSubtext, isDark && { color: '#94a3b8' }]}>{t('routeDetail.estimated', 'aproximadas')}</Text>
-        </View>
-
-        <View style={[styles.statCol, { alignItems: 'flex-start', paddingLeft: 20 }]}>
-          <Text style={[styles.statValue, isDark && { color: '#ffffff' }]}>3 {t('routeDetail.passengers', 'Pasajeros')}</Text>
-          <View style={styles.liveIndicatorRow}>
-            <View style={styles.pulseGreenDot} />
-            <Text style={styles.liveText}>{t('routeDetail.live', 'en vivo')}</Text>
-          </View>
-        </View>
+      <View style={styles.liveIndicatorRow}>
+        <View style={[styles.pulseGreenDot, liveBusCount === 0 && { backgroundColor: '#94a3b8' }]} />
+        <Text style={[styles.liveText, liveBusCount === 0 && { color: '#94a3b8' }]}>
+          {liveBusCount === 1 ? '1 bus en vivo' : `${liveBusCount} buses en vivo`}
+        </Text>
       </View>
     </TouchableOpacity>
   );

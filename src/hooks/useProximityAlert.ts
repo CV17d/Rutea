@@ -5,7 +5,8 @@ import { ProjectedBusLocation } from '../types/telemetry.types';
 import { useTrackingStore } from '../store/useTrackingStore';
 import { useRoutesStore } from '../store/useRoutesStore';
 import { useSettingsStore } from '../store/useSettingsStore';
-import { findClosestApproachingBus } from '../services/etaCalculator.service';
+import { findClosestApproachingBus, findNextBusAlongRoute } from '../services/etaCalculator.service';
+import { getRoutePath, projectOnPath } from '../services/routeBoarding.service';
 import { notificationService } from '../services/notification.service';
 import { Toast } from '../store/useNotificationStore';
 
@@ -51,7 +52,12 @@ export function useProximityAlert({
       return;
     }
 
-    const arrival = findClosestApproachingBus(busList, targetLocation, routeId);
+    // Distancia real por la ruta (sentido de circulación); si no hay geometría, línea recta.
+    const path = routeId ? getRoutePath(routeId) : null;
+    const along = path ? projectOnPath(path, targetLocation)?.alongMeters : undefined;
+    const arrival = routeId && path && along != null
+      ? findNextBusAlongRoute(busList, routeId, path, along)
+      : findClosestApproachingBus(busList, targetLocation, routeId);
 
     if (!arrival) {
       setIsWithinProximity(false);

@@ -7,7 +7,8 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import { useRoutesStore } from '../../../store/useRoutesStore';
 import { useTranslation } from '../../../i18n/useTranslation';
 import { reportService, IncidentType } from '../../../services/report.service';
-import { styles } from './ReportIncidentModal.styles';
+import { makeStyles } from './ReportIncidentModal.styles';
+import { useThemedStyles } from '../../../hooks/useThemedStyles';
 
 export interface IncidentOption {
   type: IncidentType;
@@ -25,6 +26,7 @@ export const INCIDENT_OPTIONS: IncidentOption[] = [
 ];
 
 export const ReportIncidentModal: React.FC = () => {
+  const styles = useThemedStyles(makeStyles);
   const { isReportModalOpen, closeReportModal } = useUiStore();
   const { currentLocation } = useTrackingStore();
   const authUser = useAuthStore((s) => s.user);

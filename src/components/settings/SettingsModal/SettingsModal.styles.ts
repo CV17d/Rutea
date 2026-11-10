@@ -1,17 +1,18 @@
+import { Palette } from '../../../constants/palette';
 import { StyleSheet } from 'react-native';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (P: Palette) => StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    backgroundColor: P.scrim,
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#0f172a',
+    backgroundColor: P.surface,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: P.line,
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 36,
@@ -37,35 +38,35 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#ffffff',
+    color: P.text,
   },
   subtitle: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: P.muted,
     marginTop: 2,
   },
   closeBtn: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#1e293b',
+    backgroundColor: P.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 15,
     fontWeight: '800',
-    color: '#10b981',
-    letterSpacing: 0.8,
+    color: P.text,
+    letterSpacing: -0.2,
     marginTop: 14,
     marginBottom: 8,
   },
   cardBlock: {
-    backgroundColor: '#1e293b',
+    backgroundColor: P.surface,
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: P.line,
     marginBottom: 6,
   },
   optionsRow: {
@@ -80,22 +81,22 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 8,
     borderRadius: 12,
-    backgroundColor: '#0f172a',
+    backgroundColor: P.surface,
     borderWidth: 1.5,
-    borderColor: '#334155',
+    borderColor: P.line,
     gap: 6,
   },
   choicePillActive: {
-    backgroundColor: '#064e3b',
-    borderColor: '#10b981',
+    backgroundColor: P.brandSoft,
+    borderColor: P.brand,
   },
   choiceText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#94a3b8',
+    color: P.muted,
   },
   choiceTextActive: {
-    color: '#ffffff',
+    color: P.text,
     fontWeight: '700',
   },
   toggleRow: {
@@ -110,29 +111,29 @@ export const styles = StyleSheet.create({
   toggleLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#ffffff',
+    color: P.text,
   },
   toggleSub: {
     fontSize: 11,
-    color: '#94a3b8',
+    color: P.muted,
     marginTop: 2,
   },
   clearBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1e293b',
+    backgroundColor: P.surface,
     borderRadius: 12,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: P.line,
     gap: 8,
     marginTop: 4,
   },
   clearBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#f8fafc',
+    color: P.text,
   },
   infoFooter: {
     alignItems: 'center',
@@ -141,7 +142,7 @@ export const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 11,
-    color: '#64748b',
+    color: P.muted,
     fontWeight: '500',
   },
 });

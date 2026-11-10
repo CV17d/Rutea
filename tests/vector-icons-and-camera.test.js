@@ -39,7 +39,7 @@ test('MISIÓN 46 - Iconografía Vectorial: Reemplazo de emojis por @expo/vector-
   const recContent = fs.readFileSync(recCardPath, 'utf8');
   assert.ok(recContent.includes('@expo/vector-icons'), 'RouteRecommendationCard debe importar @expo/vector-icons');
   assert.ok(recContent.includes('name="walk"'), 'RouteRecommendationCard debe usar ícono de caminata');
-  assert.ok(recContent.includes('name="arrow-right"'), 'RouteRecommendationCard debe usar flecha vectorial');
+  assert.ok(recContent.includes('name="bus"'), 'RouteRecommendationCard debe usar ícono vectorial de bus');
   assert.ok(!recContent.includes('🚶'), 'RouteRecommendationCard no debe contener el emoji 🚶');
 
   // 5. BottomNavBar
@@ -71,7 +71,7 @@ test('MISIÓN 46 - CenterLocationButton: FAB circular, GPS Crosshair y control d
   assert.ok(btnContent.includes('Location.getCurrentPositionAsync'), 'Debe tener fallback a GPS nativo');
 
   const stylesContent = fs.readFileSync(stylesPath, 'utf8');
-  assert.ok(stylesContent.includes('borderRadius: 24'), 'Debe tener radio circular');
+  assert.ok(stylesContent.includes('borderRadius: 16'), 'Debe usar el radio de controles del sistema visual');
   assert.ok(stylesContent.includes('elevation'), 'Debe tener elevación/sombra');
   assert.ok(stylesContent.includes('position: \'absolute\''), 'Debe posicionarse absolutamente');
 

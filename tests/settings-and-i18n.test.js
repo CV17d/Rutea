@@ -136,8 +136,9 @@ test('Motor de Temas Reactivo: Conmutación Claro/Oscuro y sincronización con S
 
   const mapContent = fs.readFileSync(mapPath, 'utf8');
   assert.ok(mapContent.includes('useAppTheme'), 'MapContainer debe suscribirse al tema reactivo con useAppTheme');
-  assert.ok(mapContent.includes('DARK_MAP_STYLE'), 'MapContainer debe usar DARK_MAP_STYLE en modo oscuro');
-  assert.ok(mapContent.includes('customMapStyle'), 'MapContainer debe configurar customMapStyle para Google Maps');
+  assert.ok(mapContent.includes('isDark={isDark}'), 'MapContainer debe pasar el tema al mapa OSM');
+  const osmScript = fs.readFileSync(path.resolve(__dirname, '../src/components/map/OsmMapView/osmMapScript.ts'), 'utf8');
+  assert.ok(osmScript.includes('rutea-dark'), 'El mapa OSM debe aplicar el estilo oscuro en modo oscuro');
 
   const appContent = fs.readFileSync(appPath, 'utf8');
   assert.ok(appContent.includes('useAppTheme'), 'App.tsx debe usar useAppTheme para alternar el fondo y la barra de estado');

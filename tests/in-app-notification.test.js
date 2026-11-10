@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 // 1. Verificación de InAppNotification y paleta visual oscura/esmeralda
-test('MISIÓN 65 - InAppNotification: Tema oscuro (#1e293b), acento esmeralda (#10b981) e ícono bell-ring', () => {
+test('MISIÓN 65 - InAppNotification: Paleta Galeras (claro/oscuro), acento en vivo e ícono bell-ring', () => {
   const componentPath = path.resolve(
     __dirname,
     '../src/components/ui/InAppNotification/InAppNotification.tsx'
@@ -14,9 +14,9 @@ test('MISIÓN 65 - InAppNotification: Tema oscuro (#1e293b), acento esmeralda (#
   const content = fs.readFileSync(componentPath, 'utf8');
 
   // Tema visual exigido
-  assert.ok(content.includes('#1e293b'), 'Debe usar fondo oscuro #1e293b');
-  assert.ok(content.includes('#10b981'), 'Debe usar verde esmeralda #10b981');
-  assert.ok(content.includes('#ffffff'), 'Debe usar tipografía blanca #ffffff');
+  assert.ok(content.includes('P.surface'), 'Debe usar la superficie de la paleta (claro/oscuro)');
+  assert.ok(content.includes('P.live'), 'Debe usar el acento en vivo de la paleta');
+  assert.ok(content.includes('P.text'), 'Debe usar el color de texto de la paleta');
   assert.ok(content.includes('bell-ring'), 'Debe usar ícono vectorial bell-ring');
 
   // Superposición no bloqueante

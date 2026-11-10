@@ -15,15 +15,16 @@ export const BottomNavBar: React.FC = () => {
     openSettingsModal,
   } = useUiStore();
   const { t } = useTranslation();
-  const { isDark } = useAppTheme();
-  const inactiveColor = isDark ? '#94a3b8' : '#64748b';
+  const { palette } = useAppTheme();
+  const inactiveColor = palette.muted;
+  const activeColor = palette.brand;
 
   return (
-    <View style={[styles.dock, isDark && { backgroundColor: 'rgba(15, 23, 42, 0.94)', borderColor: '#334155' }]}>
+    <View style={[styles.dock, { backgroundColor: palette.surface, borderColor: palette.line, shadowColor: palette.shadow }]}>
       {/* 1. Inicio */}
       <TouchableOpacity
         onPress={() => setScreenMode('HOME')}
-        style={[styles.navItem, screenMode === 'HOME' && styles.navItemActive]}
+        style={[styles.navItem, screenMode === 'HOME' && { backgroundColor: palette.brandSoft }]}
         activeOpacity={0.7}
         accessibilityRole="button"
         accessibilityLabel={t('nav.home', 'Inicio')}
@@ -31,14 +32,14 @@ export const BottomNavBar: React.FC = () => {
         <MaterialCommunityIcons
           name={screenMode === 'HOME' ? 'home' : 'home-outline'}
           size={24}
-          color={screenMode === 'HOME' ? '#10b981' : inactiveColor}
+          color={screenMode === 'HOME' ? activeColor : inactiveColor}
         />
       </TouchableOpacity>
 
       {/* 2. Catálogo / Detalle de Rutas */}
       <TouchableOpacity
         onPress={() => setScreenMode('ROUTE_DETAILS')}
-        style={[styles.navItem, screenMode === 'ROUTE_DETAILS' && styles.navItemActive]}
+        style={[styles.navItem, screenMode === 'ROUTE_DETAILS' && { backgroundColor: palette.brandSoft }]}
         activeOpacity={0.7}
         accessibilityRole="button"
         accessibilityLabel={t('nav.routes', 'Rutas')}
@@ -46,7 +47,7 @@ export const BottomNavBar: React.FC = () => {
         <MaterialCommunityIcons
           name="bus"
           size={24}
-          color={screenMode === 'ROUTE_DETAILS' ? '#10b981' : inactiveColor}
+          color={screenMode === 'ROUTE_DETAILS' ? activeColor : inactiveColor}
         />
       </TouchableOpacity>
 
