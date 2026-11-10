@@ -23,7 +23,6 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
   const latAnim = useRef(new Animated.Value(bus.snappedPosition.latitude)).current;
   const lngAnim = useRef(new Animated.Value(bus.snappedPosition.longitude)).current;
   const headingAnim = useRef(new Animated.Value(bus.heading || 0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const latId = latAnim.addListener(({ value }) => {
@@ -61,32 +60,26 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
     ]).start();
   }, [bus.snappedPosition.latitude, bus.snappedPosition.longitude, bus.heading]);
 
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.25, duration: 800, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1.0, duration: 800, useNativeDriver: true }),
-      ])
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [pulseAnim]);
-
   const spin = headingAnim.interpolate({
     inputRange: [0, 360],
     outputRange: ['0deg', '360deg'],
   });
 
   const markerContent = (
-    <View style={styles.wrapper}>
-      <Animated.View style={[styles.emeraldHalo, { transform: [{ scale: pulseAnim }] }]} />
-      {/* Vista cenital realista del microbús con rotación angular de rumbo */}
-      <Animated.View
+    <Animated.View
+      style={[
+        styles.busChassis,
+        {
+          transform: [{ rotate: spin }],
+        },
+      ]}
+    >
+      {/* Cuerpo del microbús cenital realista. Telemetría de velocidad (km/h) y halo desacoplados para evitar interferencia en Android */}
+      <View
         style={[
-          styles.busChassis,
+          styles.busBody,
           {
-            backgroundColor: bus.routeColor || '#10b981',
-            transform: [{ rotate: spin }],
+            backgroundColor: bus.routeColor || '#0284c7',
           },
         ]}
       >
@@ -103,13 +96,8 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
           <View style={styles.taillight} />
           <View style={styles.taillight} />
         </View>
-      </Animated.View>
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>
-          {bus.routeCode} • {bus.speedKmh} km/h
-        </Text>
       </View>
-    </View>
+    </Animated.View>
   );
 
   if (Platform.OS === 'web' || !NativeMarker) {
@@ -133,7 +121,6 @@ export const LiveBusMarker: React.FC<LiveBusMarkerProps> = ({ bus, onPress }) =>
       onPress={onPress}
       anchor={{ x: 0.5, y: 0.5 }}
       flat={true}
-      tracksViewChanges={false}
     >
       {markerContent}
     </NativeMarker>

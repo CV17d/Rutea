@@ -1,35 +1,21 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  wrapper: {
+  busChassis: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  webPositioned: {
-    position: 'absolute',
-    zIndex: 25,
-    cursor: 'pointer',
-  },
-  emeraldHalo: {
-    position: 'absolute',
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: 'rgba(16, 185, 129, 0.22)',
-    borderWidth: 1.5,
-    borderColor: '#10b981',
-  },
-  busChassis: {
-    width: 20,
-    height: 46,
-    borderRadius: 4,
+  busBody: {
+    width: 22,
+    height: 48,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3,
-    elevation: 4,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: 2,
@@ -53,17 +39,17 @@ export const styles = StyleSheet.create({
   },
   windshield: {
     width: '100%',
-    height: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
+    height: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   roofCenter: {
     flex: 1,
     width: 14,
     marginVertical: 2,
     borderRadius: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -92,18 +78,9 @@ export const styles = StyleSheet.create({
     borderRadius: 1,
     backgroundColor: '#ef4444',
   },
-  badge: {
-    marginTop: 5,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-    backgroundColor: '#064e3b',
-    borderWidth: 1,
-    borderColor: '#10b981',
-  },
-  badgeText: {
-    color: '#ffffff',
-    fontSize: 9,
-    fontWeight: '800',
+  webPositioned: {
+    position: 'absolute',
+    zIndex: 25,
+    cursor: 'pointer',
   },
 });

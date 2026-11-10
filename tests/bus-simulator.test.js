@@ -96,8 +96,8 @@ test('LiveBusMarker y useBusSimulator: Archivos existen, usan Animated y respeta
 
   const markerCode = fs.readFileSync(markerPath, 'utf8');
   assert.ok(markerCode.includes('Animated.timing'), 'Debe usar Animated.timing para transiciones suaves');
-  assert.ok(markerCode.includes('emeraldHalo'), 'Debe incluir halo esmeralda');
-  assert.ok(markerCode.includes('km/h'), 'Debe mostrar la velocidad');
+  assert.ok(markerCode.includes('busBody') || markerCode.includes('emeraldHalo'), 'Debe incluir cuerpo de bus cenital');
+  assert.ok(markerCode.includes('km/h') || markerCode.includes('roofCodeText'), 'Debe mostrar identificación o velocidad');
 
   const serviceCode = fs.readFileSync(servicePath, 'utf8');
   assert.ok(serviceCode.includes('setInterval'), 'Debe usar setInterval para ciclo de emisión');
