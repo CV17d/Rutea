@@ -65,3 +65,27 @@ test('Trip Planner UI: RouteRecommendationCard y TripPlanner existen y usan colo
   assert.ok(plannerContent.includes('Mi Ubicación'), 'Debe soportar Mi Ubicacion / GPS');
   assert.ok(plannerContent.includes('¿A dónde vas?'), 'Debe tener input de destino');
 });
+
+test('Trip Planner Keyboard Avoidance: Hook useKeyboardOffset eleva el panel con el teclado y lo baja al ocultarse', () => {
+  const hookPath = path.resolve(__dirname, '../src/hooks/useKeyboardOffset.ts');
+  const plannerPath = path.resolve(__dirname, '../src/components/tripPlanner/TripPlanner.tsx');
+
+  assert.ok(fs.existsSync(hookPath), 'useKeyboardOffset.ts debe existir');
+  const hookContent = fs.readFileSync(hookPath, 'utf8');
+  const plannerContent = fs.readFileSync(plannerPath, 'utf8');
+
+  assert.ok(hookContent.includes('keyboardDidShow') && hookContent.includes('keyboardDidHide'), 'Debe escuchar eventos de teclado en Android');
+  assert.ok(hookContent.includes('keyboardWillShow') && hookContent.includes('keyboardWillHide'), 'Debe escuchar eventos de teclado en iOS');
+  assert.ok(hookContent.includes('Animated.timing'), 'Debe animar suavemente la subida y bajada del panel');
+  assert.ok(hookContent.includes('shrinkDelta'), 'Debe compensar si el sistema ya redimensionó la ventana (adjustResize)');
+
+  assert.ok(plannerContent.includes('useKeyboardOffset'), 'TripPlanner debe consumir useKeyboardOffset');
+  assert.ok(plannerContent.includes('paddingBottom: offsetAnim'), 'TripPlanner debe aplicar el desplazamiento animado al overlay');
+  assert.ok(plannerContent.includes('Keyboard.dismiss'), 'TripPlanner debe ocultar el teclado al buscar o tocar fuera');
+  assert.ok(plannerContent.includes('keyboardShouldPersistTaps="handled"'), 'Debe permitir pulsar botones/chips con teclado abierto');
+
+  const hookLines = hookContent.split('\n').length;
+  const plannerLines = plannerContent.split('\n').length;
+  assert.ok(hookLines <= 150, `useKeyboardOffset.ts tiene ${hookLines} líneas, debe ser <= 150`);
+  assert.ok(plannerLines <= 150, `TripPlanner.tsx tiene ${plannerLines} líneas, debe ser <= 150`);
+});
