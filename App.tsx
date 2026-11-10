@@ -20,6 +20,7 @@ import { TripPlanner } from './src/components/tripPlanner';
 import { LoginScreen } from './src/components/auth/LoginScreen';
 import { InAppNotification } from './src/components/ui/InAppNotification';
 import { SplashScreen } from './src/components/ui/SplashScreen';
+import { ErrorBoundary } from './src/components/ui/ErrorBoundary';
 import { SettingsModal } from './src/components/settings/SettingsModal';
 import { useAuthStore } from './src/store/useAuthStore';
 import { useRoutesStore } from './src/store/useRoutesStore';
@@ -84,7 +85,8 @@ export default function App() {
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
-    <View style={[styles.container, { backgroundColor: showSplash ? '#ffffff' : isDark || screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
+    <ErrorBoundary>
+      <View style={[styles.container, { backgroundColor: showSplash ? '#ffffff' : isDark || screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
       <StatusBar style={showSplash ? 'dark' : isDark || screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
       <InAppNotification />
       {arrivalMessage && (
@@ -150,7 +152,8 @@ export default function App() {
       {isProfileModalOpen && <UserProfileCard onClose={closeProfileModal} />}
       {isTripPlannerOpen && <TripPlanner onClose={closeTripPlanner} />}
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
-    </View>
+      </View>
+    </ErrorBoundary>
   );
 }
 

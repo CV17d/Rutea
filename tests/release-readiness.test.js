@@ -70,3 +70,28 @@ test('MISIÓN 67 - Endpoints Offline/Producción y Saneamiento de Consola', () =
   const appSrc = fs.readFileSync(path.join(ROOT, 'App.tsx'), 'utf8');
   assert.ok(!/\bconsole\.log\s*\(/.test(appSrc), 'App.tsx no debe contener console.log');
 });
+
+test('APK Crash Fix - OsmMapView & ErrorBoundary: Mapa OSM/CartoDB sin Google API Key y ErrorBoundary activo', () => {
+  const mapContainer = fs.readFileSync(path.join(ROOT, 'src/components/map/MapContainer/MapContainer.tsx'), 'utf8');
+  const osmView = fs.readFileSync(path.join(ROOT, 'src/components/map/OsmMapView/OsmMapView.tsx'), 'utf8');
+  const osmScript = fs.readFileSync(path.join(ROOT, 'src/components/map/OsmMapView/osmMapScript.ts'), 'utf8');
+  const osmHtml = fs.readFileSync(path.join(ROOT, 'src/components/map/OsmMapView/osmMapHtml.ts'), 'utf8');
+  const errorBoundary = fs.readFileSync(path.join(ROOT, 'src/components/ui/ErrorBoundary/ErrorBoundary.tsx'), 'utf8');
+  const appSrc = fs.readFileSync(path.join(ROOT, 'App.tsx'), 'utf8');
+
+  assert.ok(mapContainer.includes('HAS_GOOGLE_MAPS_KEY'), 'MapContainer debe verificar clave antes de montar Google MapView');
+  assert.ok(mapContainer.includes('<OsmMapView'), 'MapContainer debe renderizar OsmMapView sin Google Maps Key');
+  assert.ok(osmScript.includes('cartocdn.com') && osmScript.includes('openstreetmap.org'), 'Debe usar CartoDB/OSM gratuitos');
+  assert.ok(osmScript.includes('__ruteaCamera') && osmScript.includes('__ruteaUpdate'), 'Debe soportar cámara y actualizaciones reactivas');
+  assert.ok(appSrc.includes('<ErrorBoundary>'), 'App.tsx debe envolver la vista principal con ErrorBoundary');
+
+  for (const [name, content] of [
+    ['MapContainer.tsx', mapContainer],
+    ['OsmMapView.tsx', osmView],
+    ['osmMapScript.ts', osmScript],
+    ['osmMapHtml.ts', osmHtml],
+    ['ErrorBoundary.tsx', errorBoundary],
+  ]) {
+    assert.ok(content.split('\n').length <= 150, `${name} excede 150 líneas`);
+  }
+});
