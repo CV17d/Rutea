@@ -10,16 +10,13 @@ test('MISIÓN 66 - app.json: Icono adaptativo y Splash Screen blanco (#ffffff)',
   assert.strictEqual(expo.icon, './assets/icon.png');
   assert.strictEqual(expo.android.adaptiveIcon.foregroundImage, './assets/adaptive-icon.png');
   assert.strictEqual(expo.android.adaptiveIcon.backgroundColor, '#ffffff');
-  assert.deepStrictEqual(expo.splash, {
-    image: './assets/splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#ffffff',
-  });
+  assert.strictEqual(expo.splash, undefined, 'SDK 58 usa plugin expo-splash-screen en lugar de propiedad top-level splash');
 
   const splashPlugin = (expo.plugins || []).find((p) => Array.isArray(p) && p[0] === 'expo-splash-screen');
   assert.ok(splashPlugin, 'Debe configurar el plugin expo-splash-screen');
   assert.strictEqual(splashPlugin[1].backgroundColor, '#ffffff');
   assert.strictEqual(splashPlugin[1].image, './assets/splash.png');
+  assert.strictEqual(splashPlugin[1].resizeMode, 'contain');
 });
 
 test('MISIÓN 66 - Assets PNG: Recursos gráficos reales generados en ./assets/', () => {

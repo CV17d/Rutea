@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { RawTelemetryPayload, ProjectedBusLocation } from '../types/telemetry.types';
 
-const SOCKET_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+const SOCKET_URL = process.env.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_API_URL || 'https://api.rutea.app';
 
 class SocketService {
   private socket: Socket | null = null;
@@ -22,6 +22,10 @@ class SocketService {
     });
 
     this.socket.on('disconnect', () => {
+      this.connected = false;
+    });
+
+    this.socket.on('connect_error', () => {
       this.connected = false;
     });
   }

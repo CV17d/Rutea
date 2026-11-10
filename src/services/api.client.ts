@@ -1,7 +1,7 @@
 import { TransitRoute, BusStop } from '../types/route.types';
 import { CommunityReport } from '../types/user.types';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.rutea.app/api';
 
 export class ApiClient {
   private static async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -20,7 +20,7 @@ export class ApiClient {
 
       return (await response.json()) as T;
     } catch (error) {
-      console.warn(`[ApiClient] Error in ${endpoint}:`, error);
+      if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn(`[ApiClient] Error in ${endpoint}:`, error);
       throw error;
     }
   }

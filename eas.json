@@ -9,6 +9,13 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://api.rutea.app",
+        "EXPO_PUBLIC_BACKEND_URL": "https://api.rutea.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://glpxmxgezqyskeomoknn.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_ornbeoowo1p8LWKxAAUDKQ_hoSTimQI"
+      },
       "android": {
         "buildType": "apk"
       }
@@ -16,6 +23,13 @@
     "production": {
       "autoIncrement": true,
       "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://api.rutea.app",
+        "EXPO_PUBLIC_BACKEND_URL": "https://api.rutea.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://glpxmxgezqyskeomoknn.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_ornbeoowo1p8LWKxAAUDKQ_hoSTimQI"
+      },
       "android": {
         "buildType": "app-bundle"
       }

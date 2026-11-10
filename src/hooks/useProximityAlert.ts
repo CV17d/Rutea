@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { LatLng } from '../types/route.types';
 import { ProjectedBusLocation } from '../types/telemetry.types';
@@ -90,10 +89,6 @@ export function useProximityAlert({
           text2: toastSub,
         });
 
-        if (Platform.OS === 'web') {
-          console.log(`[Geofence Proximity Alert] ${pushBody} (${dist}m)`);
-        }
-
         // Disparo de notificación local nativa con Expo Notifications
         Notifications.scheduleNotificationAsync({
           content: {
@@ -107,7 +102,7 @@ export function useProximityAlert({
           },
           trigger: null,
         }).catch((err) => {
-          console.warn('[useProximityAlert] Error lanzando notificación push local:', err);
+          if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn('[useProximityAlert] Push local error:', err);
         });
 
         if (onAlert) {

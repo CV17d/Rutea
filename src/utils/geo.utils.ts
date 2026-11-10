@@ -87,7 +87,7 @@ export function parsePostgisToCoordinates(path: any): LatLng[] {
       }).filter((c): c is LatLng => c !== null && !isNaN(c.latitude) && !isNaN(c.longitude));
     }
   } catch (err) {
-    console.warn('[parsePostgisToCoordinates] Error parseando geometria:', err);
+    if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn('[parsePostgisToCoordinates] Error:', err);
   }
   return [];
 }

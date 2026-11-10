@@ -88,7 +88,7 @@ export const CenterLocationButton: React.FC<CenterLocationButtonProps> = ({
         onRecenter();
       }
     } catch (e) {
-      console.warn('CenterLocationButton error:', e);
+      if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn('CenterLocationButton error:', e);
     } finally {
       setIsLocating(false);
     }

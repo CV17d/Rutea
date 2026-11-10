@@ -61,14 +61,14 @@ export const notificationService = {
       }
 
       if (finalStatus !== 'granted') {
-        console.warn('[NotificationService] Permiso de notificaciones push no concedido');
+        if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn('[NotificationService] Permiso push no concedido');
         return null;
       }
 
       const tokenData = await Notifications.getExpoPushTokenAsync();
       return tokenData.data;
     } catch (error) {
-      console.warn('[NotificationService] Error al registrar push token:', error);
+      if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn('[NotificationService] Error push token:', error);
       return null;
     }
   },

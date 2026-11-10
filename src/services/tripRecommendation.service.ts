@@ -140,7 +140,7 @@ export async function findBestRoutes(query: TripQuery): Promise<RouteRecommendat
       });
     }
   } catch (err) {
-    console.warn('[TripRecommendation] Fallback local:', err);
+    if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn('[TripRecommendation] Fallback local:', err);
   }
 
   return findLocalBestRoutes(query);
