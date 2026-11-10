@@ -59,7 +59,12 @@ export const TripPlanner: React.FC<Props> = ({ onClose }) => {
     }
 
     setCoverageWarning(null);
-    const destCoord = resolvePastoLocation(destText) || { latitude: 1.2312, longitude: -77.2918 };
+    const destCoord = resolvePastoLocation(destText);
+    if (!destCoord || checkCoverageArea(destCoord).isOutOfArea) {
+      setCoverageWarning(OUT_OF_AREA_MSG);
+      setIsLoading(false);
+      return;
+    }
     const results = await findBestRoutes({ origin: origCoord, destination: destCoord, radiusMeters: 1200 });
     setRecommendations(results);
     setIsLoading(false);
