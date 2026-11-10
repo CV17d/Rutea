@@ -13,7 +13,8 @@ interface Props {
 }
 
 export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSelect }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isEn = language === 'en';
   const {
     routeId,
     routeCode,
@@ -45,7 +46,7 @@ export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSel
           <View style={styles.walkingRow}>
             <MaterialCommunityIcons name="walk" size={14} color="#0284c7" />
             <Text style={styles.walkingText}>
-              A {walkingDistanceMeters} m a pie (~{estimatedWalkingMinutes} min)
+              {isEn ? `${walkingDistanceMeters} m on foot (~${estimatedWalkingMinutes} min)` : `A ${walkingDistanceMeters} m a pie (~${estimatedWalkingMinutes} min)`}
             </Text>
           </View>
         </View>
@@ -55,7 +56,7 @@ export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSel
         <View style={styles.stopRow}>
           <View style={[styles.indicatorDot, { backgroundColor: '#10b981' }]} />
           <View style={styles.stopInfo}>
-            <Text style={styles.stopLabel}>Subirse en:</Text>
+            <Text style={styles.stopLabel}>{isEn ? 'Board at:' : 'Subirse en:'}</Text>
             <Text style={styles.stopName} numberOfLines={1}>
               {originStop.name}
             </Text>
@@ -67,7 +68,7 @@ export const RouteRecommendationCard: React.FC<Props> = ({ recommendation, onSel
         <View style={styles.stopRow}>
           <View style={[styles.indicatorDot, { backgroundColor: '#ef4444' }]} />
           <View style={styles.stopInfo}>
-            <Text style={styles.stopLabel}>Bajarse en:</Text>
+            <Text style={styles.stopLabel}>{isEn ? 'Get off at:' : 'Bajarse en:'}</Text>
             <Text style={styles.stopName} numberOfLines={1}>
               {destStop.name}
             </Text>

@@ -29,13 +29,21 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
   const logout = useAuthStore((s) => s.logout);
   const { t } = useTranslation();
 
-  const displayName = authUser?.displayName || 'Pasajero Pastuso';
+  const displayName = authUser?.displayName || t('profile.defaultAlias', 'Pasajero Pastuso');
   const avatarSeed = authUser?.avatarSeed || 'user-seed';
 
   const currentRank = calculateRank(points);
   const currentPosition = calculateUserPosition(points);
   const { nextRank, pct, needed, badgeVectorIcon, badgeColor } = calculateProgress(points);
   const leaderboard = calculateLeaderboard(points, displayName, badgeVectorIcon);
+
+  const getTranslatedRank = (rank: string) => {
+    if (rank === 'Pasajero Novato') return t('profile.rookie', 'Pasajero Novato');
+    if (rank === 'Pasajero Frecuente') return t('profile.frequent', 'Pasajero Frecuente');
+    if (rank === 'Guía Local') return t('profile.guide', 'Guía Local');
+    if (rank === 'Cuy Leyenda') return t('profile.legend', 'Cuy Leyenda');
+    return rank;
+  };
 
   const handleLogout = async () => {
     onClose();
@@ -52,7 +60,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
               <Text style={styles.alias}>{displayName}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
                 <MaterialCommunityIcons name={badgeVectorIcon} size={15} color={badgeColor} />
-                <Text style={styles.rankText}>{currentRank}</Text>
+                <Text style={styles.rankText}>{getTranslatedRank(currentRank)}</Text>
                 <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '700', marginLeft: 2 }}>
                   #{currentPosition}
                 </Text>
@@ -68,14 +76,14 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
           <Text style={styles.pointsNumber}>{points}</Text>
           <Text style={styles.pointsLabel}>{t('profile.points', 'PTS acumulados')}</Text>
           <View style={{ marginLeft: 'auto' }}>
-            <GlassBadge type="POINTS" label="EN VIVO" />
+            <GlassBadge type="POINTS" label={t('routeDetail.live', 'EN VIVO')} />
           </View>
         </View>
 
         <View style={styles.progressContainer}>
           <View style={styles.progressLabels}>
             <Text style={styles.progressNextRank}>
-              {needed > 0 ? `Siguiente: ${nextRank} (${needed} pts)` : '¡Rango Máximo!'}
+              {needed > 0 ? `${t('profile.nextRank', 'Siguiente')}: ${getTranslatedRank(nextRank)} (${needed} pts)` : t('profile.maxRank', '¡Rango Máximo!')}
             </Text>
             <Text style={styles.progressPctText}>{pct}%</Text>
           </View>
@@ -102,7 +110,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ onClose }) => 
                   <MaterialCommunityIcons name={item.icon} size={16} color={item.iconColor} />
                 </View>
                 <Text style={[styles.leaderName, item.isUser && { color: '#10b981', fontWeight: '800' }]}>
-                  {item.alias}
+                  {item.isUser ? `${displayName} (${t('profile.you', 'Tú')})` : item.alias}
                 </Text>
               </View>
               <Text style={[styles.leaderPoints, item.isUser && { color: '#10b981', fontWeight: '800' }]}>

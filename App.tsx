@@ -33,10 +33,12 @@ import { useProximityAlert } from './src/hooks/useProximityAlert';
 import { useIncidentReports } from './src/hooks/useIncidentReports';
 import { useOfflineSync } from './src/hooks/useOfflineSync';
 import { useStopArrivalDetection } from './src/hooks/useStopArrivalDetection';
+import { useTranslation } from './src/i18n/useTranslation';
 
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { isDark } = useAppTheme();
+  const { t } = useTranslation();
   useOfflineSync();
   useSocketRoutes();
   useLocationTracking();
@@ -82,7 +84,7 @@ export default function App() {
       {arrivalMessage && (
         <View style={styles.arrivalToast}>
           <MaterialCommunityIcons name="check-circle" size={18} color="#10b981" />
-          <Text style={styles.arrivalToastText}>{arrivalMessage}</Text>
+          <Text style={styles.arrivalToastText}>{arrivalMessage === '¡Llegaste a la parada!' ? t('alerts.arrivedAtStop', arrivalMessage) : arrivalMessage}</Text>
         </View>
       )}
       {screenMode === 'ON_BOARD' ? (

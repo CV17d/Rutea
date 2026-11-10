@@ -70,7 +70,7 @@ export const FloatingSearchBar: React.FC = () => {
 
               <View style={styles.typeBadge}>
                 <Text style={styles.typeBadgeText}>
-                  {route.type === 'EXPRESS' ? 'EXPRESA' : 'ESTÁNDAR'}
+                  {route.type === 'EXPRESS' ? t('search.express', 'EXPRESA') : t('search.standard', 'ESTÁNDAR')}
                 </Text>
               </View>
             </TouchableOpacity>

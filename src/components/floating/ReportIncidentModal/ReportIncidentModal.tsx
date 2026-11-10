@@ -35,6 +35,26 @@ export const ReportIncidentModal: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const getOptionLabel = (type: IncidentType, fallback: string) => {
+    switch (type) {
+      case 'FULL_BUS': return t('incidents.busFull', fallback);
+      case 'TRAFFIC': return t('incidents.traffic', fallback);
+      case 'DETOUR': return t('incidents.detour', fallback);
+      case 'ACCIDENT': return t('incidents.accident', fallback);
+      default: return fallback;
+    }
+  };
+
+  const getOptionSub = (type: IncidentType, fallback: string) => {
+    switch (type) {
+      case 'FULL_BUS': return t('incidents.busFullSub', fallback);
+      case 'TRAFFIC': return t('incidents.trafficSub', fallback);
+      case 'DETOUR': return t('incidents.detourSub', fallback);
+      case 'ACCIDENT': return t('incidents.accidentSub', fallback);
+      default: return fallback;
+    }
+  };
+
   const handleSelectOption = async (option: IncidentOption) => {
     setIsSubmitting(true);
     const lat = currentLocation?.latitude || 1.2145;
@@ -42,20 +62,16 @@ export const ReportIncidentModal: React.FC = () => {
     const routeId = selectedRouteId || 'general';
 
     const res = await reportService.createIncidentReport({
-      routeId,
-      userId: authUser?.id || null,
-      type: option.type,
-      lat,
-      lng,
+      routeId, userId: authUser?.id || null, type: option.type, lat, lng,
     });
 
     setIsSubmitting(false);
     if (res?.error === 'COOLDOWN_ACTIVE') {
-      setToastMessage(res.message);
+      setToastMessage(t('incidents.cooldownWait', res.message));
     } else if (isGuest || res?.isGuest) {
       setToastMessage(t('incidents.guestAlert', 'Reporte enviado. Inicia sesión para ganar puntos por tu colaboración'));
     } else {
-      setToastMessage(t('incidents.successReward', `¡+10 Puntos por tu reporte de ${option.label}!`));
+      setToastMessage(t('incidents.successReward', `¡+10 Puntos por tu reporte!`));
     }
 
     setTimeout(() => {
@@ -85,11 +101,8 @@ export const ReportIncidentModal: React.FC = () => {
           <View style={styles.optionsGrid}>
             {INCIDENT_OPTIONS.map((opt) => (
               <TouchableOpacity
-                key={opt.type}
-                onPress={() => handleSelectOption(opt)}
-                activeOpacity={0.8}
-                disabled={isSubmitting}
-                style={styles.optionCard}
+                key={opt.type} onPress={() => handleSelectOption(opt)}
+                activeOpacity={0.8} disabled={isSubmitting} style={styles.optionCard}
               >
                 <View style={styles.rewardTag}>
                   <Text style={styles.rewardText}>{isGuest ? t('incidents.guestTag', 'INVITADO') : t('incidents.ptsTag', '+10 PTS')}</Text>
@@ -97,8 +110,8 @@ export const ReportIncidentModal: React.FC = () => {
                 <View style={[styles.iconBadge, { backgroundColor: `${opt.color}20` }]}>
                   <MaterialCommunityIcons name={opt.icon} size={22} color={opt.color} />
                 </View>
-                <Text style={styles.optionLabel}>{opt.label}</Text>
-                <Text style={styles.optionSub}>{opt.sub}</Text>
+                <Text style={styles.optionLabel}>{getOptionLabel(opt.type, opt.label)}</Text>
+                <Text style={styles.optionSub}>{getOptionSub(opt.type, opt.sub)}</Text>
               </TouchableOpacity>
             ))}
           </View>

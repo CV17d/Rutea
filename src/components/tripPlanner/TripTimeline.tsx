@@ -14,7 +14,8 @@ export interface TripTimelineProps {
 
 export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) => {
   const [isStopsExpanded, setIsStopsExpanded] = useState(false);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isEn = language === 'en';
 
   const {
     routeId,
@@ -56,10 +57,10 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
         </View>
         <View style={styles.contentCol}>
           <Text style={styles.stepHeader}>
-            Camina {walkingDistanceMeters} metros hasta el paradero {originStop.name}
+            {isEn ? `Walk ${walkingDistanceMeters}m to stop ${originStop.name}` : `Camina ${walkingDistanceMeters} metros hasta el paradero ${originStop.name}`}
           </Text>
           <Text style={styles.stepSubtext}>
-            ~{estimatedWalkingMinutes} min de caminata a pie
+            {isEn ? `~${estimatedWalkingMinutes} min walk` : `~${estimatedWalkingMinutes} min de caminata a pie`}
           </Text>
         </View>
       </View>
@@ -74,7 +75,7 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
         </View>
         <View style={styles.contentCol}>
           <Text style={styles.stepHeader}>
-            Toma la {routeName} ({routeCode})
+            {isEn ? `Take ${routeName} (${routeCode})` : `Toma la ${routeName} (${routeCode})`}
           </Text>
 
           <View style={styles.badgeWrap}>
@@ -87,7 +88,7 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
             activeOpacity={0.7}
           >
             <Text style={styles.intermediateToggleText}>
-              Viaja durante {intermediateCount} paradas
+              {isEn ? `Ride for ${intermediateCount} stops` : `Viaja durante ${intermediateCount} paradas`}
             </Text>
             <MaterialCommunityIcons
               name={isStopsExpanded ? 'chevron-up' : 'chevron-down'}
@@ -116,7 +117,7 @@ export const TripTimeline: React.FC<TripTimelineProps> = ({ recommendation }) =>
           </View>
         </View>
         <View style={styles.contentCol}>
-          <Text style={styles.stepHeader}>Bájate en {destStop.name}</Text>
+          <Text style={styles.stepHeader}>{isEn ? `Get off at ${destStop.name}` : `Bájate en ${destStop.name}`}</Text>
           <Text style={styles.stepSubtext}>{t('alerts.arrivedAtStop', 'Llegada a tu destino final')}</Text>
         </View>
       </View>

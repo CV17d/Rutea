@@ -149,3 +149,42 @@ test('Motor de Temas Reactivo: Conmutación Claro/Oscuro y sincronización con S
   assert.ok(hookLines <= 150, `useAppTheme.ts tiene ${hookLines} líneas, debe ser <= 150`);
   assert.ok(mapLines <= 150, `MapContainer.tsx tiene ${mapLines} líneas, debe ser <= 150`);
 });
+
+// 6. Traducción Completa al Inglés: Alertas de mapa, reportes en vivo y rangos de usuario
+test('i18n Total Coverage: Alertas en mapa, reportes y rangos traducidos al inglés', () => {
+  const enPath = path.resolve(__dirname, '../src/i18n/locales/en.ts');
+  const enContent = fs.readFileSync(enPath, 'utf8');
+
+  // Rango Novato y Gamificación
+  assert.ok(enContent.includes('Rookie Passenger'), 'en.ts debe traducir Pasajero Novato a Rookie Passenger');
+  assert.ok(enContent.includes('Frequent Passenger'), 'en.ts debe traducir Pasajero Frecuente');
+  assert.ok(enContent.includes('Local Guide'), 'en.ts debe traducir Guía Local');
+  assert.ok(enContent.includes('Legendary Cuy'), 'en.ts debe traducir Cuy Leyenda');
+
+  // Reportes de Novedad e Incidentes
+  assert.ok(enContent.includes('Full Bus'), 'en.ts debe traducir Bus Lleno a Full Bus');
+  assert.ok(enContent.includes('Heavy Traffic'), 'en.ts debe traducir Tráfico Pesado a Heavy Traffic');
+  assert.ok(enContent.includes('Traffic Jam'), 'en.ts debe traducir Trancón a Traffic Jam');
+  assert.ok(enContent.includes('Detour'), 'en.ts debe traducir Desvío a Detour');
+  assert.ok(enContent.includes('Accident'), 'en.ts debe traducir Accidente a Accident');
+
+  // Alertas en el Mapa y Feed en Vivo
+  assert.ok(enContent.includes('Heavy traffic on 18th St'), 'en.ts debe traducir alerta de tráfico en Calle 18');
+  assert.ok(enContent.includes('Full bus in Torobajo'), 'en.ts debe traducir alerta de bus lleno en Torobajo');
+  assert.ok(enContent.includes('Full bus on route'), 'en.ts debe traducir bus lleno en vía');
+  assert.ok(enContent.includes('Traffic on 17th is heavy'), 'en.ts debe traducir comentarios de feed en vivo');
+
+  // Componentes consumen useTranslation
+  const markerPath = path.resolve(__dirname, '../src/components/map/ReportMarker/ReportMarker.tsx');
+  const markerContent = fs.readFileSync(markerPath, 'utf8');
+  assert.ok(markerContent.includes('useTranslation'), 'ReportMarker debe usar useTranslation');
+  assert.ok(markerContent.includes('getTranslatedTitle'), 'ReportMarker debe implementar getTranslatedTitle');
+
+  const userProfilePath = path.resolve(__dirname, '../src/components/profile/UserProfileCard/UserProfileCard.tsx');
+  const userProfileContent = fs.readFileSync(userProfilePath, 'utf8');
+  assert.ok(userProfileContent.includes('getTranslatedRank'), 'UserProfileCard debe traducir el rango dinámicamente');
+
+  const reportModalPath = path.resolve(__dirname, '../src/components/floating/ReportIncidentModal/ReportIncidentModal.tsx');
+  const reportModalContent = fs.readFileSync(reportModalPath, 'utf8');
+  assert.ok(reportModalContent.includes('getOptionLabel'), 'ReportIncidentModal debe traducir opciones dinámicamente');
+});

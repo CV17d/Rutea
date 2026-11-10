@@ -33,7 +33,7 @@ export const ActiveTrackingView: React.FC = () => {
   const handleQuickReport = (type: 'BUS_FULL' | 'TRAFFIC_JAM', label: string) => {
     const cooldown = checkReportCooldown(type);
     if (!cooldown.canReport) {
-      setToastMessage(`Debes esperar ${Math.ceil(cooldown.remainingSeconds / 60)} min para reportar nuevamente`);
+      setToastMessage(t('incidents.cooldownWait', `Debes esperar ${Math.ceil(cooldown.remainingSeconds / 60)} min para reportar nuevamente`));
       setTimeout(() => setToastMessage(null), 2000);
       return;
     }
@@ -56,7 +56,7 @@ export const ActiveTrackingView: React.FC = () => {
       title: `${label} en vía`, reporterAlias: profile.alias || 'Andrés', latitude: lat, longitude: lng,
     });
 
-    setToastMessage(isUserGuest ? 'Reporte enviado. Inicia sesión para ganar puntos' : `¡+15 Puntos por tu reporte: ${label}!`);
+    setToastMessage(isUserGuest ? t('incidents.guestAlert', 'Reporte enviado. Inicia sesión para ganar puntos') : t('incidents.successReward', `¡+15 Puntos por tu reporte!`));
     setTimeout(() => setToastMessage(null), 2000);
   };
 
@@ -88,12 +88,15 @@ export const ActiveTrackingView: React.FC = () => {
       <Text style={styles.sectionTitle}>{t('onBoard.liveReports', 'Reportes en vivo')}</Text>
       <View style={styles.reportsFeedContainer}>
         <View style={styles.speechBubbleSimple}>
-          <Text style={styles.bubbleText}>El tráfico en la 17 está pesado</Text>
+          <Text style={styles.bubbleText}>{t('incidents.sampleTrafficComment', 'El tráfico en la 17 está pesado')}</Text>
           <MaterialCommunityIcons name="comment-text-outline" size={16} color="#94a3b8" />
         </View>
         <View style={styles.speechBubbleWithAvatar}>
           <View style={styles.avatarWrap}><ProceduralAvatar seed="andres" size={34} /></View>
-          <View style={styles.bubbleContent}><Text style={styles.bubbleText}>El tráfico en la 17 está pesado</Text><Text style={styles.bubbleAuthor}>Andrés</Text></View>
+          <View style={styles.bubbleContent}>
+            <Text style={styles.bubbleText}>{t('incidents.sampleTrafficComment', 'El tráfico en la 17 está pesado')}</Text>
+            <Text style={styles.bubbleAuthor}>Andrés</Text>
+          </View>
         </View>
       </View>
 

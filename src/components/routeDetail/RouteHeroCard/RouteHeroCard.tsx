@@ -25,7 +25,7 @@ export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
     return null;
   }
 
-  const displayCode = routeCode || (selectedRoute ? `Ruta ${selectedRoute.code}` : '');
+  const displayCode = routeCode || (selectedRoute ? `${t('nav.routes', 'Ruta')} ${selectedRoute.code}` : '');
 
   return (
     <View style={[styles.container, isDark && { backgroundColor: 'rgba(30, 41, 59, 0.94)', borderColor: '#334155' }]}>
@@ -45,7 +45,7 @@ export const RouteHeroCard: React.FC<RouteHeroCardProps> = ({
           <Text style={[styles.pointsLabel, isDark && { color: '#cbd5e1' }]}>{t('profile.points', 'Puntos')} </Text>
           <Text style={styles.pointsBadge}>+{points}</Text>
         </View>
-        <Text style={[styles.collabSubtext, isDark && { color: '#94a3b8' }]}>sistema colaborativo</Text>
+        <Text style={[styles.collabSubtext, isDark && { color: '#94a3b8' }]}>{t('routeDetail.collabSystem', 'sistema colaborativo')}</Text>
       </View>
     </View>
   );

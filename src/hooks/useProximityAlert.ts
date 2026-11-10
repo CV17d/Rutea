@@ -5,6 +5,7 @@ import { LatLng } from '../types/route.types';
 import { ProjectedBusLocation } from '../types/telemetry.types';
 import { useTrackingStore } from '../store/useTrackingStore';
 import { useRoutesStore } from '../store/useRoutesStore';
+import { useSettingsStore } from '../store/useSettingsStore';
 import { findClosestApproachingBus } from '../services/etaCalculator.service';
 import { notificationService } from '../services/notification.service';
 import { Toast } from '../store/useNotificationStore';
@@ -77,22 +78,27 @@ export function useProximityAlert({
         const alertMessage = '¡Prepárate! Tu bus está a punto de llegar';
         const notificationBody = `¡Prepárate! La ruta ${routeCode} está llegando a tu parada`;
 
+        const isEn = useSettingsStore.getState().language === 'en';
+        const alertTitle = isEn ? 'Get ready!' : '¡Prepárate!';
+        const toastSub = isEn ? `Your bus ${routeCode} is arriving at your stop` : `Tu bus ${routeCode} está llegando a tu parada`;
+        const pushBody = isEn ? `Get ready! Route ${routeCode} is arriving at your stop` : notificationBody;
+
         // Notificación In-App visual temática (Toast)
         Toast.show({
           type: 'success',
-          text1: '¡Prepárate!',
-          text2: `Tu bus ${routeCode} está llegando a tu parada`,
+          text1: alertTitle,
+          text2: toastSub,
         });
 
         if (Platform.OS === 'web') {
-          console.log(`[Geofence Proximity Alert] ${notificationBody} (${dist}m)`);
+          console.log(`[Geofence Proximity Alert] ${pushBody} (${dist}m)`);
         }
 
         // Disparo de notificación local nativa con Expo Notifications
         Notifications.scheduleNotificationAsync({
           content: {
-            title: '¡Prepárate!',
-            body: notificationBody,
+            title: alertTitle,
+            body: pushBody,
             sound: true,
             vibrate: [0, 250, 250, 250],
             priority: Notifications.AndroidNotificationPriority.MAX,

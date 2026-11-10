@@ -20,7 +20,7 @@ export const RouteSummaryCard: React.FC = () => {
     return null;
   }
 
-  const displayTitle = `Ruta ${selectedRoute.code} • ${selectedRoute.name}`;
+  const displayTitle = `${t('nav.routes', 'Ruta')} ${selectedRoute.code} • ${selectedRoute.name}`;
   const firstStopLoc = selectedRoute.stops?.[0]?.location;
 
   return (
@@ -52,12 +52,12 @@ export const RouteSummaryCard: React.FC = () => {
 
       <View style={styles.statsRow}>
         <View style={styles.statCol}>
-          <Text style={[styles.statValue, isDark && { color: '#ffffff' }]}>78 Visitas</Text>
+          <Text style={[styles.statValue, isDark && { color: '#ffffff' }]}>78 {t('routeDetail.visits', 'Visitas')}</Text>
           <Text style={[styles.statSubtext, isDark && { color: '#94a3b8' }]}>{t('routeDetail.estimated', 'aproximadas')}</Text>
         </View>
 
         <View style={[styles.statCol, { alignItems: 'flex-start', paddingLeft: 20 }]}>
-          <Text style={[styles.statValue, isDark && { color: '#ffffff' }]}>3 Pasajeros</Text>
+          <Text style={[styles.statValue, isDark && { color: '#ffffff' }]}>3 {t('routeDetail.passengers', 'Pasajeros')}</Text>
           <View style={styles.liveIndicatorRow}>
             <View style={styles.pulseGreenDot} />
             <Text style={styles.liveText}>{t('routeDetail.live', 'en vivo')}</Text>
