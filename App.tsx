@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as NativeSplash from 'expo-splash-screen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MapContainer } from './src/components/map/MapContainer';
 import { RoutePolyline } from './src/components/map/RoutePolyline';
@@ -18,6 +19,7 @@ import { UserProfileCard } from './src/components/profile/UserProfileCard';
 import { TripPlanner } from './src/components/tripPlanner';
 import { LoginScreen } from './src/components/auth/LoginScreen';
 import { InAppNotification } from './src/components/ui/InAppNotification';
+import { SplashScreen } from './src/components/ui/SplashScreen';
 import { SettingsModal } from './src/components/settings/SettingsModal';
 import { useAuthStore } from './src/store/useAuthStore';
 import { useRoutesStore } from './src/store/useRoutesStore';
@@ -35,7 +37,10 @@ import { useOfflineSync } from './src/hooks/useOfflineSync';
 import { useStopArrivalDetection } from './src/hooks/useStopArrivalDetection';
 import { useTranslation } from './src/i18n/useTranslation';
 
+NativeSplash.preventAutoHideAsync().catch(() => {});
+
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { isDark } = useAppTheme();
   const { t } = useTranslation();
@@ -67,9 +72,10 @@ export default function App() {
 
   if (!isAuthenticated) {
     return (
-      <View style={styles.container}>
-        <StatusBar style="light" />
+      <View style={[styles.container, showSplash && { backgroundColor: '#ffffff' }]}>
+        <StatusBar style={showSplash ? 'dark' : 'light'} />
         <LoginScreen />
+        {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       </View>
     );
   }
@@ -78,8 +84,8 @@ export default function App() {
   const selectedBus = selectedBusId ? activeBuses[selectedBusId] : undefined;
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark || screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
-      <StatusBar style={isDark || screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
+    <View style={[styles.container, { backgroundColor: showSplash ? '#ffffff' : isDark || screenMode === 'ON_BOARD' ? '#0f172a' : '#f8fafc' }]}>
+      <StatusBar style={showSplash ? 'dark' : isDark || screenMode === 'ON_BOARD' ? 'light' : 'dark'} />
       <InAppNotification />
       {arrivalMessage && (
         <View style={styles.arrivalToast}>
@@ -143,6 +149,7 @@ export default function App() {
       <SettingsModal />
       {isProfileModalOpen && <UserProfileCard onClose={closeProfileModal} />}
       {isTripPlannerOpen && <TripPlanner onClose={closeTripPlanner} />}
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
     </View>
   );
 }

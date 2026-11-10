@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useTranslation } from '../../../i18n/useTranslation';
@@ -32,7 +32,7 @@ export const LoginScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.headerCol}>
         <View style={styles.logoBadge}>
-          <MaterialCommunityIcons name="bus" size={32} color="#ffffff" />
+          <Image source={require('../../../../assets/logo-mark.png')} style={styles.logoImage} resizeMode="contain" />
         </View>
         <Text style={styles.title}>{t('common.appTitle', 'Rutea Pasto')}</Text>
         <Text style={styles.subtitle}>{t('auth.subtitle', 'Transporte Urbano Inteligente • SETPasto')}</Text>
